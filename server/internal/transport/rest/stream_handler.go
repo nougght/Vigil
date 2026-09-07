@@ -67,6 +67,7 @@ func (s *StreamHandler) StreamFrames(c *gin.Context) {
 		select {
 		case <-c.Request.Context().Done():
 			s.agentService.UnsubAllStreaming(viewerID)
+			return
 		case frame := <-framesChan:
 			log.Println("frame")
 

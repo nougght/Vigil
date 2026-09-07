@@ -90,7 +90,7 @@ func (s *MetricsService) resolveAndSaveBatchFunc(ctx context.Context, batches []
 	if err != nil {
 		return fmt.Errorf("failed to resolve metric series: %w", err)
 	}
-	metricRows := make([]metrics_model.MetricRow, metricsCount)
+	metricRows := make([]metrics_model.MetricRow, 0, metricsCount)
 	for _, b := range batches {
 		for i, key := range sharedUtil.Map(b.Metrics, func(m *metrics_model.MetricSample) metrics_model.MetricSeriesKey {
 			return metrics_model.MetricSeriesKey{
