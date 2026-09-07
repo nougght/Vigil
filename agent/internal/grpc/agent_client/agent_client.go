@@ -258,6 +258,7 @@ func (c *AgentClient) runStreamingWriter(ctx context.Context, wg *sync.WaitGroup
 				image, err := streaming.TakeScreenshot()
 				if err != nil {
 					log.Println(err.Error())
+					continue
 				}
 				var raw bytes.Buffer
 				err = jpeg.Encode(&raw, image, &jpeg.Options{Quality: 60})

@@ -38,17 +38,16 @@ func MustLoadConfig(path string) *Config {
 }
 
 func LoadConfig(path string) (*Config, error) {
-	cfg := new(Config)
+	var cfg Config
 	err := util.ReadYaml(path, cfg)
 	if err != nil {
 		log.Println("failed to read yaml config")
+		cfg = DefaultConfig
 	}
-
-	cfg = &DefaultConfig
 
 	if cfg.NetInterval < time.Second {
 		return nil, fmt.Errorf("net interval can't be less than 1 second")
 	}
-	return cfg, nil
+	return &cfg, nil
 
 }
