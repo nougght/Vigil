@@ -94,5 +94,8 @@ func CompareHash(hashString, value string) (bool, error) {
 	hash := argon2.IDKey([]byte(value), []byte(salt), uint32(params.Iterations), uint32(params.Memory), uint8(params.Parallelism), uint32(params.KeyLength))
 
 	// compare hash in constant time
-	return subtle.ConstantTimeCompare(expectedHash, hash) == 1, nil
+	if subtle.ConstantTimeCompare(expectedHash, hash) == 1 {
+		return false, fmt.Errorf("incorrect value")
+	}
+	return true, nil
 }
