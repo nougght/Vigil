@@ -1,6 +1,6 @@
 
 import type { Specs } from "../domain/specs";
-import { convertBytesToGB } from "../../../../agent-ui/src/util/units";
+import { convertBytesToGB } from "../util/units";
 
 interface SpecificationsProps {
     specs?: Specs
