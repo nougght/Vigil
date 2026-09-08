@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"maps"
+	"slices"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -58,10 +60,11 @@ func (r *SeriesRepository) BatchCreateOrLoadSeries(ctx context.Context, seriesLi
 		}
 	}()
 
-	res := r.db(ctx).SendBatch(ctx, batch)
+	res := tx.SendBatch(ctx, batch)
 	defer func() {
 		_ = res.Close()
 	}()
+	ctx = context.WithValue(ctx, model.ContextKeyTx, tx)
 
 	missingKeysWithIndexes := make(map[metrics_model.MetricSeriesKey]int, 0)
 	for i := range seriesList {
@@ -80,7 +83,7 @@ func (r *SeriesRepository) BatchCreateOrLoadSeries(ctx context.Context, seriesLi
 		resultSeries = append(resultSeries, createdSeries)
 	}
 
-	loadedIDs, err := r.GetSeriesIDsByKeys(ctx, seriesList)
+	loadedIDs, err := r.GetSeriesIDsByKeys(ctx, slices.Collect(maps.Keys(missingKeysWithIndexes)))
 	if err != nil {
 		return nil, fmt.Errorf("failed to load series ids: %w", err)
 	}
