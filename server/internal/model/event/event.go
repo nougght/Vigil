@@ -1,6 +1,12 @@
 package event
 
-import "context"
+import (
+	"context"
+	"fmt"
+
+	"github.com/google/uuid"
+	metrics_model "github.com/nougght/monitoring-system/server/internal/model/metrics"
+)
 
 type Event interface {
 	Name() string
@@ -14,4 +20,17 @@ type EventBus interface {
 	Shutdown(ctx context.Context) error
 	Subscribe(subject string, handler EventHandler) error
 	Publish(ctx context.Context, event Event) error
+}
+
+type AgentMetricsEvent struct {
+	AgentID uuid.UUID
+	Metric  metrics_model.MetricSample
+}
+
+func (e *AgentMetricsEvent) Name() string {
+	return "AgentMetricsEvent"
+}
+
+func (e *AgentMetricsEvent) Subject() string {
+	return fmt.Sprintf("agent.detailed.%s", e.AgentID)
 }

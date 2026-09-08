@@ -30,6 +30,7 @@ func NewServer(cfg *config.Config, services service.Services) *http.Server {
 
 	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	api.GET("/ws", gin.WrapF(services.Realtime().HandleWs))
 	handlers.AgentHandler().RegisterRoutes(api)
 	handlers.StreamHandler().RegisterRoutes(api)
 
