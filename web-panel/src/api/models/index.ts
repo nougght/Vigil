@@ -7,7 +7,13 @@
 
 export * from './agent';
 export * from './agentConfigBody';
+export * from './agentsOverview';
 export * from './agentSpecs';
+export * from './agentsSummary';
+export * from './agentWithCPUUsageDTO';
+export * from './agentWithMemoryUsageDTO';
+export * from './countByPercent';
+export * from './countDistribution';
 export * from './cpuSpecs';
 export * from './createAgent400';
 export * from './createAgent404';
@@ -27,9 +33,13 @@ export * from './getAgentSpecs500';
 export * from './getAllAgents400';
 export * from './getAllAgents404';
 export * from './getAllAgents500';
+export * from './getFleetOverview400';
+export * from './getFleetOverview404';
+export * from './getFleetOverview500';
 export * from './getStreamFrames400';
 export * from './getStreamFrames404';
 export * from './getStreamFrames500';
 export * from './hostSpecs';
 export * from './memorySpecs';
 export * from './physicalMemoryInfo';
+export * from './topNAgents';

@@ -164,3 +164,9 @@ main {
     border: 2px solid rgb(240, 162, 61);
     padding: 4px;
 }
+
+
+.topN {
+    display: flex;
+    flex-direction: row;
+}

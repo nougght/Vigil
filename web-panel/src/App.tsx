@@ -8,12 +8,13 @@ import { useEffect, useState } from 'react'
 import dashIcon from "./assets/dashboard.svg"
 import agentsIcon from "./assets/cpu.svg"
 import { ClientMessageTypeAgentDetailed, FillMetricsFromSeries, MessageTypeSeries, type AgentDetailedMessage, type ClientMessage, type Message, type Metrics } from './domain/metrics'
+import { OverviewPage } from './pages/OverviewPage'
 // import type { SeriesDTO } from './domain/metrics'
 const sideBarData: SideBarData = {
     iconSrc: "",
     title: "Vigil",
     items: [
-        { id: "dashboard", title: "Обзор", iconSrc: dashIcon, path: "/dashboard", countLabel: 0 },
+        { id: "overview", title: "Обзор", iconSrc: dashIcon, path: "/overview", countLabel: 0 },
         { id: "agents", title: "Агенты", iconSrc: agentsIcon, path: "/agents", countLabel: 0 },
     ]
 
@@ -102,7 +103,7 @@ function App() {
                 <Routes>
                     <Route element={<AppLayout />}>
                         <Route path="/" element={<Navigate to="/agents" replace />} />
-                        <Route path="/dashboard" element={<p>not implemented</p>} />
+                        <Route path="/overview" element={<OverviewPage />} />
                         <Route path="/agents" element={<AgentsPage />} />
                         <Route path="/agents/:id" element={<AgentPage
                             metrics={metrics} />} />

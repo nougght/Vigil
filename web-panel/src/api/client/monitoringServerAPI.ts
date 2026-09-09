@@ -8,6 +8,7 @@ import type {
   Agent,
   AgentConfigBody,
   AgentSpecs,
+  AgentsOverview,
   CreateAgent400,
   CreateAgent404,
   CreateAgent500,
@@ -22,6 +23,9 @@ import type {
   GetAllAgents400,
   GetAllAgents404,
   GetAllAgents500,
+  GetFleetOverview400,
+  GetFleetOverview404,
+  GetFleetOverview500,
   GetStreamFrames400,
   GetStreamFrames404,
   GetStreamFrames500
@@ -383,6 +387,66 @@ export const getAgentSpecs = async (agentID: string, options?: RequestInit): Pro
 
   const data: getAgentSpecsResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getAgentSpecsResponse
+}
+
+
+
+export type getFleetOverviewResponse200 = {
+  data: AgentsOverview
+  status: 200
+}
+
+export type getFleetOverviewResponse400 = {
+  data: GetFleetOverview400
+  status: 400
+}
+
+export type getFleetOverviewResponse404 = {
+  data: GetFleetOverview404
+  status: 404
+}
+
+export type getFleetOverviewResponse500 = {
+  data: GetFleetOverview500
+  status: 500
+}
+
+export type getFleetOverviewResponseSuccess = (getFleetOverviewResponse200) & {
+  headers: Headers;
+};
+export type getFleetOverviewResponseError = (getFleetOverviewResponse400 | getFleetOverviewResponse404 | getFleetOverviewResponse500) & {
+  headers: Headers;
+};
+
+export type getFleetOverviewResponse = (getFleetOverviewResponseSuccess | getFleetOverviewResponseError)
+
+export const getGetFleetOverviewUrl = () => {
+
+
+
+
+  return `http://monitoring.nought.ru/api/v1/fleet/overview`
+}
+
+/**
+ * @summary Get fleet overview
+ */
+export const getFleetOverview = async ( options?: RequestInit): Promise<getFleetOverviewResponse> => {
+
+  const res = await fetch(getGetFleetOverviewUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getFleetOverviewResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getFleetOverviewResponse
 }
 
 
