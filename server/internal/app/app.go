@@ -13,6 +13,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/nougght/monitoring-system/server/internal/config"
+	"github.com/nougght/monitoring-system/server/internal/infrastructure/eventbus"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/service"
 	"github.com/nougght/monitoring-system/server/internal/storage/timescale"
@@ -80,6 +81,7 @@ func New(ctx context.Context, cfg *config.Config) *App {
 		}
 	}
 
+	bus := eventbus.NewEventBus(cfg)
 	services := service.New(service.ServicesOptions{
 		Config:       cfg,
 		Repositories: repository.New(db),
@@ -89,8 +91,10 @@ func New(ctx context.Context, cfg *config.Config) *App {
 			Key:    intKey,
 			RootCA: rootCA,
 		},
+		Bus: bus,
 	})
 
+	bus.Start(ctx)
 	services.Metrics().StartSaving(ctx)
 	err = services.Metrics().SyncMetricKinds(ctx)
 	if err != nil {

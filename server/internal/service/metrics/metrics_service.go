@@ -10,7 +10,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/nougght/monitoring-system/server/internal/config"
+	"github.com/nougght/monitoring-system/server/internal/infrastructure/eventbus"
 	"github.com/nougght/monitoring-system/server/internal/model"
+	"github.com/nougght/monitoring-system/server/internal/model/event"
 	metrics_model "github.com/nougght/monitoring-system/server/internal/model/metrics"
 	"github.com/nougght/monitoring-system/server/internal/storage/timescale/repository"
 	"github.com/nougght/monitoring-system/server/internal/util"
@@ -26,12 +28,14 @@ type MetricsService struct {
 	snapshot       *SnapshotCache
 	batcher        *util.Batcher[metrics_model.MetricsBatch]
 	seriesResolver *SeriesResolver
+	bus            *eventbus.EventBus
 }
 
 func NewMetricsService(cfg *config.Config,
 	transactor model.Transactor,
 	metricsRepo *repository.MetricsRepository,
 	seriesRepo *repository.SeriesRepository,
+	bus *eventbus.EventBus,
 ) (*MetricsService, error) {
 	if cfg == nil || transactor == nil || metricsRepo == nil {
 		return nil, fmt.Errorf("params required")
@@ -42,6 +46,7 @@ func NewMetricsService(cfg *config.Config,
 		metricsRepo:    metricsRepo,
 		snapshot:       NewSnapshotCache(),
 		seriesResolver: NewSeriesResolver(seriesRepo),
+		bus:            bus,
 	}
 	s.batcher = util.NewBatcher(1000, time.Second, s.resolveAndSaveBatchFunc)
 	return s, nil
@@ -65,6 +70,19 @@ func (s *MetricsService) HandleMetrics(ctx context.Context, agentID uuid.UUID, m
 
 	if err := s.batcher.Add(metrics); err != nil {
 		return err
+	}
+
+	for _, m := range metrics.Metrics {
+		event := &event.AgentMetricsEvent{
+			AgentID: agentID,
+			Metric:  *m,
+		}
+		err := s.bus.Publish(ctx,
+			event,
+		)
+		if err != nil {
+			log.Printf("failed to publish event: %#v", event)
+		}
 	}
 
 	return nil

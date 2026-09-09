@@ -3,6 +3,7 @@ package eventbus
 import (
 	"context"
 	"errors"
+	"log"
 	"slices"
 	"strings"
 	"sync"
@@ -63,6 +64,7 @@ func (b *EventBus) Shutdown(ctx context.Context) error {
 }
 
 func (b *EventBus) Subscribe(subject string, handler model.EventHandler, bufferSize int, droppedCount *int) error {
+	log.Printf("sub event: %s", subject)
 	if !isValidSubject(subject) {
 		return ErrInvalidSubjecName
 	}
@@ -94,6 +96,7 @@ func (b *EventBus) Subscribe(subject string, handler model.EventHandler, bufferS
 }
 
 func (b *EventBus) Publish(ctx context.Context, event model.Event) error {
+	log.Printf("pub event: %s", event.Subject())
 	if !isFullSubject(event.Subject()) {
 		return ErrFullSubjectNameRequired
 	}

@@ -37,6 +37,9 @@ server-build:
 server-up:
 	docker compose --env-file ./server/.env -f ./server/docker/docker-compose.yaml -p monitoring-system up -d  --build monitoring-backend
 
+server-down:
+	docker compose --env-file ./server/.env  --file ./server/docker/docker-compose.yaml  --project-name 'monitoring-system'  down
+
 migrate-create: 
 ifndef MIGRATE_NAME
 	echo $(error migrate name is required, use `make migrate-create MIGRATE_NAME=your_migration_name`)
