@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	metrickinds "github.com/nougght/monitoring-system/shared/go/metric_kinds"
 )
 
 type AgentSeriesKey struct {
@@ -43,4 +44,27 @@ func (s *Snapshot) UpdateMetrics(metrics []*MetricSample) {
 		}
 	}
 	s.mu.Unlock()
+}
+
+func (s *Snapshot) GetCPUUsage() float64 {
+	return s.GetValueByKey(metrickinds.GetKindByKey("cpu_usage"), "")
+}
+
+func (s *Snapshot) GetMemoryUsage() float64 {
+	return s.GetValueByKey(metrickinds.GetKindByKey("memory_usage"), "")
+}
+
+func (s *Snapshot) GetDiskUsage() float64 {
+	return s.GetValueByKey(metrickinds.GetKindByKey("disk_usage"), "")
+}
+
+func (s *Snapshot) GetValueByKey(kind int32, label string) float64 {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	key := AgentSeriesKey{Kind: kind, Label: label}
+	value, ok := s.values[key]
+	if !ok {
+		return 0
+	}
+	return value.Value
 }

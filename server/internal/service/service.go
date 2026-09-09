@@ -9,15 +9,17 @@ import (
 	agent "github.com/nougght/monitoring-system/server/internal/service/agent_interaction"
 	agentregistry "github.com/nougght/monitoring-system/server/internal/service/agent_registry"
 	"github.com/nougght/monitoring-system/server/internal/service/metrics"
+	"github.com/nougght/monitoring-system/server/internal/service/overview"
 	"github.com/nougght/monitoring-system/server/internal/service/realtime"
 	"github.com/nougght/monitoring-system/server/internal/storage/timescale/repository"
 )
 
 type Services struct {
-	agentRegistry *agentregistry.AgentRegistryService
-	agent         *agent.AgentInteractionService
-	metrics       *metrics.MetricsService
-	realtime      *realtime.RealtimeService
+	agentRegistry   *agentregistry.AgentRegistryService
+	agent           *agent.AgentInteractionService
+	metrics         *metrics.MetricsService
+	realtime        *realtime.RealtimeService
+	overviewService *overview.OverviewService
 }
 
 //nolint:unused
@@ -56,16 +58,26 @@ func New(opts ServicesOptions) *Services {
 	if err != nil {
 		log.Panicf("failed initialize agent interaction service: %s", err.Error())
 	}
+	overviewService, err := overview.NewOverviewService(
+		opts.Config,
+		opts.Transactor,
+		metrics,
+		agentRegistry,
+	)
+	if err != nil {
+		log.Panicf("failed initialize overview service: %s", err.Error())
+	}
 	realtimeService, err := realtime.NewRealtimeService(
 		opts.Config,
 		opts.Transactor,
 		opts.Bus,
 	)
 	return &Services{
-		agentRegistry: agentRegistry,
-		agent:         agentInteraction,
-		metrics:       metrics,
-		realtime:      realtimeService,
+		agentRegistry:   agentRegistry,
+		agent:           agentInteraction,
+		metrics:         metrics,
+		realtime:        realtimeService,
+		overviewService: overviewService,
 	}
 }
 
@@ -83,4 +95,8 @@ func (s *Services) Metrics() *metrics.MetricsService {
 
 func (s *Services) Realtime() *realtime.RealtimeService {
 	return s.realtime
+}
+
+func (s *Services) Overview() *overview.OverviewService {
+	return s.overviewService
 }

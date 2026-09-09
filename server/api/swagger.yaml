@@ -39,6 +39,64 @@ definitions:
       updatedAt:
         type: string
     type: object
+  AgentWithCPUUsageDTO:
+    properties:
+      cpuUsage:
+        type: number
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  AgentWithMemoryUsageDTO:
+    properties:
+      id:
+        type: string
+      memoryUsage:
+        type: number
+      name:
+        type: string
+    type: object
+  AgentsOverview:
+    properties:
+      summary:
+        $ref: '#/definitions/AgentsSummary'
+      topN:
+        $ref: '#/definitions/TopNAgents'
+    type: object
+  AgentsSummary:
+    properties:
+      averageCPUUsage:
+        type: number
+      averageMemoryUsage:
+        type: number
+      cpuUsageDistribution:
+        $ref: '#/definitions/CountDistribution'
+      diskUsageDistribution:
+        $ref: '#/definitions/CountDistribution'
+      memoryUsageDistribution:
+        $ref: '#/definitions/CountDistribution'
+      onlineAgents:
+        type: integer
+      totalAgents:
+        type: integer
+    type: object
+  CountByPercent:
+    properties:
+      count:
+        type: integer
+      percent:
+        type: number
+    type: object
+  CountDistribution:
+    properties:
+      high:
+        $ref: '#/definitions/CountByPercent'
+      low:
+        $ref: '#/definitions/CountByPercent'
+      medium:
+        $ref: '#/definitions/CountByPercent'
+    type: object
   CpuSpecs:
     properties:
       architecture:
@@ -163,6 +221,17 @@ definitions:
         type: string
       speed:
         type: integer
+    type: object
+  TopNAgents:
+    properties:
+      cpuUsage:
+        items:
+          $ref: '#/definitions/AgentWithCPUUsageDTO'
+        type: array
+      memoryUsage:
+        items:
+          $ref: '#/definitions/AgentWithMemoryUsageDTO'
+        type: array
     type: object
 host: montoring.nought.ru
 info:
@@ -368,4 +437,30 @@ paths:
             additionalProperties: true
             type: object
       summary: Get agent specifications
+  /fleet/overview:
+    get:
+      operationId: getFleetOverview
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AgentsOverview'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get fleet overview
 swagger: "2.0"

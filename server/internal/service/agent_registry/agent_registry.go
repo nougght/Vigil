@@ -168,6 +168,14 @@ func (s *AgentRegistryService) GenerateAgentSetupConfig(ctx context.Context, age
 	}
 }
 
+func (s *AgentRegistryService) GetTotalAgents(ctx context.Context) (int, error) {
+	total, err := s.agentRepo.GetTotalAgents(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get total agents: %w", err)
+	}
+	return total, nil
+}
+
 func (s *AgentRegistryService) GetNewAgentFiles(ctx context.Context, agentID uuid.UUID, enrollmentKey string) ([]byte, error) {
 	tempDir, err := os.MkdirTemp("", "agent-files-*")
 	if err != nil {
@@ -353,4 +361,20 @@ func (s *AgentRegistryService) UpdateSpecifications(ctx context.Context, agentID
 		return fmt.Errorf("failed to update specifications: %w", err)
 	}
 	return nil
+}
+
+func (s *AgentRegistryService) GetSpecsTotalList(ctx context.Context, agentIDs []uuid.UUID) (map[uuid.UUID]agent_model.SpecsTotal, error) {
+	specs, err := s.specsRepo.GetSpecsTotalList(ctx, agentIDs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get specs total list: %w", err)
+	}
+	return specs, nil
+}
+
+func (s *AgentRegistryService) GetAgentNamesByIDs(ctx context.Context, agentIDs []uuid.UUID) (map[uuid.UUID]string, error) {
+	names, err := s.agentRepo.GetAgentNamesByIDs(ctx, agentIDs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get agent names by IDs: %w", err)
+	}
+	return names, nil
 }

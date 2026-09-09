@@ -31,6 +31,17 @@ func AgentToDTO(domain *agent_model.Agent) (res *dto.AgentDTO) {
 	return
 }
 
+func AgentShortToDTO(domain *agent_model.AgentShort) (res *dto.AgentShortDTO) {
+	if domain == nil {
+		return
+	}
+	res = &dto.AgentShortDTO{
+		ID:   domain.ID,
+		Name: domain.Name,
+	}
+	return
+}
+
 func CreateAgentResultToDTO(domain *agent_model.CreateAgentResult) (res *dto.CreateAgentResponse) {
 	if domain == nil {
 		return

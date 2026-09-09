@@ -27,8 +27,9 @@ func handleError(c *gin.Context, err error) {
 }
 
 type Handlers struct {
-	agentHandler  *AgentHandler
-	streamHandler *StreamHandler
+	agentHandler    *AgentHandler
+	streamHandler   *StreamHandler
+	overviewHandler *OverviewHandler
 }
 
 func newHandlers(services *service.Services) *Handlers {
@@ -41,10 +42,14 @@ func newHandlers(services *service.Services) *Handlers {
 		services.AgentRegistry(),
 		services.AgentInteractionService(),
 	)
+	overview := NewOverviewHandler(
+		services.Overview(),
+	)
 
 	return &Handlers{
-		agentHandler:  agent,
-		streamHandler: stream,
+		agentHandler:    agent,
+		streamHandler:   stream,
+		overviewHandler: overview,
 	}
 }
 
@@ -54,4 +59,8 @@ func (h *Handlers) AgentHandler() *AgentHandler {
 
 func (h *Handlers) StreamHandler() *StreamHandler {
 	return h.streamHandler
+}
+
+func (h *Handlers) OverviewHandler() *OverviewHandler {
+	return h.overviewHandler
 }

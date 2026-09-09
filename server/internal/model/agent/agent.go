@@ -23,6 +23,11 @@ type Agent struct {
 	IsOnline    *bool     `db:"-"`
 }
 
+type AgentShort struct {
+	ID   uuid.UUID `db:"id"`
+	Name string    `db:"name"`
+}
+
 type CreateAgentResult struct {
 	Agent
 	EnrollmentKey string

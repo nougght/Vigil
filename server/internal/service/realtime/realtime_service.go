@@ -13,13 +13,14 @@ import (
 	"github.com/nougght/monitoring-system/server/internal/model/event"
 	realtime_model "github.com/nougght/monitoring-system/server/internal/model/realtime"
 	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
+	"github.com/nougght/monitoring-system/server/internal/transport/ws"
 	"github.com/nougght/monitoring-system/shared/go/util"
 )
 
 type RealtimeService struct {
 	cfg        *config.Config
 	transactor model.Transactor
-	hub        *Hub
+	hub        *ws.Hub
 	upgrader   *websocket.Upgrader
 	bus        *eventbus.EventBus
 }
@@ -38,7 +39,7 @@ func NewRealtimeService(cfg *config.Config,
 		},
 		bus: bus,
 	}
-	s.hub = NewHub(s.HandleSubscription, s.HandleUnsubscription)
+	s.hub = ws.NewHub(s.HandleSubscription, s.HandleUnsubscription)
 	go s.hub.Run()
 	return s, nil
 }

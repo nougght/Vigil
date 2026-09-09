@@ -69,3 +69,8 @@ type PhysicalMemoryInfo struct {
 	Removable            bool   `json:"removable"`
 	Replaceable          bool   `json:"replaceable"`
 } // @Name PhysicalMemoryInfo
+
+type SpecsTotal struct {
+	TotalMemory uint64 `db:"memory_total"`
+	TotalDisk   uint64 `db:"total_disk"`
+}

@@ -33,6 +33,7 @@ func NewServer(cfg *config.Config, services service.Services) *http.Server {
 	api.GET("/ws", gin.WrapF(services.Realtime().HandleWs))
 	handlers.AgentHandler().RegisterRoutes(api)
 	handlers.StreamHandler().RegisterRoutes(api)
+	handlers.OverviewHandler().RegisterRoutes(api)
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.HTTP.ServerPort),

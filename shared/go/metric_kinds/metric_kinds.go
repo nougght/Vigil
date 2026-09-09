@@ -63,6 +63,14 @@ var MetricKinds = map[int32]MetricKindInfo{
 	},
 }
 
+func GetKindByKey(key string) int32 {
+	for _, kind := range MetricKinds {
+		if kind.Key == key {
+			return kind.Kind
+		}
+	}
+	return 0
+}
 func MetricKindList() []MetricKindInfo {
 	return slices.Collect(maps.Values(MetricKinds))
 }

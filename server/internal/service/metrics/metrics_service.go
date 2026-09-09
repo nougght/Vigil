@@ -137,3 +137,7 @@ func (s *MetricsService) resolveAndSaveBatchFunc(ctx context.Context, batches []
 	log.Println("metrics saved")
 	return nil
 }
+
+func (s *MetricsService) GetSnapshots() map[uuid.UUID]*metrics_model.Snapshot {
+	return s.snapshot.All()
+}

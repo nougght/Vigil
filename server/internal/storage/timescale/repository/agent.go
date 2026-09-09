@@ -88,6 +88,40 @@ func (r *AgentRepository) GetAgentByID(ctx context.Context, id uuid.UUID) (res *
 
 	return res, nil
 }
+
+func (r *AgentRepository) GetTotalAgents(ctx context.Context) (int, error) {
+	query := `
+	SELECT COUNT(*) FROM agents;
+	`
+	var total int
+	err := r.db(ctx).QueryRow(ctx, query).Scan(&total)
+	if err != nil {
+		return 0, fmt.Errorf("select failed: %w", err)
+	}
+	return total, nil
+}
+
+func (r *AgentRepository) GetAgentNamesByIDs(ctx context.Context, agentIDs []uuid.UUID) (map[uuid.UUID]string, error) {
+	query := `
+		SELECT id, name FROM agents WHERE id = ANY($1);
+	`
+	rows, err := r.db(ctx).Query(ctx, query, agentIDs)
+	if err != nil {
+		return nil, fmt.Errorf("select failed: %w", err)
+	}
+	defer rows.Close()
+	names := make(map[uuid.UUID]string)
+	for rows.Next() {
+		var id uuid.UUID
+		var name string
+		err = rows.Scan(&id, &name)
+		if err != nil {
+			return nil, fmt.Errorf("scan failed: %w", err)
+		}
+	}
+	return names, nil
+}
+
 func (r *AgentRepository) UpdateStatus(ctx context.Context, agentID uuid.UUID, status agent_model.AgentStatus) error {
 	query := `
 	UPDATE agents SET status = $1 WHERE ID = $2

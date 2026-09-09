@@ -86,3 +86,27 @@ func (r *SpecsRepository) GetCurrentSpecs(ctx context.Context, agentID uuid.UUID
 
 	return specs, nil
 }
+
+func (r *SpecsRepository) GetSpecsTotalList(ctx context.Context, agentIDs []uuid.UUID) (map[uuid.UUID]agent_model.SpecsTotal, error) {
+	query := `
+		SELECT agent_id, memory_total, full_specs #> '{diskSpecs,0,total}' as total_disk 
+		FROM agent_specs 
+		WHERE agent_id = ANY($1);
+	`
+	rows, err := r.db(ctx).Query(ctx, query, agentIDs)
+	if err != nil {
+		return nil, fmt.Errorf("select failed: %w", err)
+	}
+	defer rows.Close()
+	totals := make(map[uuid.UUID]agent_model.SpecsTotal)
+	for rows.Next() {
+		var agentID uuid.UUID
+		var memoryTotal uint64
+		var totalDisk uint64
+		err = rows.Scan(&agentID, &memoryTotal, &totalDisk)
+		if err != nil {
+			return nil, fmt.Errorf("scan failed: %w", err)
+		}
+	}
+	return totals, nil
+}

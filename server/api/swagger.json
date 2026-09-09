@@ -298,6 +298,44 @@
                     }
                 }
             }
+        },
+        "/fleet/overview": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get fleet overview",
+                "operationId": "getFleetOverview",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AgentsOverview"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -358,6 +396,96 @@
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "AgentWithCPUUsageDTO": {
+            "type": "object",
+            "properties": {
+                "cpuUsage": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "AgentWithMemoryUsageDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "memoryUsage": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "AgentsOverview": {
+            "type": "object",
+            "properties": {
+                "summary": {
+                    "$ref": "#/definitions/AgentsSummary"
+                },
+                "topN": {
+                    "$ref": "#/definitions/TopNAgents"
+                }
+            }
+        },
+        "AgentsSummary": {
+            "type": "object",
+            "properties": {
+                "averageCPUUsage": {
+                    "type": "number"
+                },
+                "averageMemoryUsage": {
+                    "type": "number"
+                },
+                "cpuUsageDistribution": {
+                    "$ref": "#/definitions/CountDistribution"
+                },
+                "diskUsageDistribution": {
+                    "$ref": "#/definitions/CountDistribution"
+                },
+                "memoryUsageDistribution": {
+                    "$ref": "#/definitions/CountDistribution"
+                },
+                "onlineAgents": {
+                    "type": "integer"
+                },
+                "totalAgents": {
+                    "type": "integer"
+                }
+            }
+        },
+        "CountByPercent": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "percent": {
+                    "type": "number"
+                }
+            }
+        },
+        "CountDistribution": {
+            "type": "object",
+            "properties": {
+                "high": {
+                    "$ref": "#/definitions/CountByPercent"
+                },
+                "low": {
+                    "$ref": "#/definitions/CountByPercent"
+                },
+                "medium": {
+                    "$ref": "#/definitions/CountByPercent"
                 }
             }
         },
@@ -549,6 +677,23 @@
                 },
                 "speed": {
                     "type": "integer"
+                }
+            }
+        },
+        "TopNAgents": {
+            "type": "object",
+            "properties": {
+                "cpuUsage": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AgentWithCPUUsageDTO"
+                    }
+                },
+                "memoryUsage": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AgentWithMemoryUsageDTO"
+                    }
                 }
             }
         }

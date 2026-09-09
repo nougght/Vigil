@@ -100,6 +100,7 @@ func New(ctx context.Context, cfg *config.Config) *App {
 	if err != nil {
 		log.Panicf("failed to sync metric kinds: %s", err.Error())
 	}
+	services.Overview().RunAggregator(ctx)
 
 	httpServer := rest.NewServer(cfg, *services)
 

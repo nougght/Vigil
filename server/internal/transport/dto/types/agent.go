@@ -17,6 +17,11 @@ type AgentDTO struct {
 	IsOnline    bool      `json:"isOnline"`
 } // @Name Agent
 
+type AgentShortDTO struct {
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
+} // @Name AgentShort
+
 type EnrollmentResponse struct {
 	EnrollmentKey string
 	AgentID       uuid.UUID
