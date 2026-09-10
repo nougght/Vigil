@@ -6,6 +6,26 @@ export interface CountDistribution {
     low: CountByPercent;
 }
 
+export const CountDistToPieList = (dist: CountDistribution) => {
+    return [
+        {
+            Name: `>${dist.high.percent}`,
+            Value: dist.high.count,
+            fill: "#c94b4b",
+        },
+        {
+            Name: `>${dist.medium.percent}`,
+            Value: dist.medium.count,
+            fill: "#c9ac4b",
+        },
+        {
+            Name: `>${dist.low.percent}`,
+            Value: dist.low.count,
+            fill: "#4bc95c",
+        }
+    ]
+}
+
 export interface CountByPercent {
     percent: number;
     count: number;

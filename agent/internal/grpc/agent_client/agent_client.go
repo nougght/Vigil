@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"image"
 	"image/jpeg"
 	"io"
 	"log"
@@ -249,6 +250,7 @@ func (c *AgentClient) StartStreamMJPEG(ctx context.Context) error {
 
 func (c *AgentClient) runStreamingWriter(ctx context.Context, wg *sync.WaitGroup, stream pb.AgentService_StartStreamMJPEGClient, interval time.Duration) error {
 	ticker := time.NewTicker(interval)
+	screenshotChan := make(chan image.Image, 1)
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -260,10 +262,34 @@ func (c *AgentClient) runStreamingWriter(ctx context.Context, wg *sync.WaitGroup
 					log.Println(err.Error())
 					continue
 				}
+				select {
+				case screenshotChan <- image:
+				default:
+					select {
+					case <-screenshotChan:
+					default:
+					}
+					select {
+					case screenshotChan <- image:
+					default:
+					}
+				}
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case image := <-screenshotChan:
 				var raw bytes.Buffer
-				err = jpeg.Encode(&raw, image, &jpeg.Options{Quality: 60})
+				err := jpeg.Encode(&raw, image, &jpeg.Options{Quality: 40})
 				if err != nil {
-					log.Printf("failed to encode frame: %w", err)
+					log.Printf("failed to encode frame: %s", err)
+					continue
 				}
 				err = stream.Send(&pb.StreamingAgentMessage{
 					Payload: &pb.StreamingAgentMessage_Frame{

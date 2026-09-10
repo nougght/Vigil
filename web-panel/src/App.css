@@ -169,4 +169,17 @@ main {
 .topN {
     display: flex;
     flex-direction: row;
+    justify-content: space-evenly;
+}
+
+
+.dist-pies{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-bottom: 100px;
+}
+
+.dist-pies div{
+    text-align: center;
 }

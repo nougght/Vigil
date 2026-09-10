@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom";
 import { useOverview } from "../hooks/useOverview";
-
+import { convertBytesToGB } from "@monitoring-system/shared/src/util/units";
+import SimplePieChart from "../components/pieChart";
+import { CountDistToPieList } from "../domain/overview";
 
 export const OverviewPage = () => {
     const [warning, setWarning] = useState<string | null>()
-    const [info, setInfo] = useState<string | null>()
+    const [info, _setInfo] = useState<string | null>()
     const {
         data: overview,
         isPending: isOverviewLoading,
@@ -19,9 +21,9 @@ export const OverviewPage = () => {
         if (overview?.error != null) {
             setWarning(`ошибка:${overview?.error?.status} ${overview?.error?.message}`)
         }
-        if (overview?.overview != null) {
-            setInfo("Данные успешно загружены")
-        }
+        // if (overview?.overview != null) {
+        //     setInfo("Данные успешно загружены")
+        // }
     }, [overview]);
 
     if (isOverviewLoading) {
@@ -39,16 +41,16 @@ export const OverviewPage = () => {
                             <label >Общее количество агентов </label>
                             <span>{overview?.overview?.summary?.totalAgents}</span>
                             <br />
-                            <label>Агентов онлайн </label>
+                            <label>Онлайн </label>
                             <span>{overview?.overview?.summary?.onlineAgents}</span>
                             <br />
                             <label>Среднее использование CPU </label>
-                            <span>{overview?.overview?.summary?.averageCPUUsage}</span>
+                            <span>{overview?.overview?.summary?.averageCPUUsage.toFixed(2)}%</span>
                             <br />
                             <label>Среднее использование памяти </label>
-                            <span>{overview?.overview?.summary?.averageMemoryUsage}</span>
+                            <span>{convertBytesToGB(overview?.overview?.summary?.averageMemoryUsage).toFixed(2)} GB</span>
                         </div>
-                        <div>
+                        <div className="overview-distributions">
                             <label>Распределение использования CPU</label>
                             <br />
                             <label>Высокое({overview?.overview?.summary?.cpuUsageDistribution?.high?.percent}%) </label>
@@ -81,6 +83,24 @@ export const OverviewPage = () => {
                             <br />
                             <label>Низкое({overview?.overview?.summary?.diskUsageDistribution?.low?.percent}%) </label>
                             <span>{overview?.overview?.summary?.diskUsageDistribution?.low?.count}</span>
+
+                            <div className="dist-pies">
+
+                                <SimplePieChart
+                                Title="Использование CPU"
+                                PieData={CountDistToPieList(overview.overview.summary.cpuUsageDistribution)}
+                                />
+                                
+                                <SimplePieChart
+                                Title="Использование памяти"
+                                PieData={CountDistToPieList(overview.overview.summary.memoryUsageDistribution)}
+                                />
+                                
+                                <SimplePieChart
+                                Title="Использование диска"
+                                PieData={CountDistToPieList(overview.overview.summary.diskUsageDistribution)}
+                                />
+                            </div>
                         </div>
 
                         <div className="topN">
@@ -99,7 +119,7 @@ export const OverviewPage = () => {
                                             agent.name != "" &&
                                             <tr key={agent.id}>
                                                 <td><Link to={`/agents/${agent.id}`}>{agent.name}</Link></td>
-                                                <td>{agent.cpuUsage}</td>
+                                                <td>{agent.cpuUsage.toFixed(2)}%</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -120,7 +140,7 @@ export const OverviewPage = () => {
                                             agent.name != "" &&
                                             <tr key={agent.id}>
                                                 <td><Link to={`/agents/${agent.id}`}>{agent.name}</Link></td>
-                                                <td>{agent.memoryUsage}</td>
+                                                <td>{convertBytesToGB(agent.memoryUsage).toFixed(2)} GB</td>
                                             </tr>
                                         ))}
                                     </tbody>
