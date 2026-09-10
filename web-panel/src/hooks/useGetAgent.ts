@@ -28,7 +28,7 @@ const getAgent = async (id: string): Promise<UseAgentResult> => {
 
 export function useAgent(id: string) {
     return useQuery({
-        queryKey: ['agent'],
+        queryKey: [`agent-${id}`],
         queryFn: () => getAgent(id),
         staleTime: 60000,
         retry: 2,
