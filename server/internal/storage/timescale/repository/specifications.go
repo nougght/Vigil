@@ -107,6 +107,10 @@ func (r *SpecsRepository) GetSpecsTotalList(ctx context.Context, agentIDs []uuid
 		if err != nil {
 			return nil, fmt.Errorf("scan failed: %w", err)
 		}
+		totals[agentID] = agent_model.SpecsTotal{
+			TotalMemory: memoryTotal,
+			TotalDisk:   totalDisk,
+		}
 	}
 	return totals, nil
 }

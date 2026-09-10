@@ -74,9 +74,27 @@ func (s *OverviewService) RunAggregator(ctx context.Context) {
 				var memorySum float64
 				var diskSum float64
 
-				var cpuDistribution overview_model.CPUUsageDistribution
-				var memoryDistribution overview_model.MemoryUsageDistribution
-				var diskDistribution overview_model.DiskUsageDistribution
+				cpuDistribution := overview_model.CPUUsageDistribution{
+					CountDistribution: overview_model.CountDistribution{
+						High:   overview_model.CountByPercent{Percent: overview_model.HighCPUUsagePercent},
+						Medium: overview_model.CountByPercent{Percent: overview_model.MediumCPUUsagePercent},
+						Low:    overview_model.CountByPercent{Percent: overview_model.LowCPUUsagePercent},
+					},
+				}
+				memoryDistribution := overview_model.MemoryUsageDistribution{
+					CountDistribution: overview_model.CountDistribution{
+						High:   overview_model.CountByPercent{Percent: overview_model.HighMemoryUsagePercent},
+						Medium: overview_model.CountByPercent{Percent: overview_model.MediumMemoryUsagePercent},
+						Low:    overview_model.CountByPercent{Percent: overview_model.LowMemoryUsagePercent},
+					},
+				}
+				diskDistribution := overview_model.DiskUsageDistribution{
+					CountDistribution: overview_model.CountDistribution{
+						High:   overview_model.CountByPercent{Percent: overview_model.HighDiskUsagePercent},
+						Medium: overview_model.CountByPercent{Percent: overview_model.MediumDiskUsagePercent},
+						Low:    overview_model.CountByPercent{Percent: overview_model.LowDiskUsagePercent},
+					},
+				}
 
 				// TODO: dynamic topN count
 				n := 5
@@ -165,18 +183,22 @@ func (s *OverviewService) RunAggregator(ctx context.Context) {
 					cpuDistribution.Add(cpuUsage, 1)
 					if total := totals[agentID].TotalMemory; total > 0 {
 						memoryDistribution.Add(memoryUsage/float64(total)*100, 1)
+					} else {
+						log.Println("memory total is 0")
 					}
 					if total := totals[agentID].TotalDisk; total > 0 {
 						diskDistribution.Add(diskUsage/float64(total)*100, 1)
+					} else {
+						log.Println("disk total is 0")
 					}
 				}
 
 				s.mu.Lock()
 				s.overviewCache.Summary.TotalAgents = agentsCount
 				s.overviewCache.Summary.OnlineAgents = onlineAgents
-				if agentsCount > 0 {
-					s.overviewCache.Summary.AverageCPUUsage = cpuSum / float64(agentsCount)
-					s.overviewCache.Summary.AverageMemoryUsage = memorySum / float64(agentsCount)
+				if onlineAgents > 0 {
+					s.overviewCache.Summary.AverageCPUUsage = cpuSum / float64(onlineAgents)
+					s.overviewCache.Summary.AverageMemoryUsage = memorySum / float64(onlineAgents)
 				} else {
 					s.overviewCache.Summary.AverageCPUUsage = 0
 					s.overviewCache.Summary.AverageMemoryUsage = 0
