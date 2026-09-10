@@ -118,6 +118,7 @@ func (r *AgentRepository) GetAgentNamesByIDs(ctx context.Context, agentIDs []uui
 		if err != nil {
 			return nil, fmt.Errorf("scan failed: %w", err)
 		}
+		names[id] = name
 	}
 	return names, nil
 }

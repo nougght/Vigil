@@ -85,17 +85,18 @@ export const OverviewPage = () => {
 
                         <div className="topN">
                             <div className="topN-cpu">
-                                <label>Топ {overview.overview.topN.cpuUsage.length} агентов по использованию CPU</label>
+                                <label>Топ по использованию CPU</label>
                                 <br />
                                 <table>
-                                    <thead>
+                                    {/* <thead>
                                         <tr>
                                             <th>Агент</th>
                                             <th>Использование CPU</th>
                                         </tr>
-                                    </thead>
+                                    </thead> */}
                                     <tbody>
                                         {overview?.overview?.topN?.cpuUsage?.map((agent) => (
+                                            agent.name != "" &&
                                             <tr key={agent.id}>
                                                 <td><Link to={`/agents/${agent.id}`}>{agent.name}</Link></td>
                                                 <td>{agent.cpuUsage}</td>
@@ -105,17 +106,18 @@ export const OverviewPage = () => {
                                 </table>
                             </div>
                             <div className="topN-memory">
-                                <label>Топ {overview.overview.topN.memoryUsage.length}  агентов по использованию памяти</label>
+                                <label>Топ по использованию памяти</label>
                                 <br />
                                 <table>
-                                    <thead>
+                                    {/* <thead>
                                         <tr>
                                             <th>Агент</th>
                                             <th>Использование памяти</th>
                                         </tr>
-                                    </thead>
+                                    </thead> */}
                                     <tbody>
                                         {overview?.overview?.topN?.memoryUsage?.map((agent) => (
+                                            agent.name != "" &&
                                             <tr key={agent.id}>
                                                 <td><Link to={`/agents/${agent.id}`}>{agent.name}</Link></td>
                                                 <td>{agent.memoryUsage}</td>

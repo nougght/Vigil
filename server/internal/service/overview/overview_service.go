@@ -80,7 +80,7 @@ func (s *OverviewService) RunAggregator(ctx context.Context) {
 
 				// TODO: dynamic topN count
 				n := 5
-				cpuSorted := util.Map(slices.Collect(maps.Values(snapshots)),
+				cpuSorted := slices.SortedFunc(slices.Values(util.Map(slices.Collect(maps.Values(snapshots)),
 					func(snapshot *metrics_model.Snapshot) overview_model.AgentWithCPUUsage {
 						return overview_model.AgentWithCPUUsage{
 							AgentShort: agent_model.AgentShort{
@@ -88,6 +88,9 @@ func (s *OverviewService) RunAggregator(ctx context.Context) {
 							},
 							CPUUsage: snapshot.GetCPUUsage(),
 						}
+					})),
+					func(a overview_model.AgentWithCPUUsage, b overview_model.AgentWithCPUUsage) int {
+						return int(b.CPUUsage - a.CPUUsage)
 					})
 				for i := len(cpuSorted); i <= n; i++ {
 					cpuSorted = append(cpuSorted, overview_model.AgentWithCPUUsage{
@@ -98,7 +101,7 @@ func (s *OverviewService) RunAggregator(ctx context.Context) {
 					})
 				}
 				topNCpuUsage := cpuSorted[:n]
-				memorySorted := util.Map(slices.Collect(maps.Values(snapshots)),
+				memorySorted := slices.SortedFunc(slices.Values(util.Map(slices.Collect(maps.Values(snapshots)),
 					func(snapshot *metrics_model.Snapshot) overview_model.AgentWithMemoryUsage {
 						return overview_model.AgentWithMemoryUsage{
 							AgentShort: agent_model.AgentShort{
@@ -106,6 +109,9 @@ func (s *OverviewService) RunAggregator(ctx context.Context) {
 							},
 							MemoryUsage: snapshot.GetMemoryUsage(),
 						}
+					})),
+					func(a overview_model.AgentWithMemoryUsage, b overview_model.AgentWithMemoryUsage) int {
+						return int(b.MemoryUsage - a.MemoryUsage)
 					})
 				for i := len(memorySorted); i <= n; i++ {
 					memorySorted = append(memorySorted, overview_model.AgentWithMemoryUsage{
@@ -117,6 +123,33 @@ func (s *OverviewService) RunAggregator(ctx context.Context) {
 				}
 				topNMemoryUsage := memorySorted[:n]
 
+				topAgentIDs := make([]uuid.UUID, 0, n*2)
+				for _, ag := range topNCpuUsage {
+					topAgentIDs = append(topAgentIDs, ag.ID)
+				}
+				for _, ag := range topNMemoryUsage {
+					topAgentIDs = append(topAgentIDs, ag.ID)
+				}
+				names, err := s.agentRegistry.GetAgentNamesByIDs(ctx, topAgentIDs)
+				if err != nil {
+					log.Printf("failed get agent names: %s", err.Error())
+				}
+				for i, ag := range topNCpuUsage {
+					name, ok := names[ag.ID]
+					if !ok {
+						log.Println("name not found in list")
+						continue
+					}
+					topNCpuUsage[i].Name = name
+				}
+				for i, ag := range topNMemoryUsage {
+					name, ok := names[ag.ID]
+					if !ok {
+						log.Println("name not found in list")
+						continue
+					}
+					topNMemoryUsage[i].Name = name
+				}
 				for agentID, snapshot := range snapshots {
 					if s.agentRegistry.IsOnline(agentID) {
 						onlineAgents++
