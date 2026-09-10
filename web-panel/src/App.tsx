@@ -4,7 +4,7 @@ import { AgentsPage } from './pages/AgentsPage'
 import { AgentPage } from './pages/AgentPage'
 import { NewAgentPage } from './pages/NewAgentPage'
 import { SideBar, type SideBarData } from './components/sideBar'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import dashIcon from "./assets/dashboard.svg"
 import agentsIcon from "./assets/cpu.svg"
 import { ClientMessageTypeAgentDetailed, FillMetricsFromSeries, MessageTypeSeries, type AgentDetailedMessage, type ClientMessage, type Message, type Metrics } from './domain/metrics'
@@ -43,16 +43,28 @@ const AppLayout = () => {
 function App() {
     const [sendMessage, setSendMessage] = useState<ClientMessage | null>(null)
     const [wsSocket, setWSSocket] = useState<WebSocket | null>(null)
+    const [socketConnected, setConnected] = useState<boolean>(false)
     const [metrics, setMetrics] = useState<Metrics | undefined>()
 
+    const sendMessageRef = useRef(sendMessage);
+
+    const sendMsg = () => {
+         const currentMsg = sendMessageRef.current; 
+        if (currentMsg != null) {
+            console.log("send message ", currentMsg)
+            wsSocket?.send(JSON.stringify(currentMsg))
+        }
+    }
     useEffect(() => {
         const socket = new WebSocket("ws://monitoring.nought.ru/api/v1/ws");
         socket.addEventListener("open", () => {
             console.log("start")
+            setConnected(true)
         });
 
         socket.onclose = () => {
             console.log("connection closed")
+            setConnected(false)
         };
 
         socket.addEventListener("message", (event) => {
@@ -70,13 +82,20 @@ function App() {
         setWSSocket(socket)
     }, []);
 
+    useEffect(() => {
+        sendMsg()
+    }, [socketConnected])
 
     useEffect(() => {
-        if (wsSocket == null || wsSocket.readyState == wsSocket.CONNECTING) {
-            console.log("ws socket is null")
+        if (sendMessage == null)
+            return
+        sendMessageRef.current = sendMessage
+        if (wsSocket == null || wsSocket.readyState != wsSocket.OPEN) {
+            console.log("ws socket not ready: ", wsSocket?.readyState)
             return
         }
-        wsSocket.send(JSON.stringify(sendMessage))
+        console.log("ws message sent ", sendMessage)
+        sendMsg()
     }, [sendMessage]);
 
     const handleLocationChange = (path: string) => {
