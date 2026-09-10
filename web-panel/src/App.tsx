@@ -49,10 +49,14 @@ function App() {
     const sendMessageRef = useRef(sendMessage);
 
     const sendMsg = () => {
-         const currentMsg = sendMessageRef.current; 
+        const currentMsg = sendMessageRef.current;
         if (currentMsg != null) {
             console.log("send message ", currentMsg)
-            wsSocket?.send(JSON.stringify(currentMsg))
+            try {
+                wsSocket?.send(JSON.stringify(currentMsg))
+            } catch(ex: any) {
+                console.log(`exception: ${ex}`)
+            }
         }
     }
     useEffect(() => {
@@ -74,16 +78,22 @@ function App() {
                 console.log("series message received", msg)
                 const series = msg.payload
                 if (series != undefined) {
-                    setMetrics((prev) => FillMetricsFromSeries(series, prev ?? {}))
+                    setMetrics((prev) => FillMetricsFromSeries(series, prev ?? {}, msg.agentID))
                 }
             }
         });
 
         setWSSocket(socket)
+
+        return () => {
+            socket.close()
+        }
     }, []);
 
     useEffect(() => {
-        sendMsg()
+        if (socketConnected === true) {
+            sendMsg()
+        }
     }, [socketConnected])
 
     useEffect(() => {
@@ -125,7 +135,7 @@ function App() {
                         <Route path="/overview" element={<OverviewPage />} />
                         <Route path="/agents" element={<AgentsPage />} />
                         <Route path="/agents/:id" element={<AgentPage
-                            metrics={metrics} />} />
+                            metricsProp={metrics} />} />
                         <Route path="/agents/new" element={<NewAgentPage />} />
                     </Route>
                     {/* <Route path="*" element={<NotFoundPage />} /> */}

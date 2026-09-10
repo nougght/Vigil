@@ -8,22 +8,21 @@ import type { Agent } from '../domain/agent';
 import { useLocation, useParams } from 'react-router-dom';
 import type { Metrics } from '../domain/metrics';
 import { convertBytesToGB } from '@monitoring-system/shared/src/util/units';
-import {getGradientColor} from '@monitoring-system/shared/src/util/gradientColor';
+import { getGradientColor } from '@monitoring-system/shared/src/util/gradientColor';
 
 interface Tab {
     text: string;
     content: React.ReactNode;
 }
 
-export const AgentPage = ({ metrics }: { metrics?: Metrics }) => {
+export const AgentPage = ({ metricsProp }: { metricsProp?: Metrics }) => {
     const { state } = useLocation() as { state: Agent | null }
-
-    const [agent, setAgent] = useState<Agent | null>(state)
-
     const { id } = useParams()
+    const [agent, setAgent] = useState<Agent | null>(state)
     const [activeTab, setActiveTab] = useState(0)
-
     const [warning, setWarning] = useState<string | null>()
+    const [metrics, setMetrics] = useState<Metrics | null>()
+
     const {
         data: specs,
         isPending: isSpecsPending,
@@ -55,6 +54,14 @@ export const AgentPage = ({ metrics }: { metrics?: Metrics }) => {
         }
         setAgent(agentResp?.agent!)
     }, [agentResp]);
+
+    useEffect(() => {
+        if (agent?.id != metricsProp?.agentID) {
+            console.log(`metrics agent id mismatch: ${metricsProp?.agentID} - ${agent?.id}`)
+        } else {
+            setMetrics(metricsProp)
+        }
+    }, [metricsProp, agent?.id])
 
 
     const tabs: Tab[] = [
@@ -94,13 +101,13 @@ export const AgentPage = ({ metrics }: { metrics?: Metrics }) => {
                             </div>
                             <h2>Disk usage</h2>
                             <div>
-                                {specs?.specs?.disk?.map((disk)=> {
+                                {specs?.specs?.disk?.map((disk) => {
                                     return (
                                         <div key={disk.device}>
                                             <p>
-                                                {disk.device}: {convertBytesToGB(metrics?.diskUsage?.get(disk.device?? "") ?? 0).toFixed(2)} /
-                                                {convertBytesToGB(disk.total ?? 0).toFixed(2)} GB <span style={{ color: getGradientColor(["#4cd485", "#e0cb51", "#d44c4c"], Math.round((metrics?.diskUsage?.get(disk.device?? "") ?? 0) / (disk.total ?? 0) * 100)) }}>
-                                                    ({Math.round((metrics?.diskUsage?.get(disk.device?? "") ?? 0) / (disk.total ?? 0) * 100)}%)
+                                                {disk.device}: {convertBytesToGB(metrics?.diskUsage?.get(disk.device ?? "") ?? 0).toFixed(2)} /
+                                                {convertBytesToGB(disk.total ?? 0).toFixed(2)} GB <span style={{ color: getGradientColor(["#4cd485", "#e0cb51", "#d44c4c"], Math.round((metrics?.diskUsage?.get(disk.device ?? "") ?? 0) / (disk.total ?? 0) * 100)) }}>
+                                                    ({Math.round((metrics?.diskUsage?.get(disk.device ?? "") ?? 0) / (disk.total ?? 0) * 100)}%)
                                                 </span>
                                             </p>
                                         </div>

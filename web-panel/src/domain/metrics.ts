@@ -38,6 +38,7 @@ const NET_UPLOAD = 60;   // label = интерфейс
 const NET_DOWNLOAD = 70;
 
 export interface Metrics {
+    agentID?: string
     focusedWindow?: string
     cpuPercent?: number
     memoryUsed?: number
@@ -48,14 +49,14 @@ export interface Metrics {
     timestamp?: Date
 }
 
-export const FillMetricsFromSeries = (s: SeriesDTO, metrics: Metrics):Metrics => {
+export const FillMetricsFromSeries = (s: SeriesDTO, metrics: Metrics, agentID: string):Metrics => {
     let m: Metrics = {
         cpuPercent: metrics.cpuPercent,
         memoryUsed: metrics.memoryUsed,
         diskUsage: metrics.diskUsage,
         uploadMbps: metrics.uploadMbps,
         downloadMbps: metrics.downloadMbps,
-
+        agentID: agentID
     }
     const last = s.values[s.values.length - 1]
     switch (s.key) {
