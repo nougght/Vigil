@@ -61,9 +61,6 @@ func (r *SeriesRepository) BatchCreateOrLoadSeries(ctx context.Context, seriesLi
 	}()
 
 	res := tx.SendBatch(ctx, batch)
-	defer func() {
-		_ = res.Close()
-	}()
 	ctx = context.WithValue(ctx, model.ContextKeyTx, tx)
 
 	missingKeysWithIndexes := make(map[metrics_model.MetricSeriesKey]int, 0)
@@ -77,10 +74,14 @@ func (r *SeriesRepository) BatchCreateOrLoadSeries(ctx context.Context, seriesLi
 			continue
 		}
 		if err != nil {
+			_ = res.Close()
 			return nil, fmt.Errorf("batch QueryRow scan error: %w", err)
 		}
 
 		resultSeries = append(resultSeries, createdSeries)
+	}
+	if err := res.Close(); err != nil {
+		return nil, fmt.Errorf("batch results close error: %w", err)
 	}
 
 	loadedIDs, err := r.GetSeriesIDsByKeys(ctx, slices.Collect(maps.Keys(missingKeysWithIndexes)))
