@@ -7,8 +7,9 @@ import { SideBar, type SideBarData } from './components/sideBar'
 import { useEffect, useRef, useState } from 'react'
 import dashIcon from "./assets/dashboard.svg"
 import agentsIcon from "./assets/cpu.svg"
-import { ClientMessageTypeAgentDetailed, FillMetricsFromSeries, MessageTypeSeries, type AgentDetailedMessage, type ClientMessage, type Message, type Metrics } from './domain/metrics'
+import { ClientMessageTypeAgentDetailed, FillMetricsFromSeries, MessageTypeFleetOverview, MessageTypeSeries, type AgentDetailedMessage, type ClientMessage, type Message, type Metrics, type SeriesDTO } from './domain/metrics'
 import { OverviewPage } from './pages/OverviewPage'
+import type { Overview } from './domain/overview'
 // import type { SeriesDTO } from './domain/metrics'
 const sideBarData: SideBarData = {
     iconSrc: "",
@@ -45,6 +46,8 @@ function App() {
     const [wsSocket, setWSSocket] = useState<WebSocket | null>(null)
     const [socketConnected, setConnected] = useState<boolean>(false)
     const [metrics, setMetrics] = useState<Metrics | undefined>()
+    const [overview, setOverview] = useState<Overview | undefined>()
+
 
     const sendMessageRef = useRef(sendMessage);
 
@@ -76,10 +79,13 @@ function App() {
             const msg = JSON.parse(event.data) as Message;
             if (msg.type == MessageTypeSeries) {
                 console.log("series message received", msg)
-                const series = msg.payload
+                const series = msg.payload as SeriesDTO
                 if (series != undefined) {
                     setMetrics((prev) => FillMetricsFromSeries(series, prev ?? {}, msg.agentID))
                 }
+            } else if (msg.type == MessageTypeFleetOverview) {
+                console.log("fleet overview message received", msg)
+                setOverview(msg.payload as Overview)
             }
         });
 
@@ -120,6 +126,12 @@ function App() {
                 payload: p
             }
             setSendMessage(msg)
+        } else if (splitted[1] == "overview") {
+            const msg: ClientMessage = {
+                type: MessageTypeFleetOverview,
+                payload: undefined
+            }
+            setSendMessage(msg)
         }
     }
 
@@ -132,7 +144,8 @@ function App() {
                 <Routes>
                     <Route element={<AppLayout />}>
                         <Route path="/" element={<Navigate to="/agents" replace />} />
-                        <Route path="/overview" element={<OverviewPage />} />
+                        <Route path="/overview" element={<OverviewPage 
+                            overviewProp={overview} />} />
                         <Route path="/agents" element={<AgentsPage />} />
                         <Route path="/agents/:id" element={<AgentPage
                             metricsProp={metrics} />} />

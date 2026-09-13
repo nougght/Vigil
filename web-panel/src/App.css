@@ -33,6 +33,7 @@
 body {
     height: 100vh;
     overflow: hidden;
+    font-family: 'Roboto';
 }
 
 #root,
@@ -41,7 +42,12 @@ main {
     height: 100%;
 }
 
-
+.top-cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+}
 
 
 .keyContainer {

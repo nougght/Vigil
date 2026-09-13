@@ -9,7 +9,8 @@ import (
 type MessageType string
 
 const (
-	MessageTypeSeries MessageType = "series"
+	MessageTypeSeries        MessageType = "series"
+	MessageTypeFleetOverview MessageType = "fleet.overview"
 )
 
 type Message struct {
@@ -22,6 +23,7 @@ type ClientMessageType string
 
 const (
 	ClientMessageTypeAgentDetailed ClientMessageType = "agent.detailed"
+	ClientMessageTypeFleetOverview ClientMessageType = "fleet.overview"
 )
 
 type AgentDetailedMessage struct {

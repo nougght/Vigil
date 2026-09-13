@@ -69,6 +69,14 @@ func (c *Client) runReader() {
 				}
 				c.mu.Unlock()
 
+			case realtime_model.ClientMessageTypeFleetOverview:
+				log.Println("fleet overview subscription")
+				c.mu.Lock()
+				subj := string(realtime_model.ClientMessageTypeFleetOverview)
+				c.subs[subj] = struct{}{}
+				c.subFunc(subj)
+				c.mu.Unlock()
+
 			}
 
 		}

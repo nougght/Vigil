@@ -1,0 +1,46 @@
+
+
+
+.agentsCount {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: fit-content;
+    border: 1px solid rgb(124, 139, 151);
+    border-radius: 10px;
+    padding: 5px;
+    background-color: rgb(220, 229, 231);
+}
+
+.valuesContainer {
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+
+.agentsCount h3 {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 0;
+}
+
+.onlineCountValue {
+    font-size: 40px;
+    color: rgb(101, 165, 99);
+    margin: 5px 10px;
+    /* background: red; */
+}
+
+.totalCountValue {
+    font-size: 24px;
+    color: rgb(22, 22, 22);
+    margin: 10px;
+    /* background: red; */
+}
+
+.countLabelsContainer {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}

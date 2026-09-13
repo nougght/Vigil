@@ -1,16 +1,19 @@
+import type { Overview } from "./overview"
 
 
 export const MessageTypeSeries = "series"
+export const MessageTypeFleetOverview = "fleet.overview"
 
 
 export interface Message {
     type: string
     agentID: string
-    payload: SeriesDTO
+    payload: SeriesDTO | Overview
 }
 
 
 export const ClientMessageTypeAgentDetailed = "agent.detailed"
+export const ClientMessageType = "fleet.overview"
 
 
 export interface AgentDetailedMessage {
@@ -19,7 +22,7 @@ export interface AgentDetailedMessage {
 
 export interface ClientMessage {
     type: string
-    payload: AgentDetailedMessage
+    payload?: AgentDetailedMessage | undefined
 }
 
 export interface SeriesDTO {

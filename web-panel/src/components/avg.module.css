@@ -1,0 +1,18 @@
+
+
+.avg {
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    height: fit-content;
+}
+.avg h3 {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 0;
+}
+
+.avg span{
+    font-size: 30px;
+}

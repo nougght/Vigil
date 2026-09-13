@@ -176,9 +176,13 @@ func (c *CollectorService) getDiskUsageMap(ctx context.Context) (map[string]uint
 	}
 	diskUsageMap := make(map[string]uint64, len(disks))
 	for _, d := range disks {
+		if d.Mountpoint == "" {
+			continue
+		}
 		diskUsage, err := disk.UsageWithContext(ctx, d.Mountpoint)
 		if err != nil {
-			return nil, err
+			log.Printf("failed to get disk usage for %s: %s", d.Mountpoint, err.Error())
+			continue
 		}
 		diskUsageMap[diskUsage.Path] = diskUsage.Used
 	}
@@ -331,16 +335,22 @@ func getSpecifications(ctx context.Context) (*model.Specs, error) {
 	}
 	log.Printf("disks: %v", disks)
 
-	diskSpecsList := make([]model.DiskSpecs, len(disks))
-	for i, d := range disks {
-		diskSpecsList[i].Device = d.Mountpoint
-		diskSpecsList[i].FsType = d.Fstype
+	diskSpecsList := make([]model.DiskSpecs, 0, len(disks))
+	for _, d := range disks {
+		if d.Mountpoint == "" {
+			continue
+		}
 		diskUsage, err := disk.UsageWithContext(ctx, d.Mountpoint)
 		if err != nil {
-			return nil, err
+			log.Printf("failed to get disk usage for %s: %s", d.Mountpoint, err.Error())
+			continue
 		}
 		log.Printf("disk usage: %v", diskUsage)
-		diskSpecsList[i].Total = diskUsage.Total
+		diskSpecsList = append(diskSpecsList, model.DiskSpecs{
+			Device: d.Mountpoint,
+			FsType: d.Fstype,
+			Total:  diskUsage.Total,
+		})
 	}
 	// userInfo, err := host.Users()
 	// if err != nil {

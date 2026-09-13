@@ -34,6 +34,7 @@ type App struct {
 	Repositories *repository.Repositories
 
 	Services *service.Services
+	Bus      *eventbus.EventBus
 
 	HTTPServer           *http.Server
 	AgentGRPCServer      *grpc.Server
@@ -94,13 +95,10 @@ func New(ctx context.Context, cfg *config.Config) *App {
 		Bus: bus,
 	})
 
-	bus.Start(ctx)
-	services.Metrics().StartSaving(ctx)
 	err = services.Metrics().SyncMetricKinds(ctx)
 	if err != nil {
 		log.Panicf("failed to sync metric kinds: %s", err.Error())
 	}
-	services.Overview().RunAggregator(ctx)
 
 	httpServer := rest.NewServer(cfg, *services)
 
@@ -136,6 +134,7 @@ func New(ctx context.Context, cfg *config.Config) *App {
 		DB:                   db,
 		Repositories:         repository.New(db),
 		Services:             services,
+		Bus:                  bus,
 		HTTPServer:           httpServer,
 		AgentGRPCServer:      agentServer,
 		EnrollmentGRPCServer: enrollmentServer,
@@ -153,6 +152,11 @@ func New(ctx context.Context, cfg *config.Config) *App {
 }
 
 func (a *App) Run(ctx context.Context) error {
+	a.Bus.Start(ctx)
+	a.Services.Metrics().StartSaving(ctx)
+	a.Services.Overview().RunAggregator(ctx)
+	a.Services.Realtime().Run(ctx)
+
 	httpErrChan := make(chan error)
 	go func() {
 		log.Println("starting HTTP server")

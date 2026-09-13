@@ -1,0 +1,17 @@
+
+
+
+.container {
+    width: var(--width, 100%);
+    height: var(--height, 20px);
+    background-color: rgb(211, 211, 211);
+    border-radius: 10px;
+}
+
+.filler {
+    height: 100%;
+    width: var(--load-percent, 0%);
+    background-color: var(--color);
+    border-radius: inherit;
+    transition: 'width 0.2s ease-in-out'
+}

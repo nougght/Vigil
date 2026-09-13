@@ -1,4 +1,8 @@
 
+export interface Overview {
+    summary: AgentsSummary;
+    topN: TopNAgents;
+}
 
 export interface CountDistribution {
     high: CountByPercent;
@@ -56,9 +60,4 @@ export interface AgentWithMemoryUsage {
     id: string;
     name: string;
     memoryUsage: number;
-}
-
-export interface Overview {
-    summary: AgentsSummary;
-    topN: TopNAgents;
 }

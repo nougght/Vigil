@@ -125,7 +125,7 @@ func (s *OverviewService) RunAggregator(ctx context.Context) {
 							AgentShort: agent_model.AgentShort{
 								ID: snapshot.AgentID,
 							},
-							MemoryUsage: snapshot.GetMemoryUsage(),
+							MemoryUsage: snapshot.GetMemoryUsage() / float64(totals[snapshot.AgentID].TotalMemory) * 100,
 						}
 					})),
 					func(a overview_model.AgentWithMemoryUsage, b overview_model.AgentWithMemoryUsage) int {
@@ -173,24 +173,30 @@ func (s *OverviewService) RunAggregator(ctx context.Context) {
 						onlineAgents++
 					}
 					cpuUsage := snapshot.GetCPUUsage()
-					memoryUsage := snapshot.GetMemoryUsage()
-					diskUsage := snapshot.GetDiskUsage()
+					memoryUsageRaw := snapshot.GetMemoryUsage()
+					diskUsageRaw := snapshot.GetDiskUsage()
+
+					memoryUsage := 0.0
+					diskUsage := 0.0
+
+					cpuDistribution.Add(cpuUsage, 1)
+					if total := totals[agentID].TotalMemory; total > 0 {
+						memoryUsage = memoryUsageRaw / float64(total) * 100
+						memoryDistribution.Add(memoryUsage, 1)
+					} else {
+						log.Println("memory total is 0")
+					}
+					if total := totals[agentID].TotalDisk; total > 0 {
+						diskUsage = diskUsageRaw / float64(total) * 100
+						diskDistribution.Add(diskUsage, 1)
+					} else {
+						log.Println("disk total is 0")
+					}
 
 					cpuSum += cpuUsage
 					memorySum += memoryUsage
 					diskSum += diskUsage
 
-					cpuDistribution.Add(cpuUsage, 1)
-					if total := totals[agentID].TotalMemory; total > 0 {
-						memoryDistribution.Add(memoryUsage/float64(total)*100, 1)
-					} else {
-						log.Println("memory total is 0")
-					}
-					if total := totals[agentID].TotalDisk; total > 0 {
-						diskDistribution.Add(diskUsage/float64(total)*100, 1)
-					} else {
-						log.Println("disk total is 0")
-					}
 				}
 
 				s.mu.Lock()

@@ -69,6 +69,7 @@ func New(opts ServicesOptions) *Services {
 	}
 	realtimeService, err := realtime.NewRealtimeService(
 		opts.Config,
+		overviewService,
 		opts.Transactor,
 		opts.Bus,
 	)

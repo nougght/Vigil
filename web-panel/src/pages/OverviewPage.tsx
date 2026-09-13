@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom";
 import { useOverview } from "../hooks/useOverview";
-import { convertBytesToGB } from "@monitoring-system/shared/src/util/units";
 import SimplePieChart from "../components/pieChart";
-import { CountDistToPieList } from "../domain/overview";
+import { CountDistToPieList, type Overview } from "../domain/overview";
+import { AgentCount } from "../components/agentCount";
+import { LoadBar } from "../components/loadBar";
+import { AvgCPU } from "../components/avgCPU";
+import { AvgMem } from "../components/avgMem";
 
-export const OverviewPage = () => {
+export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefined }) => {
     const [warning, setWarning] = useState<string | null>()
     const [info, _setInfo] = useState<string | null>()
+    
+    
     const {
         data: overview,
         isPending: isOverviewLoading,
@@ -16,6 +21,12 @@ export const OverviewPage = () => {
         isFetching: _isOverviewFetching,
     } = useOverview();
 
+    useEffect(() => {
+        if (overviewProp != undefined) {
+            setWarning(null)
+            overview!.overview = overviewProp
+        }
+    }, [overviewProp]);
 
     useEffect(() => {
         if (overview?.error != null) {
@@ -36,19 +47,24 @@ export const OverviewPage = () => {
             <div>
                 <h1>Обзор</h1>
                 {overview?.overview?.summary != null && (
+
                     <div>
-                        <div>
-                            <label >Общее количество агентов </label>
-                            <span>{overview?.overview?.summary?.totalAgents}</span>
-                            <br />
-                            <label>Онлайн </label>
-                            <span>{overview?.overview?.summary?.onlineAgents}</span>
-                            <br />
-                            <label>Среднее использование CPU </label>
+                        <div className="top-cards">
+                            <AgentCount
+                                online={overview?.overview?.summary?.onlineAgents}
+                                count={overview?.overview?.summary?.totalAgents}
+                            />
+                            <AvgCPU
+                                value={overview?.overview?.summary?.averageCPUUsage}
+                            />
+                            <AvgMem
+                                value={overview?.overview?.summary?.averageMemoryUsage}
+                            />
+                            {/* <label>Среднее использование CPU </label>
                             <span>{overview?.overview?.summary?.averageCPUUsage.toFixed(2)}%</span>
                             <br />
                             <label>Среднее использование памяти </label>
-                            <span>{convertBytesToGB(overview?.overview?.summary?.averageMemoryUsage).toFixed(2)} GB</span>
+                            <span>{overview?.overview?.summary?.averageMemoryUsage.toFixed(2)}%</span> */}
                         </div>
                         <div className="overview-distributions">
                             <label>Распределение использования CPU</label>
@@ -87,18 +103,18 @@ export const OverviewPage = () => {
                             <div className="dist-pies">
 
                                 <SimplePieChart
-                                Title="Использование CPU"
-                                PieData={CountDistToPieList(overview.overview.summary.cpuUsageDistribution)}
+                                    Title="Использование CPU"
+                                    PieData={CountDistToPieList(overview.overview.summary.cpuUsageDistribution)}
                                 />
-                                
+
                                 <SimplePieChart
-                                Title="Использование памяти"
-                                PieData={CountDistToPieList(overview.overview.summary.memoryUsageDistribution)}
+                                    Title="Использование памяти"
+                                    PieData={CountDistToPieList(overview.overview.summary.memoryUsageDistribution)}
                                 />
-                                
+
                                 <SimplePieChart
-                                Title="Использование диска"
-                                PieData={CountDistToPieList(overview.overview.summary.diskUsageDistribution)}
+                                    Title="Использование диска"
+                                    PieData={CountDistToPieList(overview.overview.summary.diskUsageDistribution)}
                                 />
                             </div>
                         </div>
@@ -119,6 +135,7 @@ export const OverviewPage = () => {
                                             agent.name != "" &&
                                             <tr key={agent.id}>
                                                 <td><Link to={`/agents/${agent.id}`}>{agent.name}</Link></td>
+                                                <td><LoadBar value={agent.cpuUsage} width={70} height={10} /></td>
                                                 <td>{agent.cpuUsage.toFixed(2)}%</td>
                                             </tr>
                                         ))}
@@ -140,7 +157,8 @@ export const OverviewPage = () => {
                                             agent.name != "" &&
                                             <tr key={agent.id}>
                                                 <td><Link to={`/agents/${agent.id}`}>{agent.name}</Link></td>
-                                                <td>{convertBytesToGB(agent.memoryUsage).toFixed(2)} GB</td>
+                                                <td><LoadBar value={agent.memoryUsage} width={70} height={10} /></td>
+                                                <td>{agent.memoryUsage.toFixed(2)}%</td>
                                             </tr>
                                         ))}
                                     </tbody>

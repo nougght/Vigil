@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	metrics_model "github.com/nougght/monitoring-system/server/internal/model/metrics"
+	overview_model "github.com/nougght/monitoring-system/server/internal/model/overview"
 )
 
 type Event interface {
@@ -22,15 +23,37 @@ type EventBus interface {
 	Publish(ctx context.Context, event Event) error
 }
 
+const (
+	AgentMetricsEventName  = "AgentMetricsEvent"
+	FleetOverviewEventName = "FleetOverviewEvent"
+)
+
+const (
+	AgentMetricsEventSubjectPrefix  = "agent.detailed"
+	FleetOverviewEventSubjectPrefix = "fleet.overview"
+)
+
 type AgentMetricsEvent struct {
 	AgentID uuid.UUID
 	Metric  metrics_model.MetricSample
 }
 
 func (e *AgentMetricsEvent) Name() string {
-	return "AgentMetricsEvent"
+	return AgentMetricsEventName
 }
 
 func (e *AgentMetricsEvent) Subject() string {
-	return fmt.Sprintf("agent.detailed.%s", e.AgentID)
+	return fmt.Sprintf("%s.%s", AgentMetricsEventSubjectPrefix, e.AgentID)
+}
+
+type FleetOverviewEvent struct {
+	Overview overview_model.AgentsOverview
+}
+
+func (e *FleetOverviewEvent) Name() string {
+	return FleetOverviewEventName
+}
+
+func (e *FleetOverviewEvent) Subject() string {
+	return FleetOverviewEventSubjectPrefix
 }

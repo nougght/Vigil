@@ -71,3 +71,13 @@ func (h *Hub) SendMessage(subject string, message *realtime_model.Message) {
 		}
 	}
 }
+
+func (h *Hub) GetClients() []*Client {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	clients := make([]*Client, 0, len(h.clients))
+	for client := range h.clients {
+		clients = append(clients, client)
+	}
+	return clients
+}
