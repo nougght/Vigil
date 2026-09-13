@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom"
+import styles from "./sideBar.module.css"
 
 
 export interface NavItem {
@@ -28,21 +29,18 @@ const SideBarButton = ({ data }: { data: NavItem }) => {
         <NavLink
             key={data.path}
             to={data.path}
-            className={({ isActive }) => `side-bar-button ${isActive ? "active" : ""}`}
+            className={({ isActive }) => `${styles.sideBarButton} ${isActive ? styles.active : ""}`}
         >
             {data.iconSrc != "" && <img src={data.iconSrc} width="15px" height="15px" />}
-            <span className="side-bar-button-title">{data.title}</span>
-            <span className="side-bar-button-count">{data.countLabel}</span>
+            <span className={styles.sideBarButtonTitle}>{data.title}</span>
+            <span className={styles.sideBarButtonCount}>{data.countLabel}</span>
         </NavLink>
     )
 }
 
 export const SideBar = ({ data}: {data: SideBarData}) => {
     return (
-        <aside className="side-bar">
-            <div className="side-bar-header">
-
-            </div>
+        <aside className={styles.sideBar}>
             <nav>
                 {
                     Array.from(data.items.values()).map((item) => (

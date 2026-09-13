@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { useAgents } from "../hooks/useGetAgents";
 import { useEffect, useState } from "react";
 import { AgentCard } from "../components/agentCard";
+import styles from "./agentsPage.module.css"
 
 
 
@@ -27,12 +28,12 @@ export const AgentsPage = () => {
         return <div>Загрузка...</div>;
     }
     return (
-        <div className='agentsPage'>
+        <div className={styles.agentsPage}>
             <h1>Агенты</h1>
             <main>
-                <div className="agent-cards-container">
+                <div className={styles.agentCardsContainer}>
                     {agents?.agents != null && agents?.agents.length > 0 &&
-                        agents?.agents?.filter((a) => a.status != null).map((agent) => 
+                        agents?.agents?.filter((a) => a.status != null).map((agent) =>
                             // {agent.status != null &&
                             <div key={agent.id}>
                                 <AgentCard agent={agent} onClick={(id)=> {navigate(id)}}/>
@@ -41,8 +42,8 @@ export const AgentsPage = () => {
                         )
                     }
                 </div>
-                <div className='bottomArea'>
-                    <button className='addAgentButton'>
+                <div className={styles.bottomArea}>
+                    <button className={styles.addAgentButton}>
                         <Link to="./new">Добавить</Link>
                     </button>
                 </div>

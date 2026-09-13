@@ -1,0 +1,35 @@
+.agentsPage {
+    height: fit-content;
+}
+
+.agentsPage > main {
+    height: fit-content;
+}
+
+.agentCardsContainer {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 5px;
+    padding: 5px;
+    margin: 10px;
+}
+
+.bottomArea {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    width: 90%;
+    margin: 10px auto;
+    display: flex;
+    justify-content: space-around;
+}
+
+.addAgentButton {
+    font-size: 20px;
+}
+
+.addAgentButton a {
+    color: inherit;
+    text-decoration: none;
+}

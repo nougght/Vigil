@@ -17,6 +17,7 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.2",
+    "recharts": "^3.10.1",
     "tanstack-query": "^1.0.0"
   },
   "devDependencies": {

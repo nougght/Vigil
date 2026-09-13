@@ -1,0 +1,29 @@
+.formRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.formLabel {
+    min-width: 80px;
+    text-align: right;
+}
+
+.keyContainer {
+    text-align: center;
+}
+
+.keyField {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.keyValue {
+    max-width: 500px;
+    overflow-wrap: anywhere;
+}

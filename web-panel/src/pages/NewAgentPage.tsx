@@ -3,6 +3,8 @@ import { useCreateAgents } from "../hooks/useCreateAgent";
 import type { CreateAgentResponse } from "../api/models";
 import { useDownloadConfig } from "../hooks/useDownloadConfig";
 import { CopyButton } from "../components/copyButton";
+import styles from "./newAgentPage.module.css"
+import commonStyles from "../common.module.css"
 
 
 interface NewAgentProps {
@@ -72,13 +74,15 @@ export const NewAgentPage = (_props: NewAgentProps) => {
             <div>
                 <h1>Создание агента</h1>
                 <div>
-                    <label htmlFor="name">Название</label>
-                    <input type="text" id="name" name="name" value={name}
-                        required onChange={e => setName(e.target.value)} />
-                    <br />
-                    <label htmlFor="description">Описание</label>
-                    <input type="text" id="name" name="name" value={description ?? ""} onChange={e => setDescription(e.target.value)} />
-                    <br />
+                    <div className={styles.formRow}>
+                        <label className={styles.formLabel} htmlFor="name">Название</label>
+                        <input type="text" id="name" name="name" value={name}
+                            required onChange={e => setName(e.target.value)} />
+                    </div>
+                    <div className={styles.formRow}>
+                        <label className={styles.formLabel} htmlFor="description">Описание</label>
+                        <input type="text" id="description" name="description" value={description ?? ""} onChange={e => setDescription(e.target.value)} />
+                    </div>
                     <button onClick={handleCreate}>Создать</button>
                 </div>
             </div>
@@ -86,12 +90,12 @@ export const NewAgentPage = (_props: NewAgentProps) => {
             <div>
                 {
                     isSuccess &&
-                    <div className="keyContainer">
+                    <div className={styles.keyContainer}>
                         <h3>
                             Ключ подключения агента
                         </h3>
-                        <div className="keyField">
-                            <p>{isSuccess ? resp?.enrollmentKey : "....."}</p>
+                        <div className={styles.keyField}>
+                            <p className={styles.keyValue}>{isSuccess ? resp?.enrollmentKey : "....."}</p>
                             <CopyButton text={resp?.enrollmentKey ?? ""} />
                         </div>
                         <div>
@@ -109,7 +113,7 @@ export const NewAgentPage = (_props: NewAgentProps) => {
             }
             {
                 info != null &&
-                <div className="infoMessage">
+                <div className={commonStyles.infoMessage}>
                     <p>{info}</p>
                 </div>
             }

@@ -11,7 +11,7 @@ import { ClientMessageTypeAgentDetailed, FillMetricsFromSeries, MessageTypeFleet
 import { OverviewPage } from './pages/OverviewPage'
 import type { Overview } from './domain/overview'
 // import type { SeriesDTO } from './domain/metrics'
-const sideBarData: SideBarData = {
+let sideBarData: SideBarData = {
     iconSrc: "",
     title: "Vigil",
     items: [
@@ -20,7 +20,9 @@ const sideBarData: SideBarData = {
     ]
 
 }
-const AppLayout = () => {
+
+
+const AppLayout = ({onlineCount} : {onlineCount: number}) => {
     let location = useLocation()
 
     useEffect(
@@ -28,6 +30,13 @@ const AppLayout = () => {
 
         },
         [location]
+    )
+    useEffect(
+        () => {
+            if (onlineCount < 0) return
+            sideBarData.items[1].countLabel = onlineCount
+        },
+        [onlineCount]
     )
     return (
         <div style={{ display: `flex`, flexDirection: `row`, height: `100%`, alignItems: `stretch` }}>
@@ -142,7 +151,7 @@ function App() {
                     handler={handleLocationChange}
                 />
                 <Routes>
-                    <Route element={<AppLayout />}>
+                    <Route element={<AppLayout onlineCount={overview?.summary?.onlineAgents ?? 0}/>}>
                         <Route path="/" element={<Navigate to="/agents" replace />} />
                         <Route path="/overview" element={<OverviewPage 
                             overviewProp={overview} />} />

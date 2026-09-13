@@ -1,0 +1,31 @@
+.topCards {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.distPies {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-bottom: 60px;
+}
+
+.distPies > div {
+    text-align: center;
+}
+
+.topN {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.topNSection h3 {
+    margin-bottom: 8px;
+}
+
+.topNSection table td {
+    padding: 3px 8px 3px 0;
+}

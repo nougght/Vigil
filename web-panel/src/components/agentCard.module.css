@@ -1,0 +1,7 @@
+.agentCard {
+    border: 1px solid grey;
+    border-radius: 15px;
+    padding: 4px 10px;
+    background-color: lightblue;
+    cursor: pointer;
+}

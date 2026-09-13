@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Sector, Tooltip } from "recharts";
+import { useEffect, useRef,  } from "react";
+import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip, type PieLabelRenderProps } from "recharts";
 
 
 interface PieRow {
@@ -12,7 +12,30 @@ export default function SimplePieChart({ Title, PieData }: { Title: string, PieD
 
     const first = useRef(true);
     useEffect(() => { first.current = false; }, []);
+    const RADIAN = Math.PI / 180;
 
+    const renderInnerLabel = (props: PieLabelRenderProps) => {
+        const { cx, cy, midAngle, innerRadius, outerRadius, percent, name } = props;
+        if (percent == null || percent === 0) return <></>;
+
+        const radius = Number(innerRadius) + (Number(outerRadius) - Number(innerRadius)) * 0.6;
+        const x = Number(cx) + radius * Math.cos(-(midAngle ?? 0) * RADIAN);
+        const y = Number(cy) + radius * Math.sin(-(midAngle ?? 0) * RADIAN);
+
+        return (
+            <text
+                x={x}
+                y={y}
+                fill="rgb(22, 22, 22)"
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize={13}
+                fontWeight={700}
+            >
+                {`${name} ${(percent * 100).toFixed(0)}%`}
+            </text>
+        );
+    };
     return (
         <div style={{ width: '100%', height: 300 }}>
             <h3>{Title}</h3>
@@ -26,25 +49,27 @@ export default function SimplePieChart({ Title, PieData }: { Title: string, PieD
                         outerRadius={80}
                         dataKey="Value"
                         nameKey="Name"
-                        // label={({ name }) => `${name}`}
-                        label={({ name, percent }) => percent == null || percent == 0 ? "" :`${name} ${(percent * 100).toFixed(0)}%`}
+                        stroke="rgb(124, 139, 151)"
+                        strokeWidth={2}
+                        label={renderInnerLabel}
+                        labelLine={false}
                         // shape={renderShape}
                         animationDuration={300}
-                        isAnimationActive={first.current}
+                        isAnimationActive={ false}
                     >
                     </Pie>
                     <Tooltip />
                     <Legend
-                        // payload={PieData.map(r => ({
-                        //     value: r.Name,
-                        //     type: 'square',
-                        //     color: r.fill,
-                        //     inactive: r.Value === 0,
-                        // }))}
+                    // payload={PieData.map(r => ({
+                    //     value: r.Name,
+                    //     type: 'square',
+                    //     color: r.fill,
+                    //     inactive: r.Value === 0,
+                    // }))}
                     />
                 </PieChart>
             </ResponsiveContainer>
-        </div>
+        </div >
     );
 }
 

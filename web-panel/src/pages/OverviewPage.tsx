@@ -7,6 +7,8 @@ import { AgentCount } from "../components/agentCount";
 import { LoadBar } from "../components/loadBar";
 import { AvgCPU } from "../components/avgCPU";
 import { AvgMem } from "../components/avgMem";
+import styles from "./overviewPage.module.css"
+import commonStyles from "../common.module.css"
 
 export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefined }) => {
     const [warning, setWarning] = useState<string | null>()
@@ -49,7 +51,7 @@ export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefi
                 {overview?.overview?.summary != null && (
 
                     <div>
-                        <div className="top-cards">
+                        <div className={styles.topCards}>
                             <AgentCount
                                 online={overview?.overview?.summary?.onlineAgents}
                                 count={overview?.overview?.summary?.totalAgents}
@@ -66,8 +68,8 @@ export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefi
                             <label>Среднее использование памяти </label>
                             <span>{overview?.overview?.summary?.averageMemoryUsage.toFixed(2)}%</span> */}
                         </div>
-                        <div className="overview-distributions">
-                            <label>Распределение использования CPU</label>
+                        <div>
+                            {/* <label>Распределение использования CPU</label>
                             <br />
                             <label>Высокое({overview?.overview?.summary?.cpuUsageDistribution?.high?.percent}%) </label>
                             <span>{overview?.overview?.summary?.cpuUsageDistribution?.high?.count}</span>
@@ -98,9 +100,9 @@ export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefi
                             <span>{overview?.overview?.summary?.diskUsageDistribution?.medium?.count}</span>
                             <br />
                             <label>Низкое({overview?.overview?.summary?.diskUsageDistribution?.low?.percent}%) </label>
-                            <span>{overview?.overview?.summary?.diskUsageDistribution?.low?.count}</span>
+                            <span>{overview?.overview?.summary?.diskUsageDistribution?.low?.count}</span> */}
 
-                            <div className="dist-pies">
+                            <div className={styles.distPies}>
 
                                 <SimplePieChart
                                     Title="Использование CPU"
@@ -119,10 +121,9 @@ export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefi
                             </div>
                         </div>
 
-                        <div className="topN">
-                            <div className="topN-cpu">
-                                <label>Топ по использованию CPU</label>
-                                <br />
+                        <div className={styles.topN}>
+                            <div className={styles.topNSection}>
+                                <h3>Топ по использованию CPU</h3>
                                 <table>
                                     {/* <thead>
                                         <tr>
@@ -142,9 +143,8 @@ export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefi
                                     </tbody>
                                 </table>
                             </div>
-                            <div className="topN-memory">
-                                <label>Топ по использованию памяти</label>
-                                <br />
+                            <div className={styles.topNSection}>
+                                <h3>Топ по использованию памяти</h3>
                                 <table>
                                     {/* <thead>
                                         <tr>
@@ -177,7 +177,7 @@ export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefi
             }
             {
                 info != null &&
-                <div className="infoMessage">
+                <div className={commonStyles.infoMessage}>
                     <p>{info}</p>
                 </div>
             }

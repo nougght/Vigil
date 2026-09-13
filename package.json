@@ -16,8 +16,5 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.17"
-  },
-  "dependencies": {
-    "recharts": "^3.10.1"
   }
 }
