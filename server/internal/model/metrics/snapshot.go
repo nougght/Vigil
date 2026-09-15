@@ -55,7 +55,16 @@ func (s *Snapshot) GetMemoryUsage() float64 {
 }
 
 func (s *Snapshot) GetDiskUsage() float64 {
-	return s.GetValueByKey(metrickinds.GetKindByKey("disk_usage"), "")
+	kind := metrickinds.GetKindByKey("disk_usage")
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	var sum float64
+	for key, state := range s.values {
+		if key.Kind == kind {
+			sum += state.Value
+		}
+	}
+	return sum
 }
 
 func (s *Snapshot) GetValueByKey(kind int32, label string) float64 {
