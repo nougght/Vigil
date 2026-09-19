@@ -10,7 +10,7 @@
 .avg h3 {
     font-size: 18px;
     font-weight: 500;
-    line-height: 0;
+    /* line-height: 0; */
 }
 
 .avg span{

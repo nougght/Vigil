@@ -21,7 +21,7 @@
 .agentsCount h3 {
     font-size: 18px;
     font-weight: 500;
-    line-height: 0;
+    margin-top: 0;
 }
 
 .valueGroup {

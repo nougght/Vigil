@@ -15,8 +15,13 @@ let sideBarData: SideBarData = {
     iconSrc: "",
     title: "Vigil",
     items: [
-        { id: "overview", title: "Обзор", iconSrc: dashIcon, path: "/overview", countLabel: 0 },
+        { id: "overview", title: "Обзор", iconSrc: dashIcon, path: "/overview"},
         { id: "agents", title: "Агенты", iconSrc: agentsIcon, path: "/agents", countLabel: 0 },
+        { id: "groups", title: "Группы", path: "/groups"},
+        { id: "reports", title: "Отчеты", path: "/reports"},
+        { id: "events", title: "События", path: "/events"},
+        { id: "streams", title: "Удаленный просмотр", path: "streams"}
+
     ]
 
 }
@@ -159,6 +164,10 @@ function App() {
                         <Route path="/agents/:id" element={<AgentPage
                             metricsProp={metrics} />} />
                         <Route path="/agents/new" element={<NewAgentPage />} />
+                        <Route path="/groups" element={<NotImplemented/>}/>
+                        <Route path="/reports" element={<NotImplemented/>}/>
+                        <Route path="/events" element={<NotImplemented/>}/>
+                        <Route path="/streams" element={<NotImplemented/>}/>
                     </Route>
                     {/* <Route path="*" element={<NotFoundPage />} /> */}
                 </Routes>
@@ -182,3 +191,12 @@ function RouteChangeTracker({ handler }: { handler: (path: string) => void }) {
 
 export default App
 
+const NotImplemented = () => {
+    return (
+        <div>
+            <h3>
+                Not implemented
+            </h3>
+        </div>
+    )
+}
