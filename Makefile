@@ -80,3 +80,8 @@ gen-intermedate-ca:
 		-out ./server/creds/intermediate-ca.crt
 copy-root-ca:
 	cp ./cert-config/root-ca.crt ./server/creds/root-ca.crt
+
+
+nginx-up:
+	docker compose  -f ./server/docker/nginx-docker-compose.yaml -p nginx up -d  --build nginx
+

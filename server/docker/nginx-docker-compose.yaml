@@ -1,0 +1,20 @@
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    networks:
+      default:
+      proxy:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./monit-nginx.conf:/etc/nginx/conf.d/monit-nginx.conf:ro
+      - /conf:/etc/nginx/conf.d  # for linux 
+      - ../../web-panel/dist:/usr/share/nginx/html:ro
+
+networks:
+  proxy:
+    external: true
