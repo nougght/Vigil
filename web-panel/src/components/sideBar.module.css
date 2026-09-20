@@ -3,11 +3,12 @@
     width: var(--width-val, "min-content");
     display: flex;
     position: relative;
-    background-color: lightblue;
-    border-right: 1px solid rgb(197, 197, 197);
+    background-color: color-mix(in srgb, var(--color-srf) 50%, transparent);
+    border-right: 1px solid var(--color-brd);
     margin-right: 5px;
     will-change: width;
     overflow-wrap:break-word;
+    font-family: 'Roboto';
 }
 
 .resizeArea {
@@ -35,6 +36,14 @@
     /* background-color: red; */
     margin-bottom: 20px;
 }
+.themeButton {
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    font-family: 'Roboto';
+    margin: 5px;
+    padding: 5px 8px;
+}
 
 .sideBar nav {
     /* background-color: red; */
@@ -51,13 +60,14 @@
     padding: 5px 8px;
     margin: 5px;
     text-align: left;
+    font-size: 16px;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 6px;
     background-color: inherit;
     text-decoration: none;
-    color: black;
+    color: var(--color-txt);
 }
 
 .sideBarButtonTitle {
@@ -66,14 +76,16 @@
 
 .sideBarButtonCount {
     font-size: 14px;
-    color: rgb(90, 90, 90);
+    /* color: rgb(90, 90, 90); */
 }
 
 .sideBarButton:hover {
-    background-color: rgb(240, 231, 216);
+    background-color: color-mix(in srgb, var(--color-scn) 50%, transparent);
 }
 
 .sideBarButton.active {
-    background-color: rgb(240, 162, 61);
+    background-color: var(--color-scn);
+    color: var(--color-prm);
+    box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.05);
 }
 

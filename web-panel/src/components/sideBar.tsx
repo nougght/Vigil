@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom"
 import styles from "./sideBar.module.css"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { useTheme } from "../hooks/useTheme"
 
 
 export interface NavItem {
@@ -41,8 +42,10 @@ const SideBarButton = ({ data }: { data: NavItem }) => {
 
 export const SideBar = ({ data }: { data: SideBarData }) => {
     const [width, setWidth] = useState<number | null>();
-    const [widthVal, setWidthVal] = useState<string | null>(); 
+    const [widthVal, setWidthVal] = useState<string | null>();
     const [isResizing, setIsResizing] = useState(false);
+
+    const [theme, setTheme] = useTheme();
     const barRef = useRef<HTMLBaseElement>(null);
 
     useEffect(() => {
@@ -60,6 +63,10 @@ export const SideBar = ({ data }: { data: SideBarData }) => {
             document.body.style.cursor = 'default';
         };
     }, [isResizing]);
+
+    const handleTheme = () => {
+        setTheme(theme == 'light' ? 'dark' : 'light');
+    }
 
     const handleResize = useCallback((e: React.MouseEvent<HTMLDivElement>): void => {
         setIsResizing(true);
@@ -125,6 +132,11 @@ export const SideBar = ({ data }: { data: SideBarData }) => {
                             path: "/settings"
                         }}
                     />
+                    <button className={styles.themeButton}
+                        onClick={handleTheme}
+                    >
+                        Поменять тему
+                    </button>
                 </div>
             </div>
             <div className={styles.resizeArea}

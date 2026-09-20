@@ -6,10 +6,10 @@
     flex-direction: column;
     justify-content: space-evenly;
     width: fit-content;
-    border: 1px solid rgb(124, 139, 151);
+    border: 1px solid var(--color-brd);
     border-radius: 10px;
     padding: 5px;
-    background-color: rgb(220, 229, 231);
+    /* background-color: rgb(220, 229, 231); */
 }
 
 .valuesContainer {
@@ -38,7 +38,7 @@
 
 .totalCountValue {
     font-size: 24px;
-    color: rgb(22, 22, 22);
+    /* color: rgb(22, 22, 22); */
     margin: 10px;
 }
 
