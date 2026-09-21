@@ -9,20 +9,22 @@ import { useLocation, useParams } from 'react-router-dom';
 import type { Metrics } from '../domain/metrics';
 import { convertBytesToGB } from '@monitoring-system/shared/src/util/units';
 import { getGradientColor } from '@monitoring-system/shared/src/util/gradientColor';
+import type { ActivityUpdate } from '../domain/activity';
+import { AgentActivity } from '../components/agentActivity';
 
 interface Tab {
     text: string;
     content: React.ReactNode;
 }
 
-export const AgentPage = ({ metricsProp }: { metricsProp?: Metrics }) => {
+export const AgentPage = ({ metricsProp, activity }: { metricsProp?: Metrics, activity?: ActivityUpdate }) => {
     const { state } = useLocation() as { state: Agent | null }
     const { id } = useParams()
     const [agent, setAgent] = useState<Agent | null>(state)
     const [activeTab, setActiveTab] = useState(0)
     const [warning, setWarning] = useState<string | null>()
     const [metrics, setMetrics] = useState<Metrics | null>()
-
+    const [activityInfo, setActivity] = useState<ActivityUpdate>()
     const {
         data: specs,
         isPending: isSpecsPending,
@@ -63,6 +65,14 @@ export const AgentPage = ({ metricsProp }: { metricsProp?: Metrics }) => {
         }
     }, [metricsProp, agent?.id])
 
+    useEffect(() => {
+        if (agent?.id != activity?.agentID) {
+            console.log(`activity agent id mismatch: ${activity?.agentID} - ${agent?.id}`)
+        } else {
+            setActivity(activity)
+        }
+    }, [activity, agent?.id])
+
 
     const tabs: Tab[] = [
         //TODO: full overview page 
@@ -73,7 +83,6 @@ export const AgentPage = ({ metricsProp }: { metricsProp?: Metrics }) => {
                     <div>
                         <p>{`Имя хоста: ${specs?.specs?.host?.hostName ?? "NO DATA"}`}</p>
                         <p>{`Идентификатор агента: ${agent.id}`}</p>
-                        <img src={`http://monitoring.nought.ru/api/v1/agents/${agent.id}/frames`} height="200px" />
                         <section>
                             {/* <h2>Active window</h2>
                             <div>{metrics?.focusedWindow == null ? "No data" :
@@ -125,6 +134,17 @@ export const AgentPage = ({ metricsProp }: { metricsProp?: Metrics }) => {
                     </div> :
                     agentResp?.error?.status == 404 && <div>Агент не найден</div>
         },
+        {
+            text: "Активность",
+            content: isSpecsPending ? <div>Загрузка...</div> :
+                agent != null ?
+                    <AgentActivity
+                        activity={activityInfo}
+                        agentID={agent.id}
+                    /> :
+                    specs?.error?.status == 404 && <div>Агент не найден</div>
+        },
+        
         {
             text: "Характеристики",
             content: isSpecsPending ? <div>Загрузка...</div> :

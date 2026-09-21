@@ -33,13 +33,22 @@ export const AgentsPage = () => {
             <main>
                 <div className={styles.agentCardsContainer}>
                     {agents?.agents != null && agents?.agents.length > 0 &&
-                        agents?.agents?.filter((a) => a.status != null).map((agent) =>
-                            // {agent.status != null &&
-                            <div key={agent.id}>
-                                <AgentCard agent={agent} onClick={(id)=> {navigate(id)}}/>
-                            </div>
-                            // }
-                        )
+                        agents?.agents?.filter((a) => a.status != null)
+                            .sort((a, b) => {
+                                if (a.isOnline == b.isOnline)
+                                    return 0
+                                if (a.isOnline) {
+                                    return -1
+                                }
+                                return 1
+                            })
+                            .map((agent) =>
+                                // {agent.status != null &&
+                                <div key={agent.id}>
+                                    <AgentCard agent={agent} onClick={(id) => { navigate(id) }} />
+                                </div>
+                                // }
+                            )
                     }
                 </div>
                 <div className={styles.bottomArea}>

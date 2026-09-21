@@ -1,0 +1,8 @@
+
+.agentActivity {
+    
+}
+
+.agentActivity img {
+    width: var(--width, 500px);
+}

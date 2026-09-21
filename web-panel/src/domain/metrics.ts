@@ -1,3 +1,5 @@
+
+import type { ActivityUpdate } from "./activity"
 import type { Overview } from "./overview"
 
 
@@ -9,7 +11,7 @@ export const MessageTypeFleetOverview = "fleet.overview"
 export interface Message {
     type: string
     agentID: string
-    payload: SeriesDTO | Overview
+    payload: SeriesDTO | Overview | ActivityUpdate
 }
 
 

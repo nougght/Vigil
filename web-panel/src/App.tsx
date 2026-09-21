@@ -10,6 +10,7 @@ import agentsIcon from "./assets/cpu.svg"
 import { ClientMessageTypeAgentDetailed, FillMetricsFromSeries, MessageTypeActivity, MessageTypeFleetOverview, MessageTypeSeries, type AgentDetailedMessage, type ClientMessage, type Message, type Metrics, type SeriesDTO } from './domain/metrics'
 import { OverviewPage } from './pages/OverviewPage'
 import type { Overview } from './domain/overview'
+import type { ActivityUpdate } from './domain/activity'
 // import type { SeriesDTO } from './domain/metrics'
 let sideBarData: SideBarData = {
     iconSrc: "",
@@ -61,6 +62,7 @@ function App() {
     const [socketConnected, setConnected] = useState<boolean>(false)
     const [metrics, setMetrics] = useState<Metrics | undefined>()
     const [overview, setOverview] = useState<Overview | undefined>()
+    const [activity, setActivity] = useState<ActivityUpdate | undefined>()
 
 
     const sendMessageRef = useRef(sendMessage);
@@ -102,6 +104,7 @@ function App() {
                 setOverview(msg.payload as Overview)
             } else if (msg.type == MessageTypeActivity) {
                 console.log("activity message received")
+                setActivity(msg.payload as ActivityUpdate)
             }
         });
 
@@ -164,7 +167,8 @@ function App() {
                             overviewProp={overview} />} />
                         <Route path="/agents" element={<AgentsPage />} />
                         <Route path="/agents/:id" element={<AgentPage
-                            metricsProp={metrics} />} />
+                            metricsProp={metrics} 
+                            activity={activity}/>} />
                         <Route path="/agents/new" element={<NewAgentPage />} />
                         <Route path="/groups" element={<NotImplemented/>}/>
                         <Route path="/reports" element={<NotImplemented/>}/>

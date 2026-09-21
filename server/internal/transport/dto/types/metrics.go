@@ -16,7 +16,7 @@ type SeriesDTO struct {
 } // @Name Series
 
 type ActivityUpdate struct {
-	AgentID   uuid.UUID `json:"agent_id"`
+	AgentID   uuid.UUID `json:"agentID"`
 	Kind      int32     `json:"kind"`
 	Title     *string   `json:"title,omitempty"`
 	Timestamp time.Time `json:"ts"`
