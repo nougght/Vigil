@@ -25,11 +25,13 @@ type EventBus interface {
 
 const (
 	AgentMetricsEventName  = "AgentMetricsEvent"
+	AgentActivityEventName = "AgentActivityEvent"
 	FleetOverviewEventName = "FleetOverviewEvent"
 )
 
 const (
 	AgentMetricsEventSubjectPrefix  = "agent.detailed"
+	AgentActivityEventSubjectPrefix = "agent.activity"
 	FleetOverviewEventSubjectPrefix = "fleet.overview"
 )
 
@@ -56,4 +58,17 @@ func (e *FleetOverviewEvent) Name() string {
 
 func (e *FleetOverviewEvent) Subject() string {
 	return FleetOverviewEventSubjectPrefix
+}
+
+type AgentActivityEvent struct {
+	AgentID  uuid.UUID
+	Activity metrics_model.ActivityUpdate
+}
+
+func (e *AgentActivityEvent) Name() string {
+	return AgentActivityEventName
+}
+
+func (e *AgentActivityEvent) Subject() string {
+	return fmt.Sprintf("%s.%s", AgentActivityEventSubjectPrefix, e.AgentID)
 }

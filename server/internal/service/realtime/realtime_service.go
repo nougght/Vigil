@@ -50,7 +50,8 @@ func NewRealtimeService(cfg *config.Config,
 	}
 	s.hub = ws.NewHub(s.HandleSubscription, s.HandleUnsubscription)
 	s.handlers = map[string]event.EventHandler{
-		event.AgentMetricsEventName: s.metricsSeriesEventHandler,
+		event.AgentMetricsEventName:  s.metricsSeriesEventHandler,
+		event.AgentActivityEventName: s.activityEventHandler,
 	}
 	go s.hub.Run()
 	return s, nil
@@ -101,6 +102,8 @@ func (s *RealtimeService) HandleSubscription(subject string) {
 	switch {
 	case strings.HasPrefix(subject, event.AgentMetricsEventSubjectPrefix):
 		name = event.AgentMetricsEventName
+	case strings.HasPrefix(subject, event.AgentActivityEventSubjectPrefix):
+		name = event.AgentActivityEventName
 	default:
 		return
 	}
@@ -110,12 +113,37 @@ func (s *RealtimeService) HandleSubscription(subject string) {
 	}
 }
 
+func (s *RealtimeService) activityEventHandler(ctx context.Context, e event.Event) {
+	activityEvent, ok := e.(*event.AgentActivityEvent)
+	if !ok {
+		log.Printf("failed to convert event: %s", e)
+		return
+	}
+	log.Printf("received activity event for agent %s", activityEvent.AgentID)
+
+	jsonMsg, err := json.Marshal(&dto.ActivityUpdate{
+		AgentID:   activityEvent.AgentID,
+		Kind:      activityEvent.Activity.Kind,
+		Title:     activityEvent.Activity.Title,
+		Timestamp: activityEvent.Activity.Timestamp,
+	})
+
+	if err != nil {
+		log.Printf("failed to marshal json activity event")
+	}
+	s.hub.SendMessage(fmt.Sprintf("%s.%s", event.AgentActivityEventSubjectPrefix, activityEvent.AgentID), &realtime_model.Message{
+		Type:    realtime_model.MessageTypeActivity,
+		AgentID: activityEvent.AgentID,
+		Payload: jsonMsg,
+	})
+}
 func (s *RealtimeService) metricsSeriesEventHandler(ctx context.Context, e event.Event) {
 	metricsEvent, ok := e.(*event.AgentMetricsEvent)
 	if !ok {
 		log.Printf("failed to convert event: %s", e)
+		return
 	}
-	log.Printf("received metrics event for agent %s", metricsEvent.AgentID)
+	// log.Printf("received metrics event for agent %s", metricsEvent.AgentID)
 
 	raw, err := json.Marshal(&dto.SeriesDTO{
 		Key:    metricsEvent.Metric.Kind,

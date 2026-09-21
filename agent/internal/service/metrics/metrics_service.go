@@ -7,18 +7,26 @@ import (
 	"log"
 	"sync"
 	"time"
+
+	"github.com/nougght/monitoring-system/shared/go/util"
 )
+
+type Sender interface {
+	SendActivityUpdate(data *model.ActivityUpdate) error
+}
 
 type MetricsService struct {
 	config *config.Config
 
 	// temporary storing
-	specs     *model.Specs
-	specsMu   sync.RWMutex
-	metrics   *model.Metrics
-	metricsMu sync.RWMutex
-
+	specs            *model.Specs
+	specsMu          sync.RWMutex
+	metrics          *model.Metrics
+	metricsMu        sync.RWMutex
+	wg               sync.WaitGroup
 	refreshSpecsFunc func(ctx context.Context) (*model.Specs, error)
+
+	sender Sender
 }
 
 func NewMetricsService(cfg *config.Config,
@@ -30,11 +38,56 @@ func NewMetricsService(cfg *config.Config,
 	}
 }
 
+func (m *MetricsService) SetSender(sender Sender) {
+	m.sender = sender
+}
+
+// TEMP; TODO: add metrics aggregation
+func (m *MetricsService) RunAggregator(ctx context.Context) {
+	m.wg.Add(1)
+	go func() {
+		defer m.wg.Done()
+		ticker := time.NewTicker(model.MetricsAggregatorPeriod)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+
+			case <-ctx.Done():
+				return
+			}
+		}
+
+	}()
+}
+
 func (m *MetricsService) UpdateMetric(metric model.Metric) {
 	// log.Println("update metric", metric.Type())
 	switch metric.Type() {
 	case model.MetricTypeFocusedWindow:
-		m.metrics.FocusedWindow = metric.(*model.FocusedWindowMetric)
+		var oldValue *string = nil
+		if m.metrics.FocusedWindow != nil {
+			oldValue = util.Ptr(m.metrics.FocusedWindow.Value())
+		}
+		newValue := metric.(*model.FocusedWindowMetric).Value()
+
+		if oldValue == nil || *oldValue != newValue {
+			m.metrics.FocusedWindow = metric.(*model.FocusedWindowMetric)
+			if m.sender == nil {
+				log.Println("sender is nil")
+				return
+			}
+			err := m.sender.SendActivityUpdate(&model.ActivityUpdate{
+				Kind:      model.ActivityKindFocus,
+				Title:     util.Ptr(newValue),
+				Timestamp: time.Now(),
+			})
+			if err != nil {
+				log.Println(err.Error())
+			}
+		}
+
 	case model.MetricTypeCpuPercent:
 		m.metrics.CpuPercent = metric.(*model.CpuPercentMetric)
 	case model.MetricTypeMemory:
@@ -47,7 +100,6 @@ func (m *MetricsService) UpdateMetric(metric model.Metric) {
 	case model.MetricTypeProcess:
 		m.metrics.Process = metric.(*model.ProcessMetric)
 	}
-
 }
 
 func (m *MetricsService) GetSpecs(ctx context.Context) (*model.Specs, error) {

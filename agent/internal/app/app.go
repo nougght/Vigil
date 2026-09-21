@@ -89,6 +89,8 @@ func RunAgent(setupConfig *config.SetupConfig) error {
 		service.GetMetricsService(),
 	)
 
+	service.GetMetricsService().SetSender(grpcAgentClient)
+
 	grpcCtx, cancel := context.WithCancel(rootCtx)
 	defer cancel()
 

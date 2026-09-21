@@ -2,7 +2,6 @@ package agent_client
 
 import (
 	"agent/internal/model"
-	"log"
 
 	pb "github.com/nougght/monitoring-system/shared/go/proto/gen/agent/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -176,9 +175,20 @@ func convertMetricsToProto(metrics *model.Metrics) *pb.MetricsBatch {
 	}
 	batch.Samples = append(batch.Samples, convertDiskUsageMetricToProto(metrics.DiskUsage)...)
 	batch.Samples = append(batch.Samples, convertNetworkUsageMetricToProto(metrics.NetworkUsage)...)
-	log.Println("samples:")
-	for _, s := range batch.Samples {
-		log.Printf("%#v", s)
-	}
+	// log.Println("samples:")
+	// for _, s := range batch.Samples {
+	// 	log.Printf("%#v", s)
+	// }
 	return batch
+}
+
+func convertActivityUpdateToProto(m *model.ActivityUpdate) *pb.ActivityUpdate {
+	if m == nil {
+		return nil
+	}
+	return &pb.ActivityUpdate{
+		Kind:      pb.ActivityKind(m.Kind),
+		Title:     m.Title,
+		Timestamp: timestamppb.New(m.Timestamp),
+	}
 }

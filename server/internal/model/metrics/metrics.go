@@ -45,3 +45,16 @@ type MetricSeriesKey struct {
 	Kind    int32     `db:"kind"`
 	Label   string    `db:"lable"`
 }
+
+const (
+	ActivityKindIdle   = 0
+	ActivityKindActive = 1
+	ActivityKindFocus  = 2
+)
+
+type ActivityUpdate struct {
+	AgentID   uuid.UUID
+	Kind      int32
+	Title     *string
+	Timestamp time.Time
+}

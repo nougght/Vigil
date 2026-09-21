@@ -155,7 +155,8 @@ func (s *OverviewService) RunAggregator(ctx context.Context) {
 				for i, ag := range topNCpuUsage {
 					name, ok := names[ag.ID]
 					if !ok {
-						log.Println("name not found in list")
+						// TODO: check logs
+						// log.Println("name not found in list")
 						continue
 					}
 					topNCpuUsage[i].Name = name
@@ -163,7 +164,7 @@ func (s *OverviewService) RunAggregator(ctx context.Context) {
 				for i, ag := range topNMemoryUsage {
 					name, ok := names[ag.ID]
 					if !ok {
-						log.Println("name not found in list")
+						// log.Println("name not found in list")
 						continue
 					}
 					topNMemoryUsage[i].Name = name

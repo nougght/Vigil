@@ -106,3 +106,16 @@ func convertSpecsFromProto(p *agentv1.Specs) *agent_model.Specs {
 		},
 	}
 }
+
+func convertActivityUpdateWithAgentIDFromProto(p *agentv1.ActivityUpdate, agetnID uuid.UUID) *metrics_model.ActivityUpdate {
+	if p == nil {
+		return nil
+	}
+
+	return &metrics_model.ActivityUpdate{
+		AgentID:   agetnID,
+		Kind:      int32(p.Kind),
+		Title:     p.Title,
+		Timestamp: p.Timestamp.AsTime(),
+	}
+}

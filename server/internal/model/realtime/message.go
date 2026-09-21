@@ -10,6 +10,7 @@ type MessageType string
 
 const (
 	MessageTypeSeries        MessageType = "series"
+	MessageTypeActivity      MessageType = "activity"
 	MessageTypeFleetOverview MessageType = "fleet.overview"
 )
 

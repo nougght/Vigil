@@ -88,6 +88,24 @@ func (s *MetricsService) HandleMetrics(ctx context.Context, agentID uuid.UUID, m
 	return nil
 }
 
+func (s *MetricsService) HandleActivityUpdate(ctx context.Context, update *metrics_model.ActivityUpdate) error {
+	if update == nil {
+		return nil
+	}
+	// TODO: add saving
+	event := &event.AgentActivityEvent{
+		AgentID:  update.AgentID,
+		Activity: *update,
+	}
+	err := s.bus.Publish(ctx,
+		event,
+	)
+	if err != nil {
+		log.Printf("failed to publish event: %#v", event)
+	}
+	return nil
+}
+
 func (s *MetricsService) resolveAndSaveBatchFunc(ctx context.Context, batches []metrics_model.MetricsBatch) error {
 	metricsCount := metrics_model.CountAllMetricsInBatchList(batches)
 	seriesKeys := make(map[metrics_model.MetricSeriesKey]struct{}, metricsCount)

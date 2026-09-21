@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/nougght/monitoring-system/server/internal/model/event"
 	realtime_model "github.com/nougght/monitoring-system/server/internal/model/realtime"
 )
 
@@ -63,9 +64,13 @@ func (c *Client) runReader() {
 				log.Println("agent detailed message")
 				c.mu.Lock()
 				for _, agent := range msg.Agents {
+					// TODO: move/improve
 					subj := fmt.Sprintf("%s.%s", realtime_model.ClientMessageTypeAgentDetailed, agent)
+					subj2 := fmt.Sprintf("%s.%s", event.AgentActivityEventSubjectPrefix, agent)
 					c.subs[subj] = struct{}{}
+					c.subs[subj2] = struct{}{}
 					c.subFunc(subj)
+					c.subFunc(subj2)
 				}
 				c.mu.Unlock()
 

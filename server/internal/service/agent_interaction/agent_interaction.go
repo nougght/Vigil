@@ -84,6 +84,10 @@ func (s *AgentInteractionService) HandleMetricsBatch(ctx context.Context, batch 
 	return s.metricsService.HandleMetrics(ctx, batch.AgentID, *batch)
 }
 
+func (s *AgentInteractionService) HandleActivityUpdate(ctx context.Context, update *metrics_model.ActivityUpdate) error {
+	return s.metricsService.HandleActivityUpdate(ctx, update)
+}
+
 func (s *AgentInteractionService) SubStreaming(agentID, viewerID uuid.UUID) (<-chan []byte, error) {
 	_, ok := s.registry.GetSession(agentID)
 	if !ok {

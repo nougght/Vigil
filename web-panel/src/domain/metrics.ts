@@ -2,6 +2,7 @@ import type { Overview } from "./overview"
 
 
 export const MessageTypeSeries = "series"
+export const MessageTypeActivity = "activity"
 export const MessageTypeFleetOverview = "fleet.overview"
 
 

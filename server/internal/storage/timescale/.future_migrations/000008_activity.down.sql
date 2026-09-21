@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS agent_connections CASCADE;
+DROP TABLE IF EXISTS activity_events CASCADE;
+DROP TABLE IF EXISTS user_sessions CASCADE;

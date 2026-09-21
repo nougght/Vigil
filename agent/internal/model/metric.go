@@ -17,6 +17,8 @@ const (
 
 const (
 	EmptyFocusedWindow = "EMPTY_FOCUSED_WINDOW"
+
+	MetricsAggregatorPeriod time.Duration = 1 * time.Second
 )
 
 type Metric interface {

@@ -31,6 +31,7 @@ type AgentClient struct {
 	state           *model.AgentState
 	grpcClient      pb.AgentServiceClient
 	metricsProvider MetricsProvider
+	toSend          chan *pb.AgentMessage
 }
 
 func NewAgentClient(conn *grpc.ClientConn, config *config.Config, state *model.AgentState, metricsProvider MetricsProvider) *AgentClient {
@@ -40,6 +41,7 @@ func NewAgentClient(conn *grpc.ClientConn, config *config.Config, state *model.A
 		state:           state,
 		grpcClient:      pb.NewAgentServiceClient(conn),
 		metricsProvider: metricsProvider,
+		toSend:          make(chan *pb.AgentMessage, 1000),
 	}
 }
 
@@ -155,6 +157,7 @@ func (c *AgentClient) runWriter(ctx context.Context, wg *sync.WaitGroup, stream 
 		defer wg.Done()
 		for {
 			select {
+			// TODO: move to service
 			case <-ticker.C:
 				metrics := c.metricsProvider.GetMetrics()
 				err := stream.Send(&pb.AgentMessage{
@@ -164,6 +167,12 @@ func (c *AgentClient) runWriter(ctx context.Context, wg *sync.WaitGroup, stream 
 				})
 				if err != nil {
 					log.Println("error sending metrics:", err)
+					return
+				}
+			case msg := <-c.toSend:
+				err := stream.Send(msg)
+				if err != nil {
+					log.Println("error sending message:", err)
 					return
 				}
 			case <-ctx.Done():
@@ -177,6 +186,21 @@ func (c *AgentClient) runWriter(ctx context.Context, wg *sync.WaitGroup, stream 
 		}
 	}()
 	return nil
+}
+
+func (c *AgentClient) SendActivityUpdate(data *model.ActivityUpdate) error {
+	msg := &pb.AgentMessage{
+		Payload: &pb.AgentMessage_Activity{
+			Activity: convertActivityUpdateToProto(data),
+		},
+	}
+	select {
+	case c.toSend <- msg:
+		log.Println("add activity update msg toSend")
+		return nil
+	default:
+		return fmt.Errorf("failed to send activity update, queue is full")
+	}
 }
 
 func (c *AgentClient) StartStreamMJPEG(ctx context.Context) error {
@@ -235,7 +259,7 @@ func (c *AgentClient) StartStreamMJPEG(ctx context.Context) error {
 
 	wg := sync.WaitGroup{}
 	// c.runStreamingReader(stream)
-	err = c.runStreamingWriter(ctx, &wg, stream, time.Millisecond*60)
+	err = c.runStreamingWriter(ctx, &wg, stream, time.Millisecond*100)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -302,7 +326,7 @@ func (c *AgentClient) runStreamingWriter(ctx context.Context, wg *sync.WaitGroup
 					log.Println("error sending frame:", err)
 					return
 				}
-				log.Println("frame send")
+				// log.Println("frame send")
 			case <-ctx.Done():
 				log.Println("streaming writer ctx canceled")
 				return

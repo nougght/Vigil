@@ -7,7 +7,7 @@ import { SideBar, type SideBarData } from './components/sideBar'
 import { useEffect, useRef, useState } from 'react'
 import dashIcon from "./assets/dashboard.svg"
 import agentsIcon from "./assets/cpu.svg"
-import { ClientMessageTypeAgentDetailed, FillMetricsFromSeries, MessageTypeFleetOverview, MessageTypeSeries, type AgentDetailedMessage, type ClientMessage, type Message, type Metrics, type SeriesDTO } from './domain/metrics'
+import { ClientMessageTypeAgentDetailed, FillMetricsFromSeries, MessageTypeActivity, MessageTypeFleetOverview, MessageTypeSeries, type AgentDetailedMessage, type ClientMessage, type Message, type Metrics, type SeriesDTO } from './domain/metrics'
 import { OverviewPage } from './pages/OverviewPage'
 import type { Overview } from './domain/overview'
 // import type { SeriesDTO } from './domain/metrics'
@@ -100,6 +100,8 @@ function App() {
             } else if (msg.type == MessageTypeFleetOverview) {
                 console.log("fleet overview message received", msg)
                 setOverview(msg.payload as Overview)
+            } else if (msg.type == MessageTypeActivity) {
+                console.log("activity message received")
             }
         });
 

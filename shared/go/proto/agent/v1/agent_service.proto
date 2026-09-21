@@ -11,6 +11,25 @@ service AgentService {
   rpc StartStreamMJPEG(stream StreamingAgentMessage) returns (stream StreamingServerMessage );
 }
 
+message AgentMessage {
+  oneof payload {
+    Handshake      handshake      = 1;
+    MetricsBatch   metrics        = 2;
+    ActivityUpdate activity       = 3;
+    CommandResult  command_result = 4;
+    // Heartbeat heartbeat = 4;
+  }
+}
+
+message ServerMessage {
+  oneof payload {
+    Command         command = 1;
+    HandshakeStatus status  = 2;
+    // PollingConfig config_update = 2;
+    // Ack ack = 3;
+  }
+}
+
 enum MetricKind {
   METRIC_KIND_UNSPECIFIED = 0;
   CPU_PERCENT             = 1;
@@ -34,24 +53,6 @@ message MetricSample {
 message MetricsBatch {
   uint64                batch_id = 1;
   repeated MetricSample samples  = 2;
-}
-
-message AgentMessage {
-  oneof payload {
-    Handshake     handshake      = 1;
-    MetricsBatch  metrics        = 2;
-    CommandResult command_result = 3;
-    // Heartbeat heartbeat = 4;
-  }
-}
-
-message ServerMessage {
-  oneof payload {
-    Command command = 1;
-    HandshakeStatus status = 2;
-    // PollingConfig config_update = 2;
-    // Ack ack = 3;
-  }
 }
 
 message Handshake {
@@ -210,15 +211,28 @@ message PhysicalMemoryInfo {
   bool   replaceable            = 13; // можно ли заменять память
 }
 
+enum ActivityKind {
+  ACTIVITY_KIND_IDLE = 0;     // в бездействии
+  ACTIVITY_KIND_ACTIVE = 1;   // выход из бездействия
+  ACTOVITY_KIND_FOCUS = 2;    // смена активного окна
+ 
+}
 
+message ActivityUpdate {
+  ActivityKind kind = 1;
+  optional string title = 2;  // только для смены окна
+  google.protobuf.Timestamp timestamp = 7;
+}
 
+// ----- streaming -----
 
 message StreamingAgentMessage {
-    oneof payload {
-        StreamingInfo info = 1;
-        VideoFrame frame = 2;
-    }
+  oneof payload {
+    StreamingInfo info  = 1;
+    VideoFrame    frame = 2;
+  }
 }
+
 message StreamingInfo {
 
 }
@@ -231,9 +245,9 @@ message VideoFrame {
 }
 
 message StreamingServerMessage {
-    oneof payload {
-        StreamingSettings settings = 1;
-    }
+  oneof payload {
+    StreamingSettings settings = 1;
+  }
 }
 
 message StreamingSettings {

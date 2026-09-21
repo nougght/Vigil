@@ -69,7 +69,7 @@ func (s *StreamHandler) StreamFrames(c *gin.Context) {
 			s.agentService.UnsubAllStreaming(viewerID)
 			return
 		case frame := <-framesChan:
-			log.Println("frame")
+			// log.Println("frame")
 
 			_, err := fmt.Fprintf(c.Writer,
 				"--%s\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n",

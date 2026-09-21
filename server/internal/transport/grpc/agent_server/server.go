@@ -237,7 +237,17 @@ func (s *AgentService) runReader(stream pb.AgentService_ConnectServer, wg *sync.
 			case *pb.AgentMessage_CommandResult:
 				commandResult := msg.GetCommandResult()
 				s.handleCommandResult(agentID, commandResult)
-
+			case *pb.AgentMessage_Activity:
+				activity := msg.GetActivity()
+				log.Printf("Activity received: %v", activity)
+				// TODO: check context
+				err = s.agentInteractionService.HandleActivityUpdate(context.Background(),
+					convertActivityUpdateWithAgentIDFromProto(activity, agentID),
+				)
+				if err != nil {
+					// TODO: add response to agent
+					log.Println(err.Error())
+				}
 			default:
 				log.Println("unknown message received:", msg)
 			}
