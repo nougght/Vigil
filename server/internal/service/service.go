@@ -50,6 +50,9 @@ func New(opts ServicesOptions) *Services {
 		opts.Repositories.SeriesRepository(),
 		opts.Bus,
 	)
+	if err != nil {
+		log.Panicf("failed initialize metrics service: %s", err.Error())
+	}
 	agentInteraction, err := agent.NewAgentInteractionService(
 		opts.Config,
 		agentRegistry,
@@ -73,6 +76,9 @@ func New(opts ServicesOptions) *Services {
 		opts.Transactor,
 		opts.Bus,
 	)
+	if err != nil {
+		log.Panicf("failed initialize overview service: %s", err.Error())
+	}
 	return &Services{
 		agentRegistry:   agentRegistry,
 		agent:           agentInteraction,

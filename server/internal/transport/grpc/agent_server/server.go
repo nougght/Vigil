@@ -174,6 +174,9 @@ func (s *AgentService) Connect(stream pb.AgentService_ConnectServer) error {
 			},
 		},
 	)
+	if err != nil {
+		return fmt.Errorf("failed to send handshake status: %w", err)
+	}
 
 	defer func() {
 		s.mu.Lock()

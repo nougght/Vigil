@@ -74,6 +74,9 @@ func (s *StreamHandler) StreamFrames(c *gin.Context) {
 			_, err := fmt.Fprintf(c.Writer,
 				"--%s\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n",
 				boundary, len(frame))
+			if err != nil {
+				log.Println("failed to send header for frame: %w", err)
+			}
 
 			_, err = c.Writer.Write(frame)
 			if err != nil {

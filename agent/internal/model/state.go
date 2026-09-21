@@ -51,7 +51,7 @@ func (s *AgentState) SetConnected(isConnected bool) {
 	if isConnected && s.pending {
 		s.pending = false
 	}
-	log.Printf("connected: %b, pending: %b", s.connected, s.pending)
+	log.Printf("connected: %v, pending: %v", s.connected, s.pending)
 }
 func (s *AgentState) SetPending(isPending bool) {
 	s.mu.Lock()
@@ -60,7 +60,7 @@ func (s *AgentState) SetPending(isPending bool) {
 	if isPending && s.connected {
 		s.connected = false
 	}
-	log.Printf("connected: %b, pending: %b", s.connected, s.pending)
+	log.Printf("connected: %v, pending: %v", s.connected, s.pending)
 }
 
 func (s *AgentState) SetLastConnectedAt(t time.Time) {

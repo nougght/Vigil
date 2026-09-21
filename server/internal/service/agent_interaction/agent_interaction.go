@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/nougght/monitoring-system/server/internal/config"
+	"github.com/nougght/monitoring-system/server/internal/model"
 	agent_model "github.com/nougght/monitoring-system/server/internal/model/agent"
 	metrics_model "github.com/nougght/monitoring-system/server/internal/model/metrics"
 	agentregistry "github.com/nougght/monitoring-system/server/internal/service/agent_registry"
@@ -91,7 +92,7 @@ func (s *AgentInteractionService) HandleActivityUpdate(ctx context.Context, upda
 func (s *AgentInteractionService) SubStreaming(agentID, viewerID uuid.UUID) (<-chan []byte, error) {
 	_, ok := s.registry.GetSession(agentID)
 	if !ok {
-		// return nil, fmt.Errorf("agent is offline: %w", model.ErrServiceUnavailable)
+		return nil, fmt.Errorf("agent is offline: %w", model.ErrServiceUnavailable)
 	}
 	// log.Printf("sub stream %s", agentID.String())
 	framesChan := make(chan []byte, 1)
@@ -125,9 +126,9 @@ func (s *AgentInteractionService) HandleFrame(frame []byte, agentID uuid.UUID) {
 		// log.Printf("no subs for agent: %s", agentID.String())
 		return
 	}
-	if len(subs) == 0 {
-		// log.Println("not found stream subs")
-	}
+	// if len(subs) == 0 {
+	// 	// log.Println("not found stream subs")
+	// }
 	for _, ch := range subs {
 		select {
 		case ch <- frame:

@@ -64,13 +64,18 @@ func (c *Client) runReader() {
 				log.Println("agent detailed message")
 				c.mu.Lock()
 				for _, agent := range msg.Agents {
+					// sub to several subjects
 					// TODO: move/improve
 					subj := fmt.Sprintf("%s.%s", realtime_model.ClientMessageTypeAgentDetailed, agent)
 					subj2 := fmt.Sprintf("%s.%s", event.AgentActivityEventSubjectPrefix, agent)
-					c.subs[subj] = struct{}{}
-					c.subs[subj2] = struct{}{}
-					c.subFunc(subj)
-					c.subFunc(subj2)
+					if _, ok := c.subs[subj]; !ok {
+						c.subs[subj] = struct{}{}
+						c.subFunc(subj)
+					}
+					if _, ok := c.subs[subj2]; !ok {
+						c.subs[subj2] = struct{}{}
+						c.subFunc(subj2)
+					}
 				}
 				c.mu.Unlock()
 
@@ -78,8 +83,11 @@ func (c *Client) runReader() {
 				log.Println("fleet overview subscription")
 				c.mu.Lock()
 				subj := string(realtime_model.ClientMessageTypeFleetOverview)
-				c.subs[subj] = struct{}{}
-				c.subFunc(subj)
+
+				if _, ok := c.subs[subj]; !ok {
+					c.subs[subj] = struct{}{}
+					c.subFunc(subj)
+				}
 				c.mu.Unlock()
 
 			}
@@ -93,14 +101,17 @@ func (c *Client) runWriter() {
 		ticker := time.NewTicker(time.Second * 2)
 		defer func() {
 			ticker.Stop()
-			c.conn.Close()
+			_ = c.conn.Close()
 		}()
 		for {
 			select {
 			case message, ok := <-c.toSend:
 				if !ok {
 					// The hub closed the channel.
-					c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+					err := c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+					if err != nil {
+						log.Printf("failed to write close message: %s", err.Error())
+					}
 					return
 				}
 

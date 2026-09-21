@@ -84,6 +84,7 @@ func (c *SeriesResolver) getMissingKeys(ctx context.Context, keys []metrics_mode
 	return missingKeys
 }
 
+//nolint:unused
 func (c *SeriesResolver) getSeriesID(ctx context.Context, key metrics_model.MetricSeriesKey) (id metrics_model.MetricSeriesID, ok bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
@@ -111,7 +112,7 @@ func (c *SeriesResolver) addOrLoadSeries(ctx context.Context, seriesKeys []metri
 		return fmt.Errorf("create or load series failed: %w", err)
 	}
 	c.mu.Lock()
-	log.Println("addOrLoad count: %d", len(series))
+	log.Printf("addOrLoad count: %d", len(series))
 	for _, s := range series {
 		c.cache[s.MetricSeriesKey] = s.ID
 	}

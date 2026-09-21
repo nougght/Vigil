@@ -104,7 +104,7 @@ func (b *Batcher[T]) flush(ctx context.Context) {
 
 	err := b.handler(ctx, batchToProcess)
 	if err != nil {
-		log.Println("batcher handler error: %s", err.Error())
+		log.Printf("batcher handler error: %s", err.Error())
 		// return items to buffer
 		b.mu.Lock()
 		b.items = append(b.items, batchToProcess...)

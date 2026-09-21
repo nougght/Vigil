@@ -237,23 +237,26 @@ func (c *AgentClient) StartStreamMJPEG(ctx context.Context) error {
 		log.Printf("failed connect streaming: %s", err.Error())
 		log.Println("start retrying")
 		t := time.NewTicker(time.Millisecond * 200)
+		defer t.Stop()
 		cnt := 0
 		for {
 			select {
 			case <-t.C:
-				stream, err = c.grpcClient.StartStreamMJPEG(ctx)
 				cnt += 1
-				if err != nil {
-					log.Printf("retry %d failed: %s", cnt, err.Error())
+				s, err := c.grpcClient.StartStreamMJPEG(ctx)
+				if err == nil {
+					t.Stop()
+					stream = s
+					break
 				}
+				log.Printf("retry %d failed: %s", cnt, err.Error())
 				if cnt > 10 {
-					log.Println("connect streaming retrying failed")
+					return fmt.Errorf("connect streaming retrying failed: %w", err)
 				}
 			case <-ctx.Done():
 				return ctx.Err()
 			}
 		}
-		return err
 	}
 	log.Println("streaming grpc started")
 

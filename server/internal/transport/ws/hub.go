@@ -54,7 +54,9 @@ func (h *Hub) RegisterClient(conn *websocket.Conn) {
 	client := NewClient(conn, func(subject string) {
 		h.sub <- subject
 	})
+	h.mu.Lock()
 	h.clients[client] = struct{}{}
+	h.mu.Unlock()
 	client.Run()
 }
 

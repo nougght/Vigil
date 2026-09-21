@@ -72,7 +72,10 @@ func (b *EventBus) Subscribe(subject string, handler model.EventHandler, bufferS
 		bufferSize = 1
 	}
 	ch := make(chan model.Event, bufferSize)
+
+	b.mu.Lock()
 	b.subs[subject] = append(b.subs[subject], ch)
+	b.mu.Unlock()
 
 	b.wg.Add(1)
 	go func() {
@@ -112,6 +115,8 @@ func (b *EventBus) Publish(ctx context.Context, event model.Event) error {
 		}
 		return nil
 	}
+	b.mu.RLock()
+	defer b.mu.RUnlock()
 	for subject, subs := range b.subs {
 		if matchFullSubject(strings.Split(subject, "."), tokens) {
 			for _, sub := range subs {
