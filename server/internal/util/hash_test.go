@@ -33,7 +33,7 @@ func Test_CompareHash(t *testing.T) {
 			originalHashString: hashString,
 			password:           "3847388437",
 			expectedMatch:      false,
-			expectedError:      nil,
+			expectedError:      ErrIncorrect,
 		},
 		{
 			name:               "invalid hash string",

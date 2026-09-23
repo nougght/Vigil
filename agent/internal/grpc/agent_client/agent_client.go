@@ -203,6 +203,7 @@ func (c *AgentClient) SendActivityUpdate(data *model.ActivityUpdate) error {
 	}
 }
 
+// nolint:staticcheck
 func (c *AgentClient) StartStreamMJPEG(ctx context.Context) error {
 	// connect only if main grpc stream connected
 	connectedChan := make(chan bool)

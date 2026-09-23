@@ -62,6 +62,9 @@ func ZipFolderRaw(folderPath string) ([]byte, error) {
 
 	for filename, data := range filesData {
 		name, err := filepath.Rel(folderPath, filename)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get relative path: %w", err)
+		}
 		writer, err := zipWriter.Create(name)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create file inside zip: %w", err)

@@ -14,7 +14,9 @@ func ReadYaml(path string, out interface{}) error {
 	if err != nil {
 		return fmt.Errorf("failed to open file %s: %w", path, err)
 	}
-	defer f.Close()
+	defer func() {
+		_ = f.Close()
+	}()
 
 	defer CloseWithLog(f)
 	data, err := io.ReadAll(f)

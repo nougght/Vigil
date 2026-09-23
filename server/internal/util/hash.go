@@ -13,6 +13,7 @@ import (
 
 var (
 	ErrInvalidHashString = errors.New("invalid hash string")
+	ErrIncorrect         = errors.New("incorrect value")
 )
 
 type HashParams struct {
@@ -95,7 +96,7 @@ func CompareHash(hashString, value string) (bool, error) {
 
 	// compare hash in constant time
 	if subtle.ConstantTimeCompare(expectedHash, hash) == 0 {
-		return false, fmt.Errorf("incorrect value")
+		return false, ErrIncorrect
 	}
 	return true, nil
 }
