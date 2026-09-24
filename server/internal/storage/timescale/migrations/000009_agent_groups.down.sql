@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS agent_groups CASCADE;
+ALTER TABLE agents DROP COLUMN group_id;
