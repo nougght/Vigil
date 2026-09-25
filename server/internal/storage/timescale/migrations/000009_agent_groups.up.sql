@@ -6,4 +6,5 @@ CREATE TABLE agent_groups (
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW ()
     );
 
+
 ALTER TABLE agents ADD COLUMN group_id UUID REFERENCES groups (id) ON DELETE SET NULL;
