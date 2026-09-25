@@ -17,6 +17,7 @@ type Agent struct {
 	ID          uuid.UUID `db:"id"`
 	Name        string    `db:"name"`
 	Description *string   `db:"description"`
+	GroupID     uuid.UUID `db:"group_id"`
 	CreatedAt   time.Time `db:"created_at"`
 	LastSeenAt  time.Time `db:"last_seen_at"`
 	Status      *string   `db:"status"`

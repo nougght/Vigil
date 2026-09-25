@@ -40,13 +40,25 @@ func (r *AgentRepository) CreateAgent(ctx context.Context, agent *agent_model.Ag
 	if err != nil {
 		return nil, fmt.Errorf("insert failed: %w", err)
 	}
-
 	return agent, nil
 }
 
 func (r *AgentRepository) GetAllAgents(ctx context.Context) (res []*agent_model.Agent, err error) {
 	query := `
-		SELECT * FROM agents;
+		SELECT id,
+			   name,
+			   description,
+			    CASE 
+					WHEN ag.deleted_at != NULL THEN 
+						a.group_id
+					ELSE 
+						NULL
+				END AS group_id, 
+			   created_at,
+			   last_seen_at
+		FROM agents a
+		LEFT JOIN agent_groups ag
+			ON a.group_id = ag.id;
 		`
 	// SELECT *,  EXISTS (
 	//     SELECT 1
@@ -70,7 +82,22 @@ func (r *AgentRepository) GetAllAgents(ctx context.Context) (res []*agent_model.
 
 func (r *AgentRepository) GetAgentByID(ctx context.Context, id uuid.UUID) (res *agent_model.Agent, err error) {
 	query := `
-		SELECT * FROM agents WHERE agents.id = $1;
+		SELECT id,
+			   name,
+			   description,
+			    CASE 
+					WHEN ag.deleted_at != NULL THEN 
+						a.group_id
+					ELSE 
+						NULL
+				END AS group_id, 
+			   created_at,
+			   last_seen_at
+		FROM agents a
+		LEFT JOIN agent_groups ag
+			ON a.group_id = ag.id
+		WHERE a.id = $1
+		LIMIT 1;
 		`
 	rows, err := r.db(ctx).Query(ctx, query, id)
 	if err != nil {
@@ -127,12 +154,13 @@ func (r *AgentRepository) UpdateStatus(ctx context.Context, agentID uuid.UUID, s
 	query := `
 	UPDATE agents SET status = $1 WHERE ID = $2
 	`
-	_, err := r.db(ctx).Exec(ctx, query, status, agentID)
+	res, err := r.db(ctx).Exec(ctx, query, status, agentID)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return fmt.Errorf("insert failed: %w", ErrNotFound)
-		}
 		return fmt.Errorf("insert failed: %w", err)
+	}
+
+	if res.RowsAffected() == 0 {
+		return ErrNoAffectedRows
 	}
 
 	return nil

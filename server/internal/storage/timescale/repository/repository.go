@@ -54,3 +54,11 @@ func (r *Repositories) MetricsRepository() *MetricsRepository {
 func (r *Repositories) SeriesRepository() *SeriesRepository {
 	return r.seriesRepository
 }
+
+func CollectOnePtr[T any](rows pgx.Rows) (*T, error) {
+	return pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[T])
+}
+
+func CollectRowsPtr[T any](rows pgx.Rows) ([]*T, error) {
+	return pgx.CollectRows(rows, pgx.RowToAddrOfStructByName[T])
+}
