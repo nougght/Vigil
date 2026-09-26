@@ -30,9 +30,9 @@ func (h *OverviewHandler) RegisterRoutes(r *gin.RouterGroup) {
 // @Summary Get fleet overview
 // @Produce json
 // @Success 200 {object} dto.AgentsOverview
-// @Failure      400  {object}  map[string]any
-// @Failure      404  {object}  map[string]any
-// @Failure      500  {object}  map[string]any
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router /fleet/overview [get]
 func (h *OverviewHandler) GetFleetOverview(c *gin.Context) {
 	log.Println("overview")

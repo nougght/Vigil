@@ -6,6 +6,7 @@ import (
 )
 
 var (
+	ErrUnauthorized       = errors.New("error unauthorized")
 	ErrNotFound           = errors.New("error not found")
 	ErrBadRequest         = errors.New("error bad request")
 	ErrServiceUnavailable = errors.New("error service unavailable")

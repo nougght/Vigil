@@ -11,6 +11,7 @@ import (
 	"github.com/nougght/monitoring-system/server/internal/model"
 	agent "github.com/nougght/monitoring-system/server/internal/service/agent_interaction"
 	agentregistry "github.com/nougght/monitoring-system/server/internal/service/agent_registry"
+	_ "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
 )
 
 type StreamHandler struct {
@@ -39,9 +40,9 @@ func (s *StreamHandler) RegisterRoutes(r *gin.RouterGroup) {
 // @Produce multipart/x-mixed-replace
 // @Param agentID path string true "Agent ID"
 // @Success      200  {file}    binary  "MJPEG stream"
-// @Failure      400  {object}  map[string]any
-// @Failure      404  {object}  map[string]any
-// @Failure      500  {object}  map[string]any
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router /agents/{agentID}/frames [get]
 func (s *StreamHandler) StreamFrames(c *gin.Context) {
 	agentID, err := uuid.Parse(c.Param("agentID"))
