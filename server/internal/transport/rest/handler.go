@@ -8,22 +8,40 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/service"
+	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
 )
 
+// write http response based on service error
 func handleError(c *gin.Context, err error) {
+	serr := &model.ServiceError{}
+	if !errors.As(err, &serr) {
+		serr = model.NewError(err)
+	}
 	responseCode := http.StatusInternalServerError
+	resp := dto.ErrorResponse{
+		Key:     serr.Key,
+		Message: "internal server error",
+	}
 
 	switch {
-	case errors.Is(err, model.ErrBadRequest):
+	case errors.Is(serr.Err, model.ErrUnauthorized):
+		responseCode = http.StatusUnauthorized
+	case errors.Is(serr.Err, model.ErrBadRequest):
 		responseCode = http.StatusBadRequest
-	case errors.Is(err, model.ErrNotFound):
+	case errors.Is(serr.Err, model.ErrNotFound):
 		responseCode = http.StatusNotFound
+	case errors.Is(serr.Err, model.ErrServiceUnavailable):
+		responseCode = http.StatusServiceUnavailable
 	case errors.Is(err, model.ErrServiceUnavailable):
 		responseCode = http.StatusServiceUnavailable
 	}
 
-	log.Println(err)
-	c.JSON(responseCode, gin.H{"error": err.Error()})
+	if responseCode != http.StatusInternalServerError {
+		resp.Message = err.Error()
+	}
+
+	log.Printf("Error: %v", err)
+	c.JSON(responseCode, resp)
 }
 
 type Handlers struct {
