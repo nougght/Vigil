@@ -29,7 +29,7 @@ func (r *AgentGroupsRepository) db(ctx context.Context) DB {
 	return res
 }
 
-func (r *AgentGroupsRepository) CreateGroup(ctx context.Context, group *agent_groups.AgentGroup) (*agent_groups.AgentGroup, error) {
+func (r *AgentGroupsRepository) CreateGroup(ctx context.Context, group *agent_groups.AgentGroupInput) (*agent_groups.AgentGroup, error) {
 	conn := r.db(ctx)
 
 	query := `
@@ -79,12 +79,14 @@ func (r *AgentGroupsRepository) GetGroupByID(ctx context.Context, id uuid.UUID) 
 	return res, nil
 }
 
+// all groups without deleted
 func (r *AgentGroupsRepository) GetAllGroups(ctx context.Context) ([]*agent_groups.AgentGroup, error) {
 	conn := r.db(ctx)
 
 	query := `
 		SELECT * 
-		FROM agent_groups ag;
+		FROM agent_groups ag
+		WHERE deleted_at IS NULL;
 	`
 
 	rows, err := conn.Query(ctx, query)
@@ -99,6 +101,8 @@ func (r *AgentGroupsRepository) GetAllGroups(ctx context.Context) ([]*agent_grou
 
 	return res, nil
 }
+
+// update group
 func (r *AgentGroupsRepository) UpdateGroup(ctx context.Context, group *agent_groups.UpdateAgentGroupInput) error {
 	conn := r.db(ctx)
 
@@ -107,6 +111,7 @@ func (r *AgentGroupsRepository) UpdateGroup(ctx context.Context, group *agent_gr
 		SET name = $2, 
 			description = COALESCE($3, ag.description)
 		WHERE ag.id = $1
+			AND deleted_at IS NULL;
 	`
 
 	res, err := conn.Exec(ctx, query, group.ID, group.Name, group.Description)
@@ -124,12 +129,15 @@ func (r *AgentGroupsRepository) UpdateGroup(ctx context.Context, group *agent_gr
 	return nil
 }
 
+// mark group as deleted
 func (r *AgentGroupsRepository) DeleteGroupByID(ctx context.Context, id uuid.UUID) error {
 	conn := r.db(ctx)
 
 	query := `
-		DELETE agent_groups ag
-		WHERE ag.id = $1
+		UPDATE agent_groups ag
+		SET deleted_at = now()
+		WHERE id = $1 
+			AND deleted_at IS NULL
 	`
 
 	res, err := conn.Exec(ctx, query, id)
