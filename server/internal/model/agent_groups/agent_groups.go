@@ -14,6 +14,7 @@ type (
 		Description *string   `db:"description"`
 		CreatedAt   time.Time `db:"created_at"`
 		UpdatedAt   time.Time `db:"updated_at"`
+		DeletedAt   time.Time `db:"deleted_at"`
 	}
 
 	AgentGroupInput struct {
@@ -25,6 +26,12 @@ type (
 		AgentGroupInput
 		AgentIDs []uuid.UUID `db:"agent_ids"`
 	}
+
+	CreateAgentGroupResult struct {
+		AgentGroup
+		AgentsMovedCount int
+	}
+
 	UpdateAgentGroupInput struct {
 		ID uuid.UUID
 		AgentGroupInput

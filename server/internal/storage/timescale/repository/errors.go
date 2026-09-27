@@ -4,11 +4,7 @@ import (
 	"errors"
 
 	"github.com/jackc/pgconn"
-)
-
-// postgres error codes
-const (
-	ErrCodeUniqueViolation = "23505"
+	"github.com/jackc/pgerrcode"
 )
 
 // repository errors
@@ -20,7 +16,15 @@ var (
 
 func IsConflict(err error) bool {
 	var pgErr *pgconn.PgError
-	if errors.As(err, &pgErr) && pgErr.Code == ErrCodeUniqueViolation {
+	if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
+		return true
+	}
+	return false
+}
+
+func IsInvalidForeignKey(err error) bool {
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.ForeignKeyViolation {
 		return true
 	}
 	return false

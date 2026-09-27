@@ -15,6 +15,10 @@ type AgentRepository struct {
 	pool DB
 }
 
+var (
+	ErrInvalidGroup = errors.New("invalid group")
+)
+
 func NewAgentRepository(db DB) *AgentRepository {
 	return &AgentRepository{
 		pool: db,
@@ -156,7 +160,7 @@ func (r *AgentRepository) UpdateStatus(ctx context.Context, agentID uuid.UUID, s
 	`
 	res, err := r.db(ctx).Exec(ctx, query, status, agentID)
 	if err != nil {
-		return fmt.Errorf("insert failed: %w", err)
+		return fmt.Errorf("update failed: %w", err)
 	}
 
 	if res.RowsAffected() == 0 {
@@ -164,4 +168,24 @@ func (r *AgentRepository) UpdateStatus(ctx context.Context, agentID uuid.UUID, s
 	}
 
 	return nil
+}
+
+func (r *AgentRepository) UpdateAgentsGroup(ctx context.Context, agentIDs []uuid.UUID, groupID uuid.UUID) (updated int, err error) {
+	if len(agentIDs) == 0 {
+		return 0, nil
+	}
+	query := `
+	UPDATE agents
+	SET group_id = $2
+	WHERE id = ANY($1);
+	`
+	res, err := r.db(ctx).Exec(ctx, query, agentIDs, groupID)
+	if IsInvalidForeignKey(err) {
+		return 0, ErrInvalidGroup
+	}
+	if err != nil {
+		return 0, fmt.Errorf("update failed: %w", err)
+	}
+
+	return int(res.RowsAffected()), nil
 }
