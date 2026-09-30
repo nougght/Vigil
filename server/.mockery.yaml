@@ -1,0 +1,22 @@
+all: false
+template: testify
+dir: "{{.InterfaceDir}}"
+pkgname: "{{.SrcPackageName}}"
+recursive: false
+structname: "Mock{{.InterfaceName}}"
+filename: mocks_test.go
+
+packages:
+  github.com/nougght/monitoring-system/server/internal/service/metrics:
+    { config: { all: true } }
+  github.com/nougght/monitoring-system/server/internal/service/overview:
+    { config: { all: true } }
+  github.com/nougght/monitoring-system/server/internal/service/agent_interaction:
+    { config: { all: true } }
+  github.com/nougght/monitoring-system/server/internal/service/agent_registry:
+    { config: { all: true } }
+  github.com/nougght/monitoring-system/server/internal/service/realtime:
+    { config: { all: true } }
+  github.com/nougght/monitoring-system/server/internal/transport/rest:
+    { config: { all: true } }
+

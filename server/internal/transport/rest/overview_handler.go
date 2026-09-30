@@ -6,16 +6,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nougght/monitoring-system/server/internal/service/overview"
 	"github.com/nougght/monitoring-system/server/internal/transport/dto/mapper"
 	_ "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
 )
 
 type OverviewHandler struct {
-	overviewService *overview.OverviewService
+	overviewService OverviewService
 }
 
-func NewOverviewHandler(overviewService *overview.OverviewService) *OverviewHandler {
+func NewOverviewHandler(overviewService OverviewService) *OverviewHandler {
 	return &OverviewHandler{
 		overviewService: overviewService,
 	}

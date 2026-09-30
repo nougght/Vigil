@@ -22,8 +22,8 @@ type Requester interface {
 
 type AgentInteractionService struct {
 	cfg            *config.Config
-	registry       *agentregistry.AgentRegistryService
-	metricsService *metrics.MetricsService
+	registry       AgentRegistryService
+	metricsService MetricsService
 	requester      Requester
 
 	// lastFrames  map[uuid.UUID][]byte

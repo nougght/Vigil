@@ -22,8 +22,8 @@ import (
 type OverviewService struct {
 	cfg            *config.Config
 	transactor     model.Transactor
-	metricsService *metrics.MetricsService
-	agentRegistry  *agentregistry.AgentRegistryService
+	metricsService MetricsService
+	agentRegistry  AgentRegistryService
 	overviewCache  *overview_model.AgentsOverview
 	mu             sync.RWMutex
 }

@@ -30,9 +30,9 @@ import (
 
 type AgentRegistryService struct {
 	cfg                *config.Config
-	agentRepo          *repository.AgentRepository
-	enrollmentKeysRepo *repository.EnrollmentKeysRepository
-	specsRepo          *repository.SpecsRepository
+	agentRepo          AgentRepository
+	enrollmentKeysRepo EnrollmentKeysRepository
+	specsRepo          SpecsRepository
 	transactor         model.Transactor
 	cert               *model.Certs
 	sessions           map[uuid.UUID]*agent_model.AgentSession

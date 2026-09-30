@@ -24,10 +24,10 @@ import (
 type MetricsService struct {
 	cfg            *config.Config
 	transactor     model.Transactor
-	metricsRepo    *repository.MetricsRepository
+	metricsRepo    MetricsRepository
 	snapshot       *SnapshotCache
 	batcher        *util.Batcher[metrics_model.MetricsBatch]
-	seriesResolver *SeriesResolver
+	seriesResolver SeriesProvider
 	bus            *eventbus.EventBus
 }
 

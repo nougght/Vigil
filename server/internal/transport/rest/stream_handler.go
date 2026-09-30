@@ -9,17 +9,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/nougght/monitoring-system/server/internal/model"
-	agent "github.com/nougght/monitoring-system/server/internal/service/agent_interaction"
-	agentregistry "github.com/nougght/monitoring-system/server/internal/service/agent_registry"
 )
 
 type StreamHandler struct {
-	agentRegistryService *agentregistry.AgentRegistryService
-	agentService         *agent.AgentInteractionService
+	agentRegistryService AgentRegistryService
+	agentService         AgentInteractionService
 }
 
-func newStreamHandler(agentRegistryServcie *agentregistry.AgentRegistryService,
-	agentService *agent.AgentInteractionService) *StreamHandler {
+func newStreamHandler(agentRegistryServcie AgentRegistryService,
+	agentService AgentInteractionService) *StreamHandler {
 	if agentRegistryServcie == nil || agentService == nil {
 		log.Panicf("agent handler params required")
 	}

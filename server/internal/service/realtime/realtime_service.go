@@ -24,7 +24,7 @@ import (
 
 type RealtimeService struct {
 	cfg        *config.Config
-	overview   *overview.OverviewService
+	overview   OverviewService
 	transactor model.Transactor
 	hub        *ws.Hub
 	upgrader   *websocket.Upgrader

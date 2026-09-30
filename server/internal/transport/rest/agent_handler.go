@@ -8,20 +8,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/nougght/monitoring-system/server/internal/model"
-	agent "github.com/nougght/monitoring-system/server/internal/service/agent_interaction"
-	agentregistry "github.com/nougght/monitoring-system/server/internal/service/agent_registry"
 	"github.com/nougght/monitoring-system/server/internal/transport/dto/mapper"
 	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
 	"github.com/nougght/monitoring-system/shared/go/util"
 )
 
 type AgentHandler struct {
-	agentRegistryService *agentregistry.AgentRegistryService
-	agentService         *agent.AgentInteractionService
+	agentRegistryService AgentRegistryService
+	agentService         AgentInteractionService
 }
 
-func newAgentHandler(agentRegistryServcie *agentregistry.AgentRegistryService,
-	agentService *agent.AgentInteractionService) *AgentHandler {
+func newAgentHandler(agentRegistryServcie AgentRegistryService,
+	agentService AgentInteractionService) *AgentHandler {
 	if agentRegistryServcie == nil || agentService == nil {
 		log.Panicf("agent handler params required")
 	}

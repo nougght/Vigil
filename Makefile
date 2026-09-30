@@ -63,6 +63,10 @@ gen-swag-server:
 	cd server && swag init -g cmd/main.go -o api --parseDependency --parseInternal 
 
 
+gen-mock:
+	go install github.com/vektra/mockery/v3@v3.8.0
+	cd server && mockery
+
 
 
 gen-root-ca:
