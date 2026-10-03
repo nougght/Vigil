@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/jackc/pgx/v4"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/nougght/monitoring-system/server/internal/config"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/model/agent_groups"
@@ -71,4 +72,52 @@ func (s *AgentGroupsService) CreateGroup(ctx context.Context, group *agent_group
 		AgentGroup:       *createdGroup,
 		AgentsMovedCount: moved,
 	}, nil
+}
+
+func (s *AgentGroupsService) GetGroupByID(ctx context.Context, id uuid.UUID) (*agent_groups.AgentGroup, error) {
+	group, err := s.groupsRepo.GetGroupByID(ctx, id)
+	if errors.Is(err, repository.ErrNotFound) {
+		return nil, model.ErrNotFound
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to get agent group by ID: %w", err)
+	}
+
+	return group, nil
+}
+
+func (s *AgentGroupsService) GetAllGroups(ctx context.Context) ([]*agent_groups.AgentGroup, error) {
+	groups, err := s.groupsRepo.GetAllGroups(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all agent groups: %w", err)
+	}
+
+	return groups, nil
+}
+
+func (s *AgentGroupsService) UpdateGroup(ctx context.Context, group *agent_groups.UpdateAgentGroupInput) error {
+	err := s.groupsRepo.UpdateGroup(ctx, group)
+	if errors.Is(err, repository.ErrConflict) {
+		return model.ErrorAgentGroupNameIsTaken()
+	}
+	if errors.Is(err, repository.ErrNoAffectedRows) {
+		return fmt.Errorf("not found group to update: %w", model.ErrNotFound)
+	}
+	if err != nil {
+		return fmt.Errorf("failed to update agent group: %w", err)
+	}
+
+	return nil
+}
+
+func (s *AgentGroupsService) DeleteGroupByID(ctx context.Context, id uuid.UUID) error {
+	err := s.groupsRepo.DeleteGroupByID(ctx, id)
+	if errors.Is(err, repository.ErrNoAffectedRows) {
+		return fmt.Errorf("not found group to delete: %w", model.ErrNotFound)
+	}
+	if err != nil {
+		return fmt.Errorf("failed to delete agent group: %w", err)
+	}
+
+	return nil
 }
