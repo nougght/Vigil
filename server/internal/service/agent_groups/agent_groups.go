@@ -24,7 +24,7 @@ type AgentGroupsService struct {
 
 func NewAgentGroupsService(cfg *config.Config, groupsRepo *repository.AgentGroupsRepository,
 	agentRegistry *agentregistry.AgentRegistryService,
-	transactor model.Transactor, cert *model.Certs,
+	transactor model.Transactor,
 ) (*AgentGroupsService, error) {
 	if cfg == nil || groupsRepo == nil || transactor == nil {
 		return nil, fmt.Errorf("params required")
@@ -50,7 +50,7 @@ func (s *AgentGroupsService) CreateGroup(ctx context.Context, group *agent_group
 	}()
 	ctx = context.WithValue(ctx, model.ContextKeyTx, tx)
 
-	createdGroup, err := s.groupsRepo.CreateGroup(ctx, &group.AgentGroupInput)
+	createdGroup, err := s.groupsRepo.CreateGroup(ctx, &group.AgentGroupInfo)
 	if errors.Is(err, repository.ErrConflict) {
 		return nil, model.ErrorAgentGroupNameIsTaken()
 	}

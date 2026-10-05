@@ -91,7 +91,7 @@ func (h *AgentGroupHandler) GetAllGroups(c *gin.Context) {
 // @Tags agent-groups
 // @Summary Get agent group by ID
 // @Produce json
-// @Param id path string true "Agent group ID"
+// @Param id path string true "Agent group ID" format(uuid)
 // @Success 200 {object} dto.AgentGroupDTO
 // @Failure      400  {object}  dto.ErrorResponse
 // @Failure      404  {object}  dto.ErrorResponse
@@ -119,7 +119,7 @@ func (h *AgentGroupHandler) GetGroupByID(c *gin.Context) {
 // @Tags agent-groups
 // @Summary Update agent group
 // @Accept json
-// @Param id path string true "Agent group ID"
+// @Param id path string true "Agent group ID" format(uuid)
 // @Param request body dto.UpdateAgentGroupBody true "Update agent group body"
 // @Success 200
 // @Failure      400  {object}  dto.ErrorResponse
@@ -158,7 +158,7 @@ func (h *AgentGroupHandler) UpdateGroup(c *gin.Context) {
 // @Id deleteAgentGroup
 // @Tags agent-groups
 // @Summary Delete agent group by ID
-// @Param id path string true "Agent group ID"
+// @Param id path string true "Agent group ID" format(uuid)
 // @Success 200
 // @Failure      400  {object}  dto.ErrorResponse
 // @Failure      404  {object}  dto.ErrorResponse

@@ -9,17 +9,17 @@ import (
 
 type (
 	AgentGroup struct {
-		ID          uuid.UUID `db:"id"`
-		Name        string    `db:"name"`
-		Description *string   `db:"description"`
-		CreatedAt   time.Time `db:"created_at"`
-		UpdatedAt   time.Time `db:"updated_at"`
-		DeletedAt   time.Time `db:"deleted_at"`
+		ID          uuid.UUID  `db:"id"`
+		Name        string     `db:"name"`
+		Description *string    `db:"description"`
+		CreatedAt   time.Time  `db:"created_at"`
+		UpdatedAt   time.Time  `db:"updated_at"`
+		DeletedAt   *time.Time `db:"deleted_at"`
 	}
 
 	AgentGroupInfo struct {
-		Name        string                 `db:"name"`
-		Description model.Optional[string] `db:"description"`
+		Name        string  `db:"name"`
+		Description *string `db:"description"`
 	}
 
 	CreateAgentGroupInput struct {
@@ -33,7 +33,8 @@ type (
 	}
 
 	UpdateAgentGroupInput struct {
-		ID uuid.UUID
-		AgentGroupInfo
+		ID          uuid.UUID
+		Name        *string                `db:"name"`
+		Description model.Optional[string] `db:"description"`
 	}
 )

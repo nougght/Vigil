@@ -119,6 +119,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Agent ID",
                         "name": "agentID",
                         "in": "path",
@@ -166,6 +167,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Agent ID",
                         "name": "agentID",
                         "in": "path",
@@ -216,6 +218,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Agent ID",
                         "name": "agentID",
                         "in": "path",
@@ -272,6 +275,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Agent ID",
                         "name": "agentID",
                         "in": "path",
@@ -436,6 +440,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Agent group ID",
                         "name": "id",
                         "in": "path",
@@ -478,6 +483,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Agent group ID",
                         "name": "id",
                         "in": "path",
@@ -520,6 +526,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Agent group ID",
                         "name": "id",
                         "in": "path",
@@ -809,7 +816,7 @@ const docTemplate = `{
                     }
                 },
                 "description": {
-                    "$ref": "#/definitions/github_com_nougght_monitoring-system_server_internal_model.Optional-string"
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -972,26 +979,13 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
-                    "$ref": "#/definitions/github_com_nougght_monitoring-system_server_internal_model.Optional-string"
+                    "type": "string",
+                    "x-nullable": true
                 },
                 "id": {
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_nougght_monitoring-system_server_internal_model.Optional-string": {
-            "type": "object",
-            "properties": {
-                "null": {
-                    "type": "boolean"
-                },
-                "set": {
-                    "type": "boolean"
-                },
-                "value": {
                     "type": "string"
                 }
             }

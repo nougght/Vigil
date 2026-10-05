@@ -8,8 +8,8 @@ import (
 )
 
 type AgentGroupInfoDTO struct {
-	Name        string                 `json:"name"`
-	Description model.Optional[string] `json:"description"`
+	Name        string  `json:"name"`
+	Description *string `json:"description"`
 } // @Name AgentGroupInfo
 
 type CreateAgentGroupBody struct {
@@ -23,14 +23,15 @@ type CreateAgentGroupResponse struct {
 } // @Name CreateAgentGroupResponse
 
 type UpdateAgentGroupBody struct {
-	ID uuid.UUID `json:"id"`
-	AgentGroupInfoDTO
+	ID          uuid.UUID              `json:"id"`
+	Name        *string                `json:"name,omitempty"`
+	Description model.Optional[string] `json:"description" swaggertype:"string"  extensions:"x-nullable"`
 } // @Name UpdateAgentGroupBody
 
 type AgentGroupDTO struct {
-	ID          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	Description *string   `json:"description"`
-	CreatedAt   time.Time `json:"createdAt"`
-	DeletedAt   time.Time `json:"deletedAt"`
+	ID          uuid.UUID  `json:"id"`
+	Name        string     `json:"name"`
+	Description *string    `json:"description,omitempty"`
+	CreatedAt   time.Time  `json:"createdAt"`
+	DeletedAt   *time.Time `json:"deletedAt,omitempty"`
 } // @Name AgentGroup

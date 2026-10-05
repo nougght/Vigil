@@ -161,7 +161,7 @@ definitions:
           type: string
         type: array
       description:
-        $ref: '#/definitions/github_com_nougght_monitoring-system_server_internal_model.Optional-string'
+        type: string
       name:
         type: string
     type: object
@@ -267,19 +267,11 @@ definitions:
   UpdateAgentGroupBody:
     properties:
       description:
-        $ref: '#/definitions/github_com_nougght_monitoring-system_server_internal_model.Optional-string'
+        type: string
+        x-nullable: true
       id:
         type: string
       name:
-        type: string
-    type: object
-  github_com_nougght_monitoring-system_server_internal_model.Optional-string:
-    properties:
-      "null":
-        type: boolean
-      set:
-        type: boolean
-      value:
         type: string
     type: object
 host: montoring.nought.ru
@@ -353,6 +345,7 @@ paths:
       operationId: getAgentByID
       parameters:
       - description: Agent ID
+        format: uuid
         in: path
         name: agentID
         required: true
@@ -384,6 +377,7 @@ paths:
       operationId: getStreamFrames
       parameters:
       - description: Agent ID
+        format: uuid
         in: path
         name: agentID
         required: true
@@ -417,6 +411,7 @@ paths:
       operationId: downloadAgentFiles
       parameters:
       - description: Agent ID
+        format: uuid
         in: path
         name: agentID
         required: true
@@ -454,6 +449,7 @@ paths:
       operationId: getAgentSpecs
       parameters:
       - description: Agent ID
+        format: uuid
         in: path
         name: agentID
         required: true
@@ -562,6 +558,7 @@ paths:
       operationId: deleteAgentGroup
       parameters:
       - description: Agent group ID
+        format: uuid
         in: path
         name: id
         required: true
@@ -588,6 +585,7 @@ paths:
       operationId: getAgentGroupByID
       parameters:
       - description: Agent group ID
+        format: uuid
         in: path
         name: id
         required: true
@@ -620,6 +618,7 @@ paths:
       operationId: updateAgentGroup
       parameters:
       - description: Agent group ID
+        format: uuid
         in: path
         name: id
         required: true

@@ -14,7 +14,7 @@ type Optional[T any] struct {
 	Value T
 }
 
-func (o *Optional[T]) Unmarshal(b []byte) error {
+func (o *Optional[T]) UnmarshalJSON(b []byte) error {
 	o.Set = true
 	if string(b) == "null" {
 		o.Null = true
@@ -22,7 +22,15 @@ func (o *Optional[T]) Unmarshal(b []byte) error {
 	}
 	return json.Unmarshal(b, &o.Value)
 }
-
+func (o *Optional[T]) GetPtrIfSet() (set bool, value *T) {
+	if !o.Set {
+		return false, nil
+	}
+	if o.Null {
+		return true, nil
+	}
+	return true, &o.Value
+}
 func optionalValuer[T any](v reflect.Value) any {
 	o := v.Interface().(Optional[T])
 	if !o.Set || o.Null {

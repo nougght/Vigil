@@ -76,7 +76,7 @@ func (h *AgentHandler) CreateAgent(c *gin.Context) {
 // @Summary Download agent files
 // @Accept json
 // @Produce application/zip
-// @Param agentID path string true "Agent ID"
+// @Param agentID path string true "Agent ID" format(uuid)
 // @Param request body dto.AgentConfigBody true "Download agent files"
 // @Success 200 {file} binary
 // @Failure      400  {object}  dto.ErrorResponse
@@ -137,7 +137,7 @@ func (h *AgentHandler) GetAllAgents(c *gin.Context) {
 // @Tags agents
 // @Summary Get agent by ID
 // @Produce json
-// @Param agentID path string true "Agent ID"
+// @Param agentID path string true "Agent ID" format(uuid)
 // @Success 200 {object} dto.AgentDTO
 // @Failure      400  {object}  dto.ErrorResponse
 // @Failure      404  {object}  dto.ErrorResponse
@@ -163,7 +163,7 @@ func (h *AgentHandler) GetAgent(c *gin.Context) {
 // @Tags agents
 // @Summary Get agent specifications
 // @Produce json
-// @Param agentID path string true "Agent ID"
+// @Param agentID path string true "Agent ID" format(uuid)
 // @Success 200 {object} dto.SpecsDTO
 // @Failure      400  {object}  dto.ErrorResponse
 // @Failure      404  {object}  dto.ErrorResponse

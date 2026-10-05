@@ -108,13 +108,14 @@ func (r *AgentGroupsRepository) UpdateGroup(ctx context.Context, group *agent_gr
 
 	query := `
 		UPDATE agent_groups ag
-		SET name = $2, 
-			description = COALESCE($3, ag.description)
+		SET name = COALESCE($2, ag.name),
+			description = CASE WHEN $3::bool THEN $4::text ELSE ag.description END
 		WHERE ag.id = $1
 			AND deleted_at IS NULL;
 	`
 
-	res, err := conn.Exec(ctx, query, group.ID, group.Name, group.Description)
+	set, desc := group.Description.GetPtrIfSet()
+	res, err := conn.Exec(ctx, query, group.ID, group.Name, set, desc)
 	if IsConflict(err) {
 		return ErrConflict
 	}

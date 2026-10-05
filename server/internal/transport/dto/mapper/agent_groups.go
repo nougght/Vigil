@@ -51,8 +51,9 @@ func UpdateAgentGroupInputFromDTO(d *dto.UpdateAgentGroupBody) *agent_groups.Upd
 		return nil
 	}
 	return &agent_groups.UpdateAgentGroupInput{
-		ID:             d.ID,
-		AgentGroupInfo: util.UnPtr(AgentGroupInfoFromDTO(&d.AgentGroupInfoDTO)),
+		ID:          d.ID,
+		Name:        d.Name,
+		Description: d.Description,
 	}
 }
 

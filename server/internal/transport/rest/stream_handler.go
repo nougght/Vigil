@@ -39,7 +39,7 @@ func (s *StreamHandler) RegisterRoutes(r *gin.RouterGroup) {
 // @Tags streaming
 // @Summary Get stream frames
 // @Produce multipart/x-mixed-replace
-// @Param agentID path string true "Agent ID"
+// @Param agentID path string true "Agent ID" format(uuid)
 // @Success      200  {file}    binary  "MJPEG stream"
 // @Failure      400  {object}  dto.ErrorResponse
 // @Failure      404  {object}  dto.ErrorResponse
