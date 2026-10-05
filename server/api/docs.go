@@ -20,6 +20,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "agents"
+                ],
                 "summary": "Get all agents",
                 "operationId": "getAllAgents",
                 "responses": {
@@ -58,6 +61,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "agents"
                 ],
                 "summary": "Create new agent",
                 "operationId": "createAgent",
@@ -105,6 +111,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "agents"
+                ],
                 "summary": "Get agent by ID",
                 "operationId": "getAgentByID",
                 "parameters": [
@@ -148,6 +157,9 @@ const docTemplate = `{
             "get": {
                 "produces": [
                     "multipart/x-mixed-replace"
+                ],
+                "tags": [
+                    "streaming"
                 ],
                 "summary": "Get stream frames",
                 "operationId": "getStreamFrames",
@@ -195,6 +207,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/zip"
+                ],
+                "tags": [
+                    "agents"
                 ],
                 "summary": "Download agent files",
                 "operationId": "downloadAgentFiles",
@@ -249,6 +264,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "agents"
+                ],
                 "summary": "Get agent specifications",
                 "operationId": "getAgentSpecs",
                 "parameters": [
@@ -293,6 +311,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "overview"
+                ],
                 "summary": "Get fleet overview",
                 "operationId": "getFleetOverview",
                 "responses": {
@@ -301,6 +322,222 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/AgentsOverview"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/groups": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agent-groups"
+                ],
+                "summary": "Get all agent groups",
+                "operationId": "getAllAgentGroups",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/AgentGroup"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agent-groups"
+                ],
+                "summary": "Create new agent group",
+                "operationId": "createAgentGroup",
+                "parameters": [
+                    {
+                        "description": "Create agent group body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CreateAgentGroupBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AgentGroup"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/groups/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agent-groups"
+                ],
+                "summary": "Get agent group by ID",
+                "operationId": "getAgentGroupByID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AgentGroup"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "agent-groups"
+                ],
+                "summary": "Delete agent group by ID",
+                "operationId": "deleteAgentGroup",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agent-groups"
+                ],
+                "summary": "Update agent group",
+                "operationId": "updateAgentGroup",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update agent group body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UpdateAgentGroupBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -355,6 +592,26 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "enrollmentKey": {
+                    "type": "string"
+                }
+            }
+        },
+        "AgentGroup": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }
@@ -542,6 +799,23 @@ const docTemplate = `{
                 }
             }
         },
+        "CreateAgentGroupBody": {
+            "type": "object",
+            "properties": {
+                "agentIDs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "$ref": "#/definitions/github_com_nougght_monitoring-system_server_internal_model.Optional-string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "CreateAgentResponse": {
             "type": "object",
             "properties": {
@@ -691,6 +965,34 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/AgentWithMemoryUsageDTO"
                     }
+                }
+            }
+        },
+        "UpdateAgentGroupBody": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "$ref": "#/definitions/github_com_nougght_monitoring-system_server_internal_model.Optional-string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_nougght_monitoring-system_server_internal_model.Optional-string": {
+            "type": "object",
+            "properties": {
+                "null": {
+                    "type": "boolean"
+                },
+                "set": {
+                    "type": "boolean"
+                },
+                "value": {
+                    "type": "string"
                 }
             }
         }

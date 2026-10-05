@@ -29,7 +29,7 @@ func (r *AgentGroupsRepository) db(ctx context.Context) DB {
 	return res
 }
 
-func (r *AgentGroupsRepository) CreateGroup(ctx context.Context, group *agent_groups.AgentGroupInput) (*agent_groups.AgentGroup, error) {
+func (r *AgentGroupsRepository) CreateGroup(ctx context.Context, group *agent_groups.AgentGroupInfo) (*agent_groups.AgentGroup, error) {
 	conn := r.db(ctx)
 
 	query := `

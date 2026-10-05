@@ -27,6 +27,7 @@ func (h *OverviewHandler) RegisterRoutes(r *gin.RouterGroup) {
 
 // GetFleetOverview godoc
 // @Id getFleetOverview
+// @Tags overview
 // @Summary Get fleet overview
 // @Produce json
 // @Success 200 {object} dto.AgentsOverview

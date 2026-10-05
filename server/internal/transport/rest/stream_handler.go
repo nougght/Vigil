@@ -36,6 +36,7 @@ func (s *StreamHandler) RegisterRoutes(r *gin.RouterGroup) {
 
 // StreamFrames godoc
 // @Id getStreamFrames
+// @Tags streaming
 // @Summary Get stream frames
 // @Produce multipart/x-mixed-replace
 // @Param agentID path string true "Agent ID"

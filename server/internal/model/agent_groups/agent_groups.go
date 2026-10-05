@@ -17,13 +17,13 @@ type (
 		DeletedAt   time.Time `db:"deleted_at"`
 	}
 
-	AgentGroupInput struct {
+	AgentGroupInfo struct {
 		Name        string                 `db:"name"`
 		Description model.Optional[string] `db:"description"`
 	}
 
 	CreateAgentGroupInput struct {
-		AgentGroupInput
+		AgentGroupInfo
 		AgentIDs []uuid.UUID `db:"agent_ids"`
 	}
 
@@ -34,6 +34,6 @@ type (
 
 	UpdateAgentGroupInput struct {
 		ID uuid.UUID
-		AgentGroupInput
+		AgentGroupInfo
 	}
 )

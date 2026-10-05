@@ -43,6 +43,7 @@ func (h *AgentHandler) RegisterRoutes(r *gin.RouterGroup) {
 
 // CreateAgent godoc
 // @Id createAgent
+// @Tags agents
 // @Summary Create new agent
 // @Accept json
 // @Produce json
@@ -71,6 +72,7 @@ func (h *AgentHandler) CreateAgent(c *gin.Context) {
 
 // DownloadAgentFiles godoc
 // @Id downloadAgentFiles
+// @Tags agents
 // @Summary Download agent files
 // @Accept json
 // @Produce application/zip
@@ -112,6 +114,7 @@ func (h *AgentHandler) DownloadAgentFiles(c *gin.Context) {
 
 // GetAllAgents godoc
 // @Id getAllAgents
+// @Tags agents
 // @Summary Get all agents
 // @Produce json
 // @Success 200 {array} dto.AgentDTO
@@ -131,6 +134,7 @@ func (h *AgentHandler) GetAllAgents(c *gin.Context) {
 
 // GetAgent godoc
 // @Id getAgentByID
+// @Tags agents
 // @Summary Get agent by ID
 // @Produce json
 // @Param agentID path string true "Agent ID"
@@ -156,6 +160,7 @@ func (h *AgentHandler) GetAgent(c *gin.Context) {
 
 // GetAllAgents godoc
 // @Id getAgentSpecs
+// @Tags agents
 // @Summary Get agent specifications
 // @Produce json
 // @Param agentID path string true "Agent ID"

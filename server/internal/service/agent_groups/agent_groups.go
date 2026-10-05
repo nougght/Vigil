@@ -1,4 +1,4 @@
-package agentregistry
+package agent_groups
 
 import (
 	"context"

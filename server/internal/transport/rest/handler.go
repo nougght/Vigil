@@ -2,6 +2,7 @@ package rest
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -10,6 +11,13 @@ import (
 	"github.com/nougght/monitoring-system/server/internal/service"
 	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
 )
+
+var ErrorDiffParamAndBodyID = fmt.Errorf("'id' value from params and body cannot be different: %w", model.ErrBadRequest)
+
+func handleInvalidRequestBody(c *gin.Context, err error) {
+	log.Println(err)
+	handleError(c, fmt.Errorf("invalid request body: %w", model.ErrBadRequest))
+}
 
 // write http response based on service error
 func handleError(c *gin.Context, err error) {
