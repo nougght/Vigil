@@ -9,26 +9,17 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"github.com/nougght/monitoring-system/server/internal/model"
 	agent_model "github.com/nougght/monitoring-system/server/internal/model/agent"
 )
 
 type EnrollmentKeysRepository struct {
-	pool DB
+	BaseRepository
 }
 
 func NewEnrollmentKeysRepository(db DB) *EnrollmentKeysRepository {
 	return &EnrollmentKeysRepository{
-		pool: db,
+		BaseRepository{db: db},
 	}
-}
-
-func (r *EnrollmentKeysRepository) db(ctx context.Context) DB {
-	res := r.pool
-	if tx := ctx.Value(model.ContextKeyTx); tx != nil {
-		res = tx.(DB)
-	}
-	return res
 }
 
 func (r *EnrollmentKeysRepository) CreateKey(ctx context.Context, key *agent_model.EnrollmentKey) (*agent_model.EnrollmentKey, error) {
@@ -36,7 +27,7 @@ func (r *EnrollmentKeysRepository) CreateKey(ctx context.Context, key *agent_mod
 	INSERT INTO enrollment_keys (key_hash, agent_id, expires_at, selector) 
 	VALUES($1, $2, $3, $4)
 	`
-	_, err := r.db(ctx).Exec(ctx, query, key.HashString, key.AgentID, key.ExpiresAt, key.Selector)
+	_, err := r.conn(ctx).Exec(ctx, query, key.HashString, key.AgentID, key.ExpiresAt, key.Selector)
 	if err != nil {
 		return nil, fmt.Errorf("insert failed: %w", err)
 	}
@@ -48,7 +39,7 @@ func (r *EnrollmentKeysRepository) GetKeyBySelector(ctx context.Context, selecto
 	query := `
 	SELECT * FROM enrollment_keys k WHERE k.selector = $1
 	`
-	rows, err := r.db(ctx).Query(ctx, query, selector)
+	rows, err := r.conn(ctx).Query(ctx, query, selector)
 	if err != nil {
 		return nil, fmt.Errorf("select failed: %w", err)
 	}
@@ -68,7 +59,7 @@ func (r *EnrollmentKeysRepository) GetKeyByAgentId(ctx context.Context, agentID 
 	query := `
 	SELECT * FROM enrollment_keys k WHERE k.agent_id = $1
 	`
-	rows, err := r.db(ctx).Query(ctx, query, agentID)
+	rows, err := r.conn(ctx).Query(ctx, query, agentID)
 	if err != nil {
 		return nil, fmt.Errorf("select failed: %w", err)
 	}
@@ -90,7 +81,7 @@ func (r *EnrollmentKeysRepository) SetUsed(ctx context.Context, agentID uuid.UUI
 		SET used_at = $1
 		WHERE agent_id = $2 AND used_at IS NULL
 	`
-	res, err := r.db(ctx).Exec(ctx, query, usedAt, agentID)
+	res, err := r.conn(ctx).Exec(ctx, query, usedAt, agentID)
 	if err != nil {
 		return fmt.Errorf("update failed: %w", err)
 	}

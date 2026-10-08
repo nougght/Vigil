@@ -17,6 +17,14 @@ type DB interface {
 	Begin(ctx context.Context) (pgx.Tx, error)
 }
 
+type BaseRepository struct {
+	db DB
+}
+
+func (r *BaseRepository) conn(ctx context.Context) DB {
+	return conn(ctx, r.db)
+}
+
 type Repositories struct {
 	agentRpository           *AgentRepository
 	enrollmentKeysRepository *EnrollmentKeysRepository
@@ -58,6 +66,14 @@ func (r *Repositories) SeriesRepository() *SeriesRepository {
 }
 func (r *Repositories) AgentGroupsRepository() *AgentGroupsRepository {
 	return r.agentGroupsRepository
+}
+
+func CollectOnePtr[T any](rows pgx.Rows) (*T, error) {
+	return pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[T])
+}
+
+func CollectRowsPtr[T any](rows pgx.Rows) ([]*T, error) {
+	return pgx.CollectRows(rows, pgx.RowToAddrOfStructByName[T])
 }
 
 func CollectOnePtr[T any](rows pgx.Rows) (*T, error) {

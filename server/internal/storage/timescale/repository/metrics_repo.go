@@ -5,14 +5,9 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/nougght/monitoring-system/server/internal/model"
 	metrics_model "github.com/nougght/monitoring-system/server/internal/model/metrics"
 	metrickinds "github.com/nougght/monitoring-system/shared/go/metric_kinds"
 )
-
-type MetricsRepository struct {
-	database DB
-}
 
 const (
 	metricSamplesTableName = "metric_samples"
@@ -43,23 +38,19 @@ func (s *rowSource) Err() error {
 	return nil
 }
 
-func NewMetricsRepository(db DB) *MetricsRepository {
-	return &MetricsRepository{
-		database: db,
-	}
-
+type MetricsRepository struct {
+	BaseRepository
 }
 
-func (r *MetricsRepository) db(ctx context.Context) DB {
-	res := r.database
-	if tx := ctx.Value(model.ContextKeyTx); tx != nil {
-		res = tx.(DB)
+func NewMetricsRepository(db DB) *MetricsRepository {
+	return &MetricsRepository{
+		BaseRepository{db: db},
 	}
-	return res
+
 }
 
 func (r *MetricsRepository) SaveRows(ctx context.Context, rows []metrics_model.MetricRow) error {
-	_, err := r.db(ctx).CopyFrom(ctx, pgx.Identifier{metricSamplesTableName},
+	_, err := r.conn(ctx).CopyFrom(ctx, pgx.Identifier{metricSamplesTableName},
 		[]string{metricSamplesTimestamp, metricSamplesSeriesID, metricSamplesValue},
 		pgx.CopyFromSource(&rowSource{rows: rows}))
 
@@ -86,7 +77,7 @@ func (r *MetricsRepository) UpsertMetricKinds(ctx context.Context, kinds []metri
 		batch.Queue(query, s.Kind, s.Key, s.Unit, s.Agg, s.LabelName, s.Description)
 	}
 
-	res := r.db(ctx).SendBatch(ctx, batch)
+	res := r.conn(ctx).SendBatch(ctx, batch)
 	defer func() {
 		_ = res.Close()
 	}()

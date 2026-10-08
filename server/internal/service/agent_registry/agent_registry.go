@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
 	"github.com/nougght/monitoring-system/server/internal/config"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	agent_model "github.com/nougght/monitoring-system/server/internal/model/agent"
@@ -111,49 +110,44 @@ func (s *AgentRegistryService) CreateAgent(ctx context.Context, name string, des
 		return nil, fmt.Errorf("agent name can't be blank: %w", model.ErrBadRequest)
 	}
 
-	tx, err := s.transactor.Begin(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed begin transaction: %w", err)
-	}
-	defer func() {
-		err := tx.Rollback(ctx)
-		if err != nil && !errors.Is(err, pgx.ErrTxClosed) {
-			log.Printf("rollback failed: %s", err.Error())
+	var (
+		enrollmentKey *string
+		agent         *agent_model.Agent
+		key           *agent_model.EnrollmentKey
+	)
+	err := s.transactor.WithinTx(ctx, func(ctx context.Context) (err error) {
+		agent, err = s.agentRepo.CreateAgent(ctx, &agent_model.Agent{
+			Name:        name,
+			Description: description,
+			Status:      utilShared.Ptr(string(agent_model.AgentStatusNotEnrolled)),
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create agent: %w", err)
 		}
-	}()
-	ctx = context.WithValue(ctx, model.ContextKeyTx, tx)
 
-	agent, err := s.agentRepo.CreateAgent(ctx, &agent_model.Agent{
-		Name:        name,
-		Description: description,
-		Status:      utilShared.Ptr(string(agent_model.AgentStatusNotEnrolled)),
+		enrollmentKey = s.genEnrollmentKey()
+		keyHash, err := util.Hash(*enrollmentKey, nil)
+		if err != nil {
+			return fmt.Errorf("failed to generate enrollment key: %w", err)
+		}
+
+		selector := uuid.New().String()
+		key, err = s.enrollmentKeysRepo.CreateKey(ctx, &agent_model.EnrollmentKey{
+			AgentID:    agent.ID,
+			HashString: keyHash,
+			Selector:   selector,
+			ExpiresAt:  time.Now().Add(time.Minute * 20),
+		})
+
+		if err != nil {
+			return fmt.Errorf("failed to create enrollment key: %w", err)
+		}
+		return nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to create agent: %w", err)
+		return nil, err
 	}
 
-	enrollmentKey := s.genEnrollmentKey()
-	keyHash, err := util.Hash(*enrollmentKey, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to generate enrollment key: %w", err)
-	}
-
-	selector := uuid.New().String()
-	key, err := s.enrollmentKeysRepo.CreateKey(ctx, &agent_model.EnrollmentKey{
-		AgentID:    agent.ID,
-		HashString: keyHash,
-		Selector:   selector,
-		ExpiresAt:  time.Now().Add(time.Minute * 20),
-	})
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to create enrollment key: %w", err)
-	}
-
-	err = tx.Commit(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("commit transaction error: %w", err)
-	}
 	return &agent_model.CreateAgentResult{
 		Agent:         *agent,
 		EnrollmentKey: fmt.Sprintf("%s.%s", key.Selector, *enrollmentKey),
@@ -210,45 +204,39 @@ func (s *AgentRegistryService) GetNewAgentFiles(ctx context.Context, agentID uui
 
 // TODO: return agent token
 func (s *AgentRegistryService) Enroll(ctx context.Context, params *agent_model.EnrollParams) (*agent_model.EnrollResult, error) {
-	tx, err := s.transactor.Begin(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed begin transaction: %w", err)
-	}
-	defer func() {
-		err := tx.Rollback(ctx)
+	var (
+		agentCert    *x509.Certificate
+		certNotAfter time.Time
+	)
+	err := s.transactor.WithinTx(ctx, func(ctx context.Context) (err error) {
+		agentID, pubKey, err := s.validateAgentEnrollment(ctx, params.EnrollmentKey, params.CsrDer)
 		if err != nil {
-			log.Printf("rollback failed: %s", err.Error())
+			log.Printf("failed to validate agent enrollment:%s", err.Error())
+			return fmt.Errorf("failed to validate agent enrollment")
 		}
-	}()
-	ctx = context.WithValue(ctx, model.ContextKeyTx, tx)
+		log.Printf("agent id: %s", agentID.String())
+		err = s.enrollmentKeysRepo.SetUsed(ctx, agentID, time.Now())
+		if errors.Is(err, repository.ErrNoAffectedRows) {
+			return fmt.Errorf("enrollment key already used: %w", model.ErrBadRequest)
+		}
 
-	agentID, pubKey, err := s.validateAgentEnrollment(ctx, params.EnrollmentKey, params.CsrDer)
-	if err != nil {
-		log.Printf("failed to validate agent enrollment:%s", err.Error())
-		return nil, fmt.Errorf("failed to validate agent enrollment")
-	}
-	log.Printf("agent id: %s", agentID.String())
-	err = s.enrollmentKeysRepo.SetUsed(ctx, agentID, time.Now())
-	if errors.Is(err, repository.ErrNoAffectedRows) {
-		return nil, fmt.Errorf("enrollment key already used: %w", model.ErrBadRequest)
-	}
+		err = s.agentRepo.UpdateStatus(ctx, agentID, agent_model.AgentStatusActive)
+		if err != nil {
+			return fmt.Errorf("failed update agent status: %w", err)
+		}
 
-	err = s.agentRepo.UpdateStatus(ctx, agentID, agent_model.AgentStatusActive)
+		certNotAfter = time.Now().Add(agent_model.DefaultAgentCertificateDuration)
+		agentCert, err = s.issueCertificate(agentID, pubKey, certNotAfter)
+		if err != nil {
+			log.Printf("failed issue agent certificate: %s", err.Error())
+			return fmt.Errorf("failed issue agent certificate")
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, fmt.Errorf("failed update agent status: %w", err)
-	}
-
-	certNotAfter := time.Now().Add(agent_model.DefaultAgentCertificateDuration)
-	agentCert, err := s.issueCertificate(agentID, pubKey, certNotAfter)
-	if err != nil {
-		log.Printf("failed issue agent certificate: %s", err.Error())
-		return nil, fmt.Errorf("failed issue agent certificate")
+		return nil, err
 	}
 
-	err = tx.Commit(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("commit transaction error: %w", err)
-	}
 	return &agent_model.EnrollResult{
 		CertDer:    agentCert.Raw,
 		CAChainDer: [][]byte{s.cert.CA.Raw},
