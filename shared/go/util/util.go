@@ -26,3 +26,11 @@ func Map[T any, R any](slice []T, f func(T) R, args ...any) []R {
 func Ptr[T any](value T) *T {
 	return &value
 }
+
+func UnPtr[T any](ptr *T) T {
+	var value T
+	if ptr != nil {
+		value = *ptr
+	}
+	return value
+}

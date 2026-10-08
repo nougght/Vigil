@@ -23,6 +23,7 @@ type Repositories struct {
 	specsRepository          *SpecsRepository
 	metricsRepository        *MetricsRepository
 	seriesRepository         *SeriesRepository
+	agentGroupsRepository    *AgentGroupsRepository
 }
 
 func New(db DB) *Repositories {
@@ -32,6 +33,7 @@ func New(db DB) *Repositories {
 		specsRepository:          NewSpecsRepository(db),
 		metricsRepository:        NewMetricsRepository(db),
 		seriesRepository:         NewSeriesRepository(db),
+		agentGroupsRepository:    NewAgentGroupsRepository(db),
 	}
 }
 
@@ -53,4 +55,15 @@ func (r *Repositories) MetricsRepository() *MetricsRepository {
 
 func (r *Repositories) SeriesRepository() *SeriesRepository {
 	return r.seriesRepository
+}
+func (r *Repositories) AgentGroupsRepository() *AgentGroupsRepository {
+	return r.agentGroupsRepository
+}
+
+func CollectOnePtr[T any](rows pgx.Rows) (*T, error) {
+	return pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[T])
+}
+
+func CollectRowsPtr[T any](rows pgx.Rows) ([]*T, error) {
+	return pgx.CollectRows(rows, pgx.RowToAddrOfStructByName[T])
 }

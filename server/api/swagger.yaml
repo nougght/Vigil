@@ -22,6 +22,19 @@ definitions:
       enrollmentKey:
         type: string
     type: object
+  AgentGroup:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   AgentSpecs:
     properties:
       agentId:
@@ -141,6 +154,17 @@ definitions:
     required:
     - name
     type: object
+  CreateAgentGroupBody:
+    properties:
+      agentIDs:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      name:
+        type: string
+    type: object
   CreateAgentResponse:
     properties:
       createdAt:
@@ -168,6 +192,13 @@ definitions:
         type: string
       total:
         type: integer
+    type: object
+  ErrorResponse:
+    properties:
+      key:
+        type: string
+      message:
+        type: string
     type: object
   HostSpecs:
     properties:
@@ -233,6 +264,16 @@ definitions:
           $ref: '#/definitions/AgentWithMemoryUsageDTO'
         type: array
     type: object
+  UpdateAgentGroupBody:
+    properties:
+      description:
+        type: string
+        x-nullable: true
+      id:
+        type: string
+      name:
+        type: string
+    type: object
 host: montoring.nought.ru
 info:
   contact: {}
@@ -254,19 +295,18 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
       summary: Get all agents
+      tags:
+      - agents
     post:
       consumes:
       - application/json
@@ -288,24 +328,24 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
       summary: Create new agent
+      tags:
+      - agents
   /agents/{agentID}:
     get:
       operationId: getAgentByID
       parameters:
       - description: Agent ID
+        format: uuid
         in: path
         name: agentID
         required: true
@@ -320,24 +360,24 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
       summary: Get agent by ID
+      tags:
+      - agents
   /agents/{agentID}/frames:
     get:
       operationId: getStreamFrames
       parameters:
       - description: Agent ID
+        format: uuid
         in: path
         name: agentID
         required: true
@@ -352,19 +392,18 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
       summary: Get stream frames
+      tags:
+      - streaming
   /agents/{agentID}/setupconfig:
     post:
       consumes:
@@ -372,6 +411,7 @@ paths:
       operationId: downloadAgentFiles
       parameters:
       - description: Agent ID
+        format: uuid
         in: path
         name: agentID
         required: true
@@ -392,24 +432,24 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
       summary: Download agent files
+      tags:
+      - agents
   /agents/{agentID}/specifications:
     get:
       operationId: getAgentSpecs
       parameters:
       - description: Agent ID
+        format: uuid
         in: path
         name: agentID
         required: true
@@ -424,19 +464,18 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
       summary: Get agent specifications
+      tags:
+      - agents
   /fleet/overview:
     get:
       operationId: getFleetOverview
@@ -450,17 +489,162 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/ErrorResponse'
       summary: Get fleet overview
+      tags:
+      - overview
+  /groups:
+    get:
+      operationId: getAllAgentGroups
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/AgentGroup'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get all agent groups
+      tags:
+      - agent-groups
+    post:
+      consumes:
+      - application/json
+      operationId: createAgentGroup
+      parameters:
+      - description: Create agent group body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/CreateAgentGroupBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AgentGroup'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Create new agent group
+      tags:
+      - agent-groups
+  /groups/{id}:
+    delete:
+      operationId: deleteAgentGroup
+      parameters:
+      - description: Agent group ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Delete agent group by ID
+      tags:
+      - agent-groups
+    get:
+      operationId: getAgentGroupByID
+      parameters:
+      - description: Agent group ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AgentGroup'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get agent group by ID
+      tags:
+      - agent-groups
+    patch:
+      consumes:
+      - application/json
+      operationId: updateAgentGroup
+      parameters:
+      - description: Agent group ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update agent group body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateAgentGroupBody'
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Update agent group
+      tags:
+      - agent-groups
 swagger: "2.0"

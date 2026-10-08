@@ -6,6 +6,7 @@ import (
 	"github.com/nougght/monitoring-system/server/internal/config"
 	"github.com/nougght/monitoring-system/server/internal/infrastructure/eventbus"
 	"github.com/nougght/monitoring-system/server/internal/model"
+	"github.com/nougght/monitoring-system/server/internal/service/agent_groups"
 	agent "github.com/nougght/monitoring-system/server/internal/service/agent_interaction"
 	agentregistry "github.com/nougght/monitoring-system/server/internal/service/agent_registry"
 	"github.com/nougght/monitoring-system/server/internal/service/metrics"
@@ -17,6 +18,7 @@ import (
 type Services struct {
 	agentRegistry   *agentregistry.AgentRegistryService
 	agent           *agent.AgentInteractionService
+	agentGroups     *agent_groups.AgentGroupsService
 	metrics         *metrics.MetricsService
 	realtime        *realtime.RealtimeService
 	overviewService *overview.OverviewService
@@ -79,12 +81,24 @@ func New(opts ServicesOptions) *Services {
 	if err != nil {
 		log.Panicf("failed initialize overview service: %s", err.Error())
 	}
+
+	groupsService, err := agent_groups.NewAgentGroupsService(
+		opts.Config,
+		opts.Repositories.AgentGroupsRepository(),
+		agentRegistry,
+		opts.Transactor,
+	)
+	if err != nil {
+		log.Panicf("failed initialize agent groups service: %s", err.Error())
+	}
+
 	return &Services{
 		agentRegistry:   agentRegistry,
 		agent:           agentInteraction,
 		metrics:         metrics,
 		realtime:        realtimeService,
 		overviewService: overviewService,
+		agentGroups:     groupsService,
 	}
 }
 
@@ -106,4 +120,8 @@ func (s *Services) Realtime() *realtime.RealtimeService {
 
 func (s *Services) Overview() *overview.OverviewService {
 	return s.overviewService
+}
+
+func (s *Services) AgentGroups() *agent_groups.AgentGroupsService {
+	return s.agentGroups
 }

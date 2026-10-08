@@ -2,34 +2,61 @@ package rest
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/service"
+	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
 )
 
+var ErrorDiffParamAndBodyID = fmt.Errorf("'id' value from params and body cannot be different: %w", model.ErrBadRequest)
+
+func handleInvalidRequestBody(c *gin.Context, err error) {
+	log.Println(err)
+	handleError(c, fmt.Errorf("invalid request body: %w", model.ErrBadRequest))
+}
+
+// write http response based on service error
 func handleError(c *gin.Context, err error) {
+	serr := &model.ServiceError{}
+	if !errors.As(err, &serr) {
+		serr = model.NewError(err)
+	}
 	responseCode := http.StatusInternalServerError
+	resp := dto.ErrorResponse{
+		Key:     serr.Key,
+		Message: "internal server error",
+	}
 
 	switch {
-	case errors.Is(err, model.ErrBadRequest):
+	case errors.Is(serr.Err, model.ErrUnauthorized):
+		responseCode = http.StatusUnauthorized
+	case errors.Is(serr.Err, model.ErrBadRequest):
 		responseCode = http.StatusBadRequest
-	case errors.Is(err, model.ErrNotFound):
+	case errors.Is(serr.Err, model.ErrNotFound):
 		responseCode = http.StatusNotFound
+	case errors.Is(serr.Err, model.ErrServiceUnavailable):
+		responseCode = http.StatusServiceUnavailable
 	case errors.Is(err, model.ErrServiceUnavailable):
 		responseCode = http.StatusServiceUnavailable
 	}
 
-	log.Println(err)
-	c.JSON(responseCode, gin.H{"error": err.Error()})
+	if responseCode != http.StatusInternalServerError {
+		resp.Message = err.Error()
+	}
+
+	log.Printf("Error: %v", err)
+	c.JSON(responseCode, resp)
 }
 
 type Handlers struct {
-	agentHandler    *AgentHandler
-	streamHandler   *StreamHandler
-	overviewHandler *OverviewHandler
+	agentHandler      *AgentHandler
+	streamHandler     *StreamHandler
+	overviewHandler   *OverviewHandler
+	agentGroupHandler *AgentGroupHandler
 }
 
 func newHandlers(services *service.Services) *Handlers {
@@ -46,10 +73,14 @@ func newHandlers(services *service.Services) *Handlers {
 		services.Overview(),
 	)
 
+	group := newAgentGroupHandler(
+		services.AgentGroups(),
+	)
 	return &Handlers{
-		agentHandler:    agent,
-		streamHandler:   stream,
-		overviewHandler: overview,
+		agentHandler:      agent,
+		streamHandler:     stream,
+		overviewHandler:   overview,
+		agentGroupHandler: group,
 	}
 }
 
@@ -63,4 +94,8 @@ func (h *Handlers) StreamHandler() *StreamHandler {
 
 func (h *Handlers) OverviewHandler() *OverviewHandler {
 	return h.overviewHandler
+}
+
+func (h *Handlers) AgentGroupHandler() *AgentGroupHandler {
+	return h.agentGroupHandler
 }

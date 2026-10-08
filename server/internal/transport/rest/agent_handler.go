@@ -43,14 +43,15 @@ func (h *AgentHandler) RegisterRoutes(r *gin.RouterGroup) {
 
 // CreateAgent godoc
 // @Id createAgent
+// @Tags agents
 // @Summary Create new agent
 // @Accept json
 // @Produce json
 // @Param request body dto.CreateAgentBody true "Create agent body"
 // @Success 200 {object} dto.CreateAgentResponse
-// @Failure      400  {object}  map[string]any
-// @Failure      404  {object}  map[string]any
-// @Failure      500  {object}  map[string]any
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router /agents [post]
 func (h *AgentHandler) CreateAgent(c *gin.Context) {
 	var body *dto.CreateAgentBody
@@ -71,15 +72,16 @@ func (h *AgentHandler) CreateAgent(c *gin.Context) {
 
 // DownloadAgentFiles godoc
 // @Id downloadAgentFiles
+// @Tags agents
 // @Summary Download agent files
 // @Accept json
 // @Produce application/zip
-// @Param agentID path string true "Agent ID"
+// @Param agentID path string true "Agent ID" format(uuid)
 // @Param request body dto.AgentConfigBody true "Download agent files"
 // @Success 200 {file} binary
-// @Failure      400  {object}  map[string]any
-// @Failure      404  {object}  map[string]any
-// @Failure      500  {object}  map[string]any
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router /agents/{agentID}/setupconfig [post]
 func (h *AgentHandler) DownloadAgentFiles(c *gin.Context) {
 	agentID, err := uuid.Parse(c.Param("agentID"))
@@ -112,12 +114,13 @@ func (h *AgentHandler) DownloadAgentFiles(c *gin.Context) {
 
 // GetAllAgents godoc
 // @Id getAllAgents
+// @Tags agents
 // @Summary Get all agents
 // @Produce json
 // @Success 200 {array} dto.AgentDTO
-// @Failure      400  {object}  map[string]any
-// @Failure      404  {object}  map[string]any
-// @Failure      500  {object}  map[string]any
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router /agents [get]
 func (h *AgentHandler) GetAllAgents(c *gin.Context) {
 	res, err := h.agentRegistryService.GetAllAgents(c.Request.Context())
@@ -131,13 +134,14 @@ func (h *AgentHandler) GetAllAgents(c *gin.Context) {
 
 // GetAgent godoc
 // @Id getAgentByID
+// @Tags agents
 // @Summary Get agent by ID
 // @Produce json
-// @Param agentID path string true "Agent ID"
+// @Param agentID path string true "Agent ID" format(uuid)
 // @Success 200 {object} dto.AgentDTO
-// @Failure      400  {object}  map[string]any
-// @Failure      404  {object}  map[string]any
-// @Failure      500  {object}  map[string]any
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router /agents/{agentID} [get]
 func (h *AgentHandler) GetAgent(c *gin.Context) {
 	agentID, err := uuid.Parse(c.Param("agentID"))
@@ -156,13 +160,14 @@ func (h *AgentHandler) GetAgent(c *gin.Context) {
 
 // GetAllAgents godoc
 // @Id getAgentSpecs
+// @Tags agents
 // @Summary Get agent specifications
 // @Produce json
-// @Param agentID path string true "Agent ID"
+// @Param agentID path string true "Agent ID" format(uuid)
 // @Success 200 {object} dto.SpecsDTO
-// @Failure      400  {object}  map[string]any
-// @Failure      404  {object}  map[string]any
-// @Failure      500  {object}  map[string]any
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router /agents/{agentID}/specifications [get]
 func (h *AgentHandler) GetAgentSpecs(c *gin.Context) {
 	agentID, err := uuid.Parse(c.Param("agentID"))
