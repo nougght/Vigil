@@ -11,10 +11,17 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - ./certbot/www:/var/www/certbot:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
       - ./monit-nginx.conf:/etc/nginx/conf.d/monit-nginx.conf:ro
       - /conf:/etc/nginx/conf.d  # for linux 
       - ../../web-panel/dist:/usr/share/nginx/html:ro
-
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    profiles: [tools]
 networks:
   proxy:
     external: true

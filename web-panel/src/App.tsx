@@ -5,8 +5,8 @@ import { AgentPage } from './pages/AgentPage'
 import { NewAgentPage } from './pages/NewAgentPage'
 import { SideBar, type SideBarData } from './components/sideBar'
 import { useEffect, useRef, useState } from 'react'
-import dashIcon from "./assets/dashboard.svg"
-import agentsIcon from "./assets/cpu.svg"
+import dashIcon from "../public/assets/dashboard.svg"
+import agentsIcon from "../public/assets/cpu.svg"
 import { ClientMessageTypeAgentDetailed, FillMetricsFromSeries, MessageTypeActivity, MessageTypeFleetOverview, MessageTypeSeries, type AgentDetailedMessage, type ClientMessage, type Message, type Metrics, type SeriesDTO } from './domain/metrics'
 import { OverviewPage } from './pages/OverviewPage'
 import type { Overview } from './domain/overview'
@@ -79,7 +79,8 @@ function App() {
         }
     }
     useEffect(() => {
-        const socket = new WebSocket("ws://monitoring.nought.ru/api/v1/ws");
+        const wsProto = location.protocol === 'https:' ? 'wss' : 'ws';
+        const socket = new WebSocket(`${wsProto}://${location.host}/api/v1/ws`);
         socket.addEventListener("open", () => {
             console.log("start")
             setConnected(true)

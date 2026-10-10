@@ -12,4 +12,4 @@ CREATE UNIQUE INDEX agent_groups_name_lower_uniq
     ON agent_groups (lower(name))
     WHERE deleted_at IS NULL;
     
-ALTER TABLE agents ADD COLUMN group_id UUID REFERENCES groups (id) ON DELETE SET NULL;
+ALTER TABLE agents ADD COLUMN group_id UUID REFERENCES agent_groups (id) ON DELETE SET NULL;
