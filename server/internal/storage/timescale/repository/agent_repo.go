@@ -88,6 +88,7 @@ func (r *AgentRepository) GetAgentByID(ctx context.Context, id uuid.UUID) (res *
 						NULL
 				END AS group_id, 
 			   a.created_at,
+			   a.status,
 			   a.last_seen_at
 		FROM agents a
 		LEFT JOIN agent_groups ag
