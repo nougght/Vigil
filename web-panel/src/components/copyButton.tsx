@@ -1,5 +1,5 @@
 import { CopyToClipboard} from "@monitoring-system/shared"
-import copyIcon from "../assets/copy.svg"
+import copyIcon from "../../public/assets/copy.svg"
 import styles from "./copyButton.module.css"
 
 export const CopyButton = (props: { text: string }) => {

@@ -27,7 +27,8 @@ export const AgentActivity = ({ activity, agentID }: { activity?: ActivityUpdate
             <h3>Активное приложение</h3>
             <p>{activity?.title != null ? activity?.title : "Нет данных"}</p>
             <h3>Трансляция экрана</h3><br />
-            <img src={`http://monitoring.nought.ru/api/v1/agents/${agentID}/frames`} onClick={handleResize}/>
+            {/*<img src={`http://monitoring.nought.ru/api/v1/agents/${agentID}/frames`} onClick={handleResize}/>*/}
+            <img src={`/api/v1/agents/${agentID}/frames`} onClick={handleResize}/>
         </div>
     )
 }

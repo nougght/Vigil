@@ -7,28 +7,14 @@
 import type {
   Agent,
   AgentConfigBody,
+  AgentGroup,
   AgentSpecs,
   AgentsOverview,
-  CreateAgent400,
-  CreateAgent404,
-  CreateAgent500,
   CreateAgentBody,
+  CreateAgentGroupBody,
   CreateAgentResponse,
-  GetAgentByID400,
-  GetAgentByID404,
-  GetAgentByID500,
-  GetAgentSpecs400,
-  GetAgentSpecs404,
-  GetAgentSpecs500,
-  GetAllAgents400,
-  GetAllAgents404,
-  GetAllAgents500,
-  GetFleetOverview400,
-  GetFleetOverview404,
-  GetFleetOverview500,
-  GetStreamFrames400,
-  GetStreamFrames404,
-  GetStreamFrames500
+  ErrorResponse,
+  UpdateAgentGroupBody
 } from '../models';
 
 
@@ -38,17 +24,17 @@ export type getAllAgentsResponse200 = {
 }
 
 export type getAllAgentsResponse400 = {
-  data: GetAllAgents400
+  data: ErrorResponse
   status: 400
 }
 
 export type getAllAgentsResponse404 = {
-  data: GetAllAgents404
+  data: ErrorResponse
   status: 404
 }
 
 export type getAllAgentsResponse500 = {
-  data: GetAllAgents500
+  data: ErrorResponse
   status: 500
 }
 
@@ -66,7 +52,7 @@ export const getGetAllAgentsUrl = () => {
 
 
 
-  return `http://monitoring.nought.ru/api/v1/agents`
+  return `/api/v1/agents`
 }
 
 /**
@@ -75,13 +61,13 @@ export const getGetAllAgentsUrl = () => {
 export const getAllAgents = async ( options?: RequestInit): Promise<getAllAgentsResponse> => {
 
   const res = await fetch(getGetAllAgentsUrl(),
-      {
-        ...options,
-        method: 'GET'
+  {
+    ...options,
+    method: 'GET'
 
 
-      }
-  )
+  }
+)
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
@@ -98,17 +84,17 @@ export type createAgentResponse200 = {
 }
 
 export type createAgentResponse400 = {
-  data: CreateAgent400
+  data: ErrorResponse
   status: 400
 }
 
 export type createAgentResponse404 = {
-  data: CreateAgent404
+  data: ErrorResponse
   status: 404
 }
 
 export type createAgentResponse500 = {
-  data: CreateAgent500
+  data: ErrorResponse
   status: 500
 }
 
@@ -126,7 +112,7 @@ export const getCreateAgentUrl = () => {
 
 
 
-  return `http://monitoring.nought.ru/api/v1/agents`
+  return `/api/v1/agents`
 }
 
 /**
@@ -135,13 +121,13 @@ export const getCreateAgentUrl = () => {
 export const createAgent = async (createAgentBody: CreateAgentBody, options?: RequestInit): Promise<createAgentResponse> => {
 
   const res = await fetch(getCreateAgentUrl(),
-      {
-        ...options,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...options?.headers },
-        body: JSON.stringify(createAgentBody)
-      }
-  )
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createAgentBody)
+  }
+)
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
@@ -158,17 +144,17 @@ export type getAgentByIDResponse200 = {
 }
 
 export type getAgentByIDResponse400 = {
-  data: GetAgentByID400
+  data: ErrorResponse
   status: 400
 }
 
 export type getAgentByIDResponse404 = {
-  data: GetAgentByID404
+  data: ErrorResponse
   status: 404
 }
 
 export type getAgentByIDResponse500 = {
-  data: GetAgentByID500
+  data: ErrorResponse
   status: 500
 }
 
@@ -186,7 +172,7 @@ export const getGetAgentByIDUrl = (agentID: string,) => {
 
 
 
-  return `http://monitoring.nought.ru/api/v1/agents/${agentID}`
+  return `/api/v1/agents/${agentID}`
 }
 
 /**
@@ -195,13 +181,13 @@ export const getGetAgentByIDUrl = (agentID: string,) => {
 export const getAgentByID = async (agentID: string, options?: RequestInit): Promise<getAgentByIDResponse> => {
 
   const res = await fetch(getGetAgentByIDUrl(agentID),
-      {
-        ...options,
-        method: 'GET'
+  {
+    ...options,
+    method: 'GET'
 
 
-      }
-  )
+  }
+)
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
@@ -218,17 +204,17 @@ export type getStreamFramesResponse200 = {
 }
 
 export type getStreamFramesResponse400 = {
-  data: GetStreamFrames400
+  data: ErrorResponse
   status: 400
 }
 
 export type getStreamFramesResponse404 = {
-  data: GetStreamFrames404
+  data: ErrorResponse
   status: 404
 }
 
 export type getStreamFramesResponse500 = {
-  data: GetStreamFrames500
+  data: ErrorResponse
   status: 500
 }
 
@@ -246,7 +232,7 @@ export const getGetStreamFramesUrl = (agentID: string,) => {
 
 
 
-  return `http://monitoring.nought.ru/api/v1/agents/${agentID}/frames`
+  return `/api/v1/agents/${agentID}/frames`
 }
 
 /**
@@ -255,13 +241,13 @@ export const getGetStreamFramesUrl = (agentID: string,) => {
 export const getStreamFrames = async (agentID: string, options?: RequestInit): Promise<getStreamFramesResponse> => {
 
   const res = await fetch(getGetStreamFramesUrl(agentID),
-      {
-        ...options,
-        method: 'GET'
+  {
+    ...options,
+    method: 'GET'
 
 
-      }
-  )
+  }
+)
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.blob();
@@ -305,23 +291,23 @@ export const getDownloadAgentFilesUrl = (agentID: string,) => {
 
 
 
-  return `http://monitoring.nought.ru/api/v1/agents/${agentID}/setupconfig`
+  return `/api/v1/agents/${agentID}/setupconfig`
 }
 
 /**
  * @summary Download agent files
  */
 export const downloadAgentFiles = async (agentID: string,
-                                         agentConfigBody: AgentConfigBody, options?: RequestInit): Promise<downloadAgentFilesResponse> => {
+    agentConfigBody: AgentConfigBody, options?: RequestInit): Promise<downloadAgentFilesResponse> => {
 
   const res = await fetch(getDownloadAgentFilesUrl(agentID),
-      {
-        ...options,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...options?.headers },
-        body: JSON.stringify(agentConfigBody)
-      }
-  )
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(agentConfigBody)
+  }
+)
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.blob();
@@ -337,17 +323,17 @@ export type getAgentSpecsResponse200 = {
 }
 
 export type getAgentSpecsResponse400 = {
-  data: GetAgentSpecs400
+  data: ErrorResponse
   status: 400
 }
 
 export type getAgentSpecsResponse404 = {
-  data: GetAgentSpecs404
+  data: ErrorResponse
   status: 404
 }
 
 export type getAgentSpecsResponse500 = {
-  data: GetAgentSpecs500
+  data: ErrorResponse
   status: 500
 }
 
@@ -365,7 +351,7 @@ export const getGetAgentSpecsUrl = (agentID: string,) => {
 
 
 
-  return `http://monitoring.nought.ru/api/v1/agents/${agentID}/specifications`
+  return `/api/v1/agents/${agentID}/specifications`
 }
 
 /**
@@ -374,13 +360,13 @@ export const getGetAgentSpecsUrl = (agentID: string,) => {
 export const getAgentSpecs = async (agentID: string, options?: RequestInit): Promise<getAgentSpecsResponse> => {
 
   const res = await fetch(getGetAgentSpecsUrl(agentID),
-      {
-        ...options,
-        method: 'GET'
+  {
+    ...options,
+    method: 'GET'
 
 
-      }
-  )
+  }
+)
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
@@ -397,17 +383,17 @@ export type getFleetOverviewResponse200 = {
 }
 
 export type getFleetOverviewResponse400 = {
-  data: GetFleetOverview400
+  data: ErrorResponse
   status: 400
 }
 
 export type getFleetOverviewResponse404 = {
-  data: GetFleetOverview404
+  data: ErrorResponse
   status: 404
 }
 
 export type getFleetOverviewResponse500 = {
-  data: GetFleetOverview500
+  data: ErrorResponse
   status: 500
 }
 
@@ -425,7 +411,7 @@ export const getGetFleetOverviewUrl = () => {
 
 
 
-  return `http://monitoring.nought.ru/api/v1/fleet/overview`
+  return `/api/v1/fleet/overview`
 }
 
 /**
@@ -434,19 +420,310 @@ export const getGetFleetOverviewUrl = () => {
 export const getFleetOverview = async ( options?: RequestInit): Promise<getFleetOverviewResponse> => {
 
   const res = await fetch(getGetFleetOverviewUrl(),
-      {
-        ...options,
-        method: 'GET'
+  {
+    ...options,
+    method: 'GET'
 
 
-      }
-  )
+  }
+)
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
   const data: getFleetOverviewResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getFleetOverviewResponse
+}
+
+
+
+export type getAllAgentGroupsResponse200 = {
+  data: AgentGroup[]
+  status: 200
+}
+
+export type getAllAgentGroupsResponse500 = {
+  data: ErrorResponse
+  status: 500
+}
+
+export type getAllAgentGroupsResponseSuccess = (getAllAgentGroupsResponse200) & {
+  headers: Headers;
+};
+export type getAllAgentGroupsResponseError = (getAllAgentGroupsResponse500) & {
+  headers: Headers;
+};
+
+export type getAllAgentGroupsResponse = (getAllAgentGroupsResponseSuccess | getAllAgentGroupsResponseError)
+
+export const getGetAllAgentGroupsUrl = () => {
+
+
+
+
+  return `/api/v1/groups`
+}
+
+/**
+ * @summary Get all agent groups
+ */
+export const getAllAgentGroups = async ( options?: RequestInit): Promise<getAllAgentGroupsResponse> => {
+
+  const res = await fetch(getGetAllAgentGroupsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getAllAgentGroupsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getAllAgentGroupsResponse
+}
+
+
+
+export type createAgentGroupResponse200 = {
+  data: AgentGroup
+  status: 200
+}
+
+export type createAgentGroupResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+
+export type createAgentGroupResponse404 = {
+  data: ErrorResponse
+  status: 404
+}
+
+export type createAgentGroupResponse500 = {
+  data: ErrorResponse
+  status: 500
+}
+
+export type createAgentGroupResponseSuccess = (createAgentGroupResponse200) & {
+  headers: Headers;
+};
+export type createAgentGroupResponseError = (createAgentGroupResponse400 | createAgentGroupResponse404 | createAgentGroupResponse500) & {
+  headers: Headers;
+};
+
+export type createAgentGroupResponse = (createAgentGroupResponseSuccess | createAgentGroupResponseError)
+
+export const getCreateAgentGroupUrl = () => {
+
+
+
+
+  return `/api/v1/groups`
+}
+
+/**
+ * @summary Create new agent group
+ */
+export const createAgentGroup = async (createAgentGroupBody: CreateAgentGroupBody, options?: RequestInit): Promise<createAgentGroupResponse> => {
+
+  const res = await fetch(getCreateAgentGroupUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createAgentGroupBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: createAgentGroupResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as createAgentGroupResponse
+}
+
+
+
+export type getAgentGroupByIDResponse200 = {
+  data: AgentGroup
+  status: 200
+}
+
+export type getAgentGroupByIDResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+
+export type getAgentGroupByIDResponse404 = {
+  data: ErrorResponse
+  status: 404
+}
+
+export type getAgentGroupByIDResponse500 = {
+  data: ErrorResponse
+  status: 500
+}
+
+export type getAgentGroupByIDResponseSuccess = (getAgentGroupByIDResponse200) & {
+  headers: Headers;
+};
+export type getAgentGroupByIDResponseError = (getAgentGroupByIDResponse400 | getAgentGroupByIDResponse404 | getAgentGroupByIDResponse500) & {
+  headers: Headers;
+};
+
+export type getAgentGroupByIDResponse = (getAgentGroupByIDResponseSuccess | getAgentGroupByIDResponseError)
+
+export const getGetAgentGroupByIDUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/groups/${id}`
+}
+
+/**
+ * @summary Get agent group by ID
+ */
+export const getAgentGroupByID = async (id: string, options?: RequestInit): Promise<getAgentGroupByIDResponse> => {
+
+  const res = await fetch(getGetAgentGroupByIDUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getAgentGroupByIDResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getAgentGroupByIDResponse
+}
+
+
+
+export type deleteAgentGroupResponse200 = {
+  data: void
+  status: 200
+}
+
+export type deleteAgentGroupResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+
+export type deleteAgentGroupResponse404 = {
+  data: ErrorResponse
+  status: 404
+}
+
+export type deleteAgentGroupResponse500 = {
+  data: ErrorResponse
+  status: 500
+}
+
+export type deleteAgentGroupResponseSuccess = (deleteAgentGroupResponse200) & {
+  headers: Headers;
+};
+export type deleteAgentGroupResponseError = (deleteAgentGroupResponse400 | deleteAgentGroupResponse404 | deleteAgentGroupResponse500) & {
+  headers: Headers;
+};
+
+export type deleteAgentGroupResponse = (deleteAgentGroupResponseSuccess | deleteAgentGroupResponseError)
+
+export const getDeleteAgentGroupUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/groups/${id}`
+}
+
+/**
+ * @summary Delete agent group by ID
+ */
+export const deleteAgentGroup = async (id: string, options?: RequestInit): Promise<deleteAgentGroupResponse> => {
+
+  const res = await fetch(getDeleteAgentGroupUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: deleteAgentGroupResponse['data'] = body ? JSON.parse(body) : undefined
+  return { data, status: res.status, headers: res.headers } as deleteAgentGroupResponse
+}
+
+
+
+export type updateAgentGroupResponse200 = {
+  data: void
+  status: 200
+}
+
+export type updateAgentGroupResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+
+export type updateAgentGroupResponse404 = {
+  data: ErrorResponse
+  status: 404
+}
+
+export type updateAgentGroupResponse500 = {
+  data: ErrorResponse
+  status: 500
+}
+
+export type updateAgentGroupResponseSuccess = (updateAgentGroupResponse200) & {
+  headers: Headers;
+};
+export type updateAgentGroupResponseError = (updateAgentGroupResponse400 | updateAgentGroupResponse404 | updateAgentGroupResponse500) & {
+  headers: Headers;
+};
+
+export type updateAgentGroupResponse = (updateAgentGroupResponseSuccess | updateAgentGroupResponseError)
+
+export const getUpdateAgentGroupUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/groups/${id}`
+}
+
+/**
+ * @summary Update agent group
+ */
+export const updateAgentGroup = async (id: string,
+    updateAgentGroupBody: UpdateAgentGroupBody, options?: RequestInit): Promise<updateAgentGroupResponse> => {
+
+  const res = await fetch(getUpdateAgentGroupUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateAgentGroupBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: updateAgentGroupResponse['data'] = body ? JSON.parse(body) : undefined
+  return { data, status: res.status, headers: res.headers } as updateAgentGroupResponse
 }
 
 

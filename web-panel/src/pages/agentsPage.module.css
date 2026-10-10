@@ -15,7 +15,7 @@
 }
 
 .bottomArea {
-    position: fixed;
+    position: sticky;
     bottom: 10px;
     left: 0;
     right: 0;

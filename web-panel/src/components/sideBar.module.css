@@ -1,5 +1,5 @@
 .sideBar {
-    height: 100vh;
+    height: 100dvh;
     width: var(--width-val, "min-content");
     display: flex;
     position: relative;
@@ -7,22 +7,24 @@
     border-right: 1px solid var(--color-brd);
     margin-right: 5px;
     will-change: width;
-    overflow-wrap:break-word;
+    overflow-wrap: break-word;
     font-family: 'Roboto';
 }
 
-.resizeArea {
-    position: absolute;
-    right: -4px;
-    top: 0;
-    width: 7px;
-    height: 100%;
-    cursor: w-resize;
-    /* background-color: red; */
+@media (min-width: 800px) {
+    .resizeArea {
+        position: absolute;
+        right: -4px;
+        top: 0;
+        width: 7px;
+        height: 100%;
+        cursor: w-resize;
+        /* background-color: red; */
+    }
 }
 
 .barContainer {
-    height: 100vh;
+    height: 100dvh;
     width: 100%;
     /* background-color: red; */
     display: flex;
@@ -36,6 +38,7 @@
     /* background-color: red; */
     margin-bottom: 20px;
 }
+
 .themeButton {
     background-color: transparent;
     border: none;

@@ -18,3 +18,9 @@ bin/*
 *.csr
 
 .dev.docs.md
+
+.idea
+server/docker/certbot/*
+
+# use yaml spec
+*swagger.json

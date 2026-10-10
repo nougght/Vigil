@@ -1,42 +1,66 @@
 import './App.css'
-import { BrowserRouter, Navigate, Route, Routes, Outlet, useLocation } from 'react-router-dom'
-import { AgentsPage } from './pages/AgentsPage'
-import { AgentPage } from './pages/AgentPage'
-import { NewAgentPage } from './pages/NewAgentPage'
-import { SideBar, type SideBarData } from './components/sideBar'
-import { useEffect, useRef, useState } from 'react'
-import dashIcon from "./assets/dashboard.svg"
-import agentsIcon from "./assets/cpu.svg"
-import { ClientMessageTypeAgentDetailed, FillMetricsFromSeries, MessageTypeActivity, MessageTypeFleetOverview, MessageTypeSeries, type AgentDetailedMessage, type ClientMessage, type Message, type Metrics, type SeriesDTO } from './domain/metrics'
-import { OverviewPage } from './pages/OverviewPage'
-import type { Overview } from './domain/overview'
-import type { ActivityUpdate } from './domain/activity'
+import {BrowserRouter, Navigate, Outlet, Route, Routes, useLocation} from 'react-router-dom'
+import {useMediaQuery} from 'usehooks-ts'
+import {AgentsPage} from './pages/AgentsPage'
+import {AgentPage} from './pages/AgentPage'
+import {NewAgentPage} from './pages/NewAgentPage'
+import {SideBar, type SideBarData} from './components/sideBar'
+import {useEffect, useRef, useState} from 'react'
+import dashIcon from "../public/assets/dashboard.svg"
+import agentsIcon from "../public/assets/cpu.svg"
+import {
+    type AgentDetailedMessage,
+    type ClientMessage,
+    ClientMessageTypeAgentDetailed,
+    FillMetricsFromSeries,
+    type Message,
+    MessageTypeActivity,
+    MessageTypeFleetOverview,
+    MessageTypeSeries,
+    type Metrics,
+    type SeriesDTO
+} from './domain/metrics'
+import {OverviewPage} from './pages/OverviewPage'
+import type {Overview} from './domain/overview'
+import type {ActivityUpdate} from './domain/activity'
+import {BottomNav, type BottomNavData} from "./components/bottomNav.tsx";
 // import type { SeriesDTO } from './domain/metrics'
 let sideBarData: SideBarData = {
     iconSrc: "",
     title: "Vigil",
     items: [
-        { id: "overview", title: "Обзор", iconSrc: dashIcon, path: "/overview"},
-        { id: "agents", title: "Агенты", iconSrc: agentsIcon, path: "/agents", countLabel: 0 },
-        { id: "groups", title: "Группы", path: "/groups"},
-        { id: "reports", title: "Отчеты", path: "/reports"},
-        { id: "events", title: "События", path: "/events"},
-        { id: "streams", title: "Удаленный просмотр", path: "streams"}
+        {id: "overview", title: "Обзор", iconSrc: dashIcon, path: "/overview"},
+        {id: "agents", title: "Агенты", iconSrc: agentsIcon, path: "/agents", countLabel: 0},
+        {id: "groups", title: "Группы", path: "/groups"},
+        {id: "reports", title: "Отчеты", path: "/reports"},
+        {id: "events", title: "События", path: "/events"},
+        {id: "streams", title: "Удаленный просмотр", path: "streams"}
+
+    ]
+
+}
+let bottomNavData: BottomNavData = {
+    iconSrc: "",
+    title: "Vigil",
+    items: [
+        {id: "overview", title: "Обзор", iconSrc: dashIcon, path: "/overview"},
+        {id: "agents", title: "Агенты", iconSrc: agentsIcon, path: "/agents", countLabel: 0},
+        {id: "groups", title: "Группы", path: "/groups"},
+        {id: "reports", title: "Отчеты", path: "/reports"},
 
     ]
 
 }
 
-
-const AppLayout = ({onlineCount} : {onlineCount: number}) => {
-    let location = useLocation()
-
-    useEffect(
-        () => {
-
-        },
-        [location]
-    )
+const AppLayout = ({onlineCount}: { onlineCount: number }) => {
+    // let location = useLocation()
+    const isPhone = useMediaQuery('(max-width:599px)')
+    // useEffect(
+    //     () => {
+    //
+    //     },
+    //     [location]
+    // )
     useEffect(
         () => {
             if (onlineCount < 0) return
@@ -45,12 +69,23 @@ const AppLayout = ({onlineCount} : {onlineCount: number}) => {
         [onlineCount]
     )
     return (
-        <div style={{ display: `flex`, flexDirection: `row`, height: `100%`, alignItems: `stretch` }}>
-            <SideBar
-                data={sideBarData}
-            />
-            <div style={{ flexGrow: 1, overflow: `auto` }}><Outlet /></div>
-
+        <div style={{
+            display: `flex`,
+            flexDirection: `${isPhone ? 'column' : 'row'}`,
+            height: `100%`,
+            alignItems: `stretch`
+        }}>
+            {!isPhone &&
+                <SideBar
+                    data={sideBarData}
+                />
+            }
+            <div style={{flexGrow: 1, overflow: `auto`}}><Outlet/></div>
+            {isPhone &&
+                <BottomNav
+                    data={bottomNavData}
+                />
+            }
         </div>
     )
 }
@@ -73,13 +108,14 @@ function App() {
             console.log("send message ", currentMsg)
             try {
                 wsSocket?.send(JSON.stringify(currentMsg))
-            } catch(ex: any) {
+            } catch (ex: any) {
                 console.log(`exception: ${ex}`)
             }
         }
     }
     useEffect(() => {
-        const socket = new WebSocket("ws://monitoring.nought.ru/api/v1/ws");
+        const wsProto = location.protocol === 'https:' ? 'wss' : 'ws';
+        const socket = new WebSocket(`${wsProto}://${location.host}/api/v1/ws`);
         socket.addEventListener("open", () => {
             console.log("start")
             setConnected(true)
@@ -162,14 +198,14 @@ function App() {
                 />
                 <Routes>
                     <Route element={<AppLayout onlineCount={overview?.summary?.onlineAgents ?? 0}/>}>
-                        <Route path="/" element={<Navigate to="/agents" replace />} />
-                        <Route path="/overview" element={<OverviewPage 
-                            overviewProp={overview} />} />
-                        <Route path="/agents" element={<AgentsPage />} />
+                        <Route path="/" element={<Navigate to="/agents" replace/>}/>
+                        <Route path="/overview" element={<OverviewPage
+                            overviewProp={overview}/>}/>
+                        <Route path="/agents" element={<AgentsPage/>}/>
                         <Route path="/agents/:id" element={<AgentPage
-                            metricsProp={metrics} 
-                            activity={activity}/>} />
-                        <Route path="/agents/new" element={<NewAgentPage />} />
+                            metricsProp={metrics}
+                            activity={activity}/>}/>
+                        <Route path="/agents/new" element={<NewAgentPage/>}/>
                         <Route path="/groups" element={<NotImplemented/>}/>
                         <Route path="/reports" element={<NotImplemented/>}/>
                         <Route path="/events" element={<NotImplemented/>}/>
@@ -183,7 +219,7 @@ function App() {
 }
 
 
-function RouteChangeTracker({ handler }: { handler: (path: string) => void }) {
+function RouteChangeTracker({handler}: { handler: (path: string) => void }) {
     const location = useLocation();
 
     useEffect(() => {

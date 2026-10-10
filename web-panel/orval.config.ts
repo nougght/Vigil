@@ -6,7 +6,8 @@ export default {
             schemas: 'src/api/models',
             target: 'src/api/client',
             client: 'fetch',
-            baseUrl: 'http://monitoring.nought.ru/api/v1',
+            baseUrl: '/api/v1'  // relative path
+            // baseUrl: 'http://monitoring.nought.ru/api/v1',
         },
     },
 };

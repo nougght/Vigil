@@ -7,7 +7,7 @@ interface SetupConfigVariables {
     dto: AgentConfigBody
 }
 async function downloadConfig(vars: SetupConfigVariables): Promise<Error | void> {
-    const res = await fetch(`http://monitoring.nought.ru/api/v1/agents/${vars.agentID}/setupconfig`, {
+    const res = await fetch(`/api/v1/agents/${vars.agentID}/setupconfig`, {
         method: 'POST',
         body: JSON.stringify(vars.dto)
     });

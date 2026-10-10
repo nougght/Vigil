@@ -1,0 +1,71 @@
+.bottomNavContainer {
+    width: 100%;
+    display: flex;
+    position: relative;
+
+    background-color: color-mix(in srgb, var(--color-srf) 50%, transparent);
+    border-top: 1px solid var(--color-brd);
+
+    overflow-wrap:break-word;
+    font-family: 'Roboto';
+}
+
+
+.bottomNav {
+    width: 100%;
+    /* background-color: red; */
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-evenly;
+
+    margin-bottom: 5px;
+}
+
+
+.bottomNavButton {
+    border-radius: 10px;
+    border: none;
+    padding: 5px 8px;
+    margin: 5px;
+    text-align: left;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background-color: inherit;
+    text-decoration: none;
+    color: var(--color-txt);
+}
+
+.bottomNavButtonTitle {
+    flex-grow: 1;
+}
+
+.bottomNavButtonCount {
+    font-size: 14px;
+    /* color: rgb(90, 90, 90); */
+}
+
+.imgCont {
+    height: 25px;
+    width: 60px;
+    border-radius: 999px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/*.bottomNavButton:hover {*/
+/*    background-color: color-mix(in srgb, var(--color-scn) 50%, transparent);*/
+/*}*/
+.bottomNavButton.active {
+    color: var(--color-prm);
+}
+
+.bottomNavButton.active .imgCont {
+    background-color: var(--color-scn);
+    /*box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.05);*/
+}
+
