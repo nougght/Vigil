@@ -6,7 +6,7 @@ import {VitePWA} from "vite-plugin-pwa";
 export default defineConfig({
     server: {
         proxy: {
-            '/api': { target: 'http://localhost:8091', changeOrigin: true, ws: true },
+            '/api': {target: 'http://localhost:8091', changeOrigin: true, ws: true},
         },
     },
     plugins: [react(),
@@ -18,12 +18,11 @@ export default defineConfig({
                 description: 'Приложение Vigil',
                 theme_color: '#ffffff',
                 icons: [
-                    {
-                        src: 'logo.png',
-                        sizes: '256x256',
-                        type: 'image/png'
-                    }
-                ]
+                    {src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png'},
+                    {src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png'},
+                    {src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png'},
+                    {src: 'maskable-icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable'},
+                ],
             }
         })
     ],

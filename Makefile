@@ -85,3 +85,5 @@ copy-root-ca:
 nginx-up:
 	docker compose  -f ./server/docker/nginx-docker-compose.yaml -p nginx up -d  --build nginx
 
+gen-logo:
+	npx @vite-pwa/assets-generator --preset minimal-2023 web-panel/public/logo.png
