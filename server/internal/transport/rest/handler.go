@@ -7,16 +7,26 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/service"
 	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
+	"github.com/nougght/monitoring-system/server/internal/util"
 )
 
 var ErrorDiffParamAndBodyID = fmt.Errorf("'id' value from params and body cannot be different: %w", model.ErrBadRequest)
 
+func getPathID(c *gin.Context, name string) (uuid.UUID, error) {
+	id, err := util.GetParamID(c, name)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("invalid path parameter %s: %w: %w", name, err, model.ErrBadRequest)
+	}
+	return id, nil
+}
+
 func handleInvalidRequestBody(c *gin.Context, err error) {
 	log.Println(err)
-	handleError(c, fmt.Errorf("invalid request body: %w", model.ErrBadRequest))
+	handleError(c, fmt.Errorf("invalid request body: %w: %w", err, model.ErrBadRequest))
 }
 
 // write http response based on service error

@@ -1,17 +1,13 @@
 package rest
 
 import (
-	"context"
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/service/agent_groups"
 	"github.com/nougght/monitoring-system/server/internal/transport/dto/mapper"
 	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
-	"github.com/nougght/monitoring-system/server/internal/util"
 	sharedUtil "github.com/nougght/monitoring-system/shared/go/util"
 )
 
@@ -56,7 +52,7 @@ func (h *AgentGroupHandler) CreateGroup(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&body)
 	if err != nil {
-		handleError(c, err)
+		handleInvalidRequestBody(c, err)
 		return
 	}
 
@@ -78,7 +74,7 @@ func (h *AgentGroupHandler) CreateGroup(c *gin.Context) {
 // @Failure      500  {object}  dto.ErrorResponse
 // @Router /groups [get]
 func (h *AgentGroupHandler) GetAllGroups(c *gin.Context) {
-	groups, err := h.groupService.GetAllGroups(context.Background())
+	groups, err := h.groupService.GetAllGroups(c.Request.Context())
 	if err != nil {
 		handleError(c, err)
 		return
@@ -99,9 +95,9 @@ func (h *AgentGroupHandler) GetAllGroups(c *gin.Context) {
 // @Router /groups/{id} [get]
 func (h *AgentGroupHandler) GetGroupByID(c *gin.Context) {
 	ctx := c.Request.Context()
-	id, err := util.GetParamID(c, "id")
+	id, err := getPathID(c, "id")
 	if err != nil {
-		handleError(c, fmt.Errorf("invalid 'id' path parameter: %w", model.ErrBadRequest))
+		handleError(c, err)
 		return
 	}
 
@@ -128,9 +124,9 @@ func (h *AgentGroupHandler) GetGroupByID(c *gin.Context) {
 // @Router /groups/{id} [patch]
 func (h *AgentGroupHandler) UpdateGroup(c *gin.Context) {
 	ctx := c.Request.Context()
-	id, err := util.GetParamID(c, "id")
+	id, err := getPathID(c, "id")
 	if err != nil {
-		handleError(c, fmt.Errorf("invalid 'id' path parameter: %w", model.ErrBadRequest))
+		handleError(c, err)
 		return
 	}
 
@@ -166,9 +162,9 @@ func (h *AgentGroupHandler) UpdateGroup(c *gin.Context) {
 // @Router /groups/{id} [delete]
 func (h *AgentGroupHandler) DeleteGroup(c *gin.Context) {
 	ctx := c.Request.Context()
-	id, err := util.GetParamID(c, "id")
+	id, err := getPathID(c, "id")
 	if err != nil {
-		handleError(c, fmt.Errorf("invalid 'id' path parameter: %w", model.ErrBadRequest))
+		handleError(c, err)
 		return
 	}
 

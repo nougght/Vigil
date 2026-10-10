@@ -6,8 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/nougght/monitoring-system/server/internal/model"
 	agent "github.com/nougght/monitoring-system/server/internal/service/agent_interaction"
 	agentregistry "github.com/nougght/monitoring-system/server/internal/service/agent_registry"
 	"github.com/nougght/monitoring-system/server/internal/transport/dto/mapper"
@@ -57,7 +55,7 @@ func (h *AgentHandler) CreateAgent(c *gin.Context) {
 	var body *dto.CreateAgentBody
 	err := c.ShouldBindJSON(&body)
 	if err != nil {
-		handleError(c, err)
+		handleInvalidRequestBody(c, err)
 		return
 	}
 
@@ -84,16 +82,16 @@ func (h *AgentHandler) CreateAgent(c *gin.Context) {
 // @Failure      500  {object}  dto.ErrorResponse
 // @Router /agents/{agentID}/setupconfig [post]
 func (h *AgentHandler) DownloadAgentFiles(c *gin.Context) {
-	agentID, err := uuid.Parse(c.Param("agentID"))
+	agentID, err := getPathID(c, "agentID")
 	if err != nil {
-		handleError(c, fmt.Errorf("invalid 'agentID' path parameter: %w", model.ErrBadRequest))
+		handleError(c, err)
 		return
 	}
 
 	var body dto.AgentConfigBody
 	err = c.ShouldBindJSON(&body)
 	if err != nil {
-		handleError(c, fmt.Errorf("invalid request body: %w", model.ErrBadRequest))
+		handleInvalidRequestBody(c, err)
 		return
 	}
 
@@ -144,9 +142,9 @@ func (h *AgentHandler) GetAllAgents(c *gin.Context) {
 // @Failure      500  {object}  dto.ErrorResponse
 // @Router /agents/{agentID} [get]
 func (h *AgentHandler) GetAgent(c *gin.Context) {
-	agentID, err := uuid.Parse(c.Param("agentID"))
+	agentID, err := getPathID(c, "agentID")
 	if err != nil {
-		handleError(c, fmt.Errorf("invalid 'agentID' path parameter: %w", model.ErrBadRequest))
+		handleError(c, err)
 		return
 	}
 	res, err := h.agentRegistryService.GetAgentByID(c.Request.Context(), agentID)
@@ -170,9 +168,9 @@ func (h *AgentHandler) GetAgent(c *gin.Context) {
 // @Failure      500  {object}  dto.ErrorResponse
 // @Router /agents/{agentID}/specifications [get]
 func (h *AgentHandler) GetAgentSpecs(c *gin.Context) {
-	agentID, err := uuid.Parse(c.Param("agentID"))
+	agentID, err := getPathID(c, "agentID")
 	if err != nil {
-		handleError(c, fmt.Errorf("invalid 'agentID' path parameter: %w", model.ErrBadRequest))
+		handleError(c, err)
 		return
 	}
 	res, err := h.agentRegistryService.GetSpecifications(c.Request.Context(), agentID)

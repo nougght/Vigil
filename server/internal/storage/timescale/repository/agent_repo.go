@@ -44,7 +44,7 @@ func (r *AgentRepository) GetAllAgents(ctx context.Context) (res []*agent_model.
 			   a.name,
 			   a.description,
 			    CASE 
-					WHEN ag.deleted_at != NULL THEN 
+					WHEN ag.deleted_at IS NULL THEN 
 						a.group_id
 					ELSE 
 						NULL
@@ -78,17 +78,17 @@ func (r *AgentRepository) GetAllAgents(ctx context.Context) (res []*agent_model.
 
 func (r *AgentRepository) GetAgentByID(ctx context.Context, id uuid.UUID) (res *agent_model.Agent, err error) {
 	query := `
-		SELECT id,
-			   name,
-			   description,
+		SELECT a.id,
+			   a.name,
+			   a.description,
 			    CASE 
-					WHEN ag.deleted_at != NULL THEN 
+					WHEN ag.deleted_at IS NULL THEN 
 						a.group_id
 					ELSE 
 						NULL
 				END AS group_id, 
-			   created_at,
-			   last_seen_at
+			   a.created_at,
+			   a.last_seen_at
 		FROM agents a
 		LEFT JOIN agent_groups ag
 			ON a.group_id = ag.id

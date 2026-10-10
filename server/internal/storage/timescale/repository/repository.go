@@ -75,11 +75,3 @@ func CollectOnePtr[T any](rows pgx.Rows) (*T, error) {
 func CollectRowsPtr[T any](rows pgx.Rows) ([]*T, error) {
 	return pgx.CollectRows(rows, pgx.RowToAddrOfStructByName[T])
 }
-
-func CollectOnePtr[T any](rows pgx.Rows) (*T, error) {
-	return pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[T])
-}
-
-func CollectRowsPtr[T any](rows pgx.Rows) ([]*T, error) {
-	return pgx.CollectRows(rows, pgx.RowToAddrOfStructByName[T])
-}

@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"crypto/x509"
 	"crypto/x509/pkix"
-	"database/sql"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -219,6 +218,9 @@ func (s *AgentRegistryService) Enroll(ctx context.Context, params *agent_model.E
 		if errors.Is(err, repository.ErrNoAffectedRows) {
 			return fmt.Errorf("enrollment key already used: %w", model.ErrBadRequest)
 		}
+		if err != nil {
+			return fmt.Errorf("failed to set used enrollment key: %w", err)
+		}
 
 		err = s.agentRepo.UpdateStatus(ctx, agentID, agent_model.AgentStatusActive)
 		if err != nil {
@@ -265,7 +267,7 @@ func (s *AgentRegistryService) validateAgentEnrollment(ctx context.Context, enro
 	selector, keyVerifier := parts[0], parts[1]
 
 	key, err := s.enrollmentKeysRepo.GetKeyBySelector(ctx, selector)
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, repository.ErrNotFound) {
 		return uuid.Nil, nil, fmt.Errorf("key with selector '%s' not found: %w", selector, model.ErrBadRequest)
 	}
 	if err != nil {
