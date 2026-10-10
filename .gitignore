@@ -21,3 +21,6 @@ bin/*
 
 .idea
 server/docker/certbot/*
+
+# use yaml spec
+*swagger.json

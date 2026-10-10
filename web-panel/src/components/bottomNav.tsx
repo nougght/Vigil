@@ -1,5 +1,6 @@
 import {NavLink} from "react-router-dom";
 import styles from "./bottomNav.module.css";
+import {useTheme} from "../hooks/useTheme.ts";
 
 
 export interface NavItem {
@@ -34,6 +35,7 @@ const BottomNavButton = ({data}: { data: NavItem }) => {
 }
 
 export const BottomNav = ({data}: { data: BottomNavData }) => {
+    const [_theme, _setTheme] = useTheme();  // TODO: move upper
     return (
         <div className={styles.bottomNavContainer}>
             <nav className={styles.bottomNav}>
