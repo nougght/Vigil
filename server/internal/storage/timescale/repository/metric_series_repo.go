@@ -16,22 +16,14 @@ import (
 )
 
 type SeriesRepository struct {
-	database DB
+	BaseRepository
 }
 
 func NewSeriesRepository(db DB) *SeriesRepository {
 	return &SeriesRepository{
-		database: db,
+		BaseRepository{db: db},
 	}
 
-}
-
-func (r *SeriesRepository) db(ctx context.Context) DB {
-	res := r.database
-	if tx := ctx.Value(model.ContextKeyTx); tx != nil {
-		res = tx.(DB)
-	}
-	return res
 }
 
 func (r *SeriesRepository) BatchCreateOrLoadSeries(ctx context.Context, seriesList []metrics_model.MetricSeriesKey) (resultSeries []metrics_model.MetricSeries, err error) {
@@ -49,7 +41,7 @@ func (r *SeriesRepository) BatchCreateOrLoadSeries(ctx context.Context, seriesLi
 		batch.Queue(query, s.AgentID, s.Kind, s.Label)
 	}
 
-	tx, err := r.db(ctx).Begin(ctx)
+	tx, err := r.conn(ctx).Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed begin transaction: %w", err)
 	}
@@ -120,7 +112,7 @@ func (r *SeriesRepository) GetSeriesIDsByKeys(ctx context.Context, seriesKeys []
 		labelList[i] = key.Label
 		kindList[i] = key.Kind
 	}
-	rows, err := r.db(ctx).Query(ctx, query, agentIDList, kindList, labelList)
+	rows, err := r.conn(ctx).Query(ctx, query, agentIDList, kindList, labelList)
 	if err != nil {
 		return nil, fmt.Errorf("select failed: %w", err)
 	}
@@ -143,7 +135,7 @@ func (r *SeriesRepository) GetSeriesIDsByKeys(ctx context.Context, seriesKeys []
 
 func (r *SeriesRepository) GetAllSeries(ctx context.Context) ([]*metrics_model.MetricSeries, error) {
 	query := `SELECT * FROM metric_series`
-	rows, err := r.db(ctx).Query(ctx, query)
+	rows, err := r.conn(ctx).Query(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("select failed: %w", err)
 	}

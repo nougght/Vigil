@@ -7,30 +7,21 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/model/agent_groups"
 )
 
 type AgentGroupsRepository struct {
-	pool DB
+	BaseRepository
 }
 
 func NewAgentGroupsRepository(db DB) *AgentGroupsRepository {
 	return &AgentGroupsRepository{
-		pool: db,
+		BaseRepository{db: db},
 	}
-}
-
-func (r *AgentGroupsRepository) db(ctx context.Context) DB {
-	res := r.pool
-	if tx := ctx.Value(model.ContextKeyTx); tx != nil {
-		res = tx.(DB)
-	}
-	return res
 }
 
 func (r *AgentGroupsRepository) CreateGroup(ctx context.Context, group *agent_groups.AgentGroupInfo) (*agent_groups.AgentGroup, error) {
-	conn := r.db(ctx)
+	conn := r.conn(ctx)
 
 	query := `
 		INSERT INTO agent_groups(name, description)
@@ -55,7 +46,7 @@ func (r *AgentGroupsRepository) CreateGroup(ctx context.Context, group *agent_gr
 }
 
 func (r *AgentGroupsRepository) GetGroupByID(ctx context.Context, id uuid.UUID) (*agent_groups.AgentGroup, error) {
-	conn := r.db(ctx)
+	conn := r.conn(ctx)
 
 	query := `
 		SELECT * 
@@ -64,14 +55,14 @@ func (r *AgentGroupsRepository) GetGroupByID(ctx context.Context, id uuid.UUID) 
 	`
 
 	rows, err := conn.Query(ctx, query, id)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, ErrNotFound
-	}
 	if err != nil {
 		return nil, fmt.Errorf("select failed: %w", err)
 	}
 
 	res, err := CollectOnePtr[agent_groups.AgentGroup](rows)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, ErrNotFound
+	}
 	if err != nil {
 		return nil, fmt.Errorf("collect failed: %w", err)
 	}
@@ -81,7 +72,7 @@ func (r *AgentGroupsRepository) GetGroupByID(ctx context.Context, id uuid.UUID) 
 
 // all groups without deleted
 func (r *AgentGroupsRepository) GetAllGroups(ctx context.Context) ([]*agent_groups.AgentGroup, error) {
-	conn := r.db(ctx)
+	conn := r.conn(ctx)
 
 	query := `
 		SELECT * 
@@ -104,7 +95,7 @@ func (r *AgentGroupsRepository) GetAllGroups(ctx context.Context) ([]*agent_grou
 
 // update group
 func (r *AgentGroupsRepository) UpdateGroup(ctx context.Context, group *agent_groups.UpdateAgentGroupInput) error {
-	conn := r.db(ctx)
+	conn := r.conn(ctx)
 
 	query := `
 		UPDATE agent_groups ag
@@ -132,7 +123,7 @@ func (r *AgentGroupsRepository) UpdateGroup(ctx context.Context, group *agent_gr
 
 // mark group as deleted
 func (r *AgentGroupsRepository) DeleteGroupByID(ctx context.Context, id uuid.UUID) error {
-	conn := r.db(ctx)
+	conn := r.conn(ctx)
 
 	query := `
 		UPDATE agent_groups ag

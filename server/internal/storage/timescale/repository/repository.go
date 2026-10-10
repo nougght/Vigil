@@ -17,6 +17,14 @@ type DB interface {
 	Begin(ctx context.Context) (pgx.Tx, error)
 }
 
+type BaseRepository struct {
+	db DB
+}
+
+func (r *BaseRepository) conn(ctx context.Context) DB {
+	return conn(ctx, r.db)
+}
+
 type Repositories struct {
 	agentRpository           *AgentRepository
 	enrollmentKeysRepository *EnrollmentKeysRepository

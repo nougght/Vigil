@@ -75,13 +75,13 @@ export const getGetAllAgentsUrl = () => {
 export const getAllAgents = async ( options?: RequestInit): Promise<getAllAgentsResponse> => {
 
   const res = await fetch(getGetAllAgentsUrl(),
-  {
-    ...options,
-    method: 'GET'
+      {
+        ...options,
+        method: 'GET'
 
 
-  }
-)
+      }
+  )
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
@@ -135,13 +135,13 @@ export const getCreateAgentUrl = () => {
 export const createAgent = async (createAgentBody: CreateAgentBody, options?: RequestInit): Promise<createAgentResponse> => {
 
   const res = await fetch(getCreateAgentUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createAgentBody)
-  }
-)
+      {
+        ...options,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...options?.headers },
+        body: JSON.stringify(createAgentBody)
+      }
+  )
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
@@ -195,13 +195,13 @@ export const getGetAgentByIDUrl = (agentID: string,) => {
 export const getAgentByID = async (agentID: string, options?: RequestInit): Promise<getAgentByIDResponse> => {
 
   const res = await fetch(getGetAgentByIDUrl(agentID),
-  {
-    ...options,
-    method: 'GET'
+      {
+        ...options,
+        method: 'GET'
 
 
-  }
-)
+      }
+  )
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
@@ -255,13 +255,13 @@ export const getGetStreamFramesUrl = (agentID: string,) => {
 export const getStreamFrames = async (agentID: string, options?: RequestInit): Promise<getStreamFramesResponse> => {
 
   const res = await fetch(getGetStreamFramesUrl(agentID),
-  {
-    ...options,
-    method: 'GET'
+      {
+        ...options,
+        method: 'GET'
 
 
-  }
-)
+      }
+  )
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.blob();
@@ -312,16 +312,16 @@ export const getDownloadAgentFilesUrl = (agentID: string,) => {
  * @summary Download agent files
  */
 export const downloadAgentFiles = async (agentID: string,
-    agentConfigBody: AgentConfigBody, options?: RequestInit): Promise<downloadAgentFilesResponse> => {
+                                         agentConfigBody: AgentConfigBody, options?: RequestInit): Promise<downloadAgentFilesResponse> => {
 
   const res = await fetch(getDownloadAgentFilesUrl(agentID),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(agentConfigBody)
-  }
-)
+      {
+        ...options,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...options?.headers },
+        body: JSON.stringify(agentConfigBody)
+      }
+  )
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.blob();
@@ -374,13 +374,13 @@ export const getGetAgentSpecsUrl = (agentID: string,) => {
 export const getAgentSpecs = async (agentID: string, options?: RequestInit): Promise<getAgentSpecsResponse> => {
 
   const res = await fetch(getGetAgentSpecsUrl(agentID),
-  {
-    ...options,
-    method: 'GET'
+      {
+        ...options,
+        method: 'GET'
 
 
-  }
-)
+      }
+  )
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
@@ -434,13 +434,13 @@ export const getGetFleetOverviewUrl = () => {
 export const getFleetOverview = async ( options?: RequestInit): Promise<getFleetOverviewResponse> => {
 
   const res = await fetch(getGetFleetOverviewUrl(),
-  {
-    ...options,
-    method: 'GET'
+      {
+        ...options,
+        method: 'GET'
 
 
-  }
-)
+      }
+  )
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();

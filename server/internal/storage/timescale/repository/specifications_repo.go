@@ -6,27 +6,18 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/nougght/monitoring-system/server/internal/model"
 	agent_model "github.com/nougght/monitoring-system/server/internal/model/agent"
 )
 
 type SpecsRepository struct {
-	pool DB
+	BaseRepository
 }
 
 func NewSpecsRepository(db DB) *SpecsRepository {
 	return &SpecsRepository{
-		pool: db,
+		BaseRepository{db: db},
 	}
 
-}
-
-func (r *SpecsRepository) db(ctx context.Context) DB {
-	res := r.pool
-	if tx := ctx.Value(model.ContextKeyTx); tx != nil {
-		res = tx.(DB)
-	}
-	return res
 }
 
 func (r *SpecsRepository) CreateOrUpdateSpecs(ctx context.Context, specs *agent_model.Specs) (*agent_model.Specs, error) {
@@ -45,7 +36,7 @@ func (r *SpecsRepository) CreateOrUpdateSpecs(ctx context.Context, specs *agent_
 		full_specs = EXCLUDED.full_specs,
 		updated_at = EXCLUDED.updated_at;
 	`
-	_, err := r.db(ctx).Exec(ctx, query,
+	_, err := r.conn(ctx).Exec(ctx, query,
 		specs.AgentID,
 		specs.HostSpecs.Hostname,
 		specs.HostSpecs.OSType,
@@ -68,7 +59,7 @@ func (r *SpecsRepository) GetCurrentSpecs(ctx context.Context, agentID uuid.UUID
 	query := `
 		SELECT full_specs, agent_id, updated_at FROM agent_specs WHERE agent_id = $1;
 		`
-	rows, err := r.db(ctx).Query(ctx, query, agentID)
+	rows, err := r.conn(ctx).Query(ctx, query, agentID)
 	if err != nil {
 		return nil, fmt.Errorf("select failed: %w", err)
 	}
@@ -93,7 +84,7 @@ func (r *SpecsRepository) GetSpecsTotalList(ctx context.Context, agentIDs []uuid
 		FROM agent_specs 
 		WHERE agent_id = ANY($1);
 	`
-	rows, err := r.db(ctx).Query(ctx, query, agentIDs)
+	rows, err := r.conn(ctx).Query(ctx, query, agentIDs)
 	if err != nil {
 		return nil, fmt.Errorf("select failed: %w", err)
 	}

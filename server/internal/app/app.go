@@ -72,7 +72,7 @@ func New(ctx context.Context, cfg *config.Config) *App {
 	if err != nil {
 		log.Println("failed to connect to database, retry after 500ms")
 		select {
-		case <-time.After(time.Microsecond * 1000):
+		case <-time.After(time.Millisecond * 1000):
 			db, err = timescale.ConnectToDB(ctx, cfg.Postgres)
 			if err != nil {
 				log.Panicf("failed to connect to database: %s", err.Error())
@@ -86,7 +86,7 @@ func New(ctx context.Context, cfg *config.Config) *App {
 	services := service.New(service.ServicesOptions{
 		Config:       cfg,
 		Repositories: repository.New(db),
-		Transactor:   db,
+		Transactor:   repository.NewTransactor(db),
 		Cert: &model.Certs{
 			CA:     intCA,
 			Key:    intKey,

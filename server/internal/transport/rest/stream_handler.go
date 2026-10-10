@@ -8,7 +8,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/nougght/monitoring-system/server/internal/model"
 	agent "github.com/nougght/monitoring-system/server/internal/service/agent_interaction"
 	agentregistry "github.com/nougght/monitoring-system/server/internal/service/agent_registry"
 	_ "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
@@ -46,9 +45,9 @@ func (s *StreamHandler) RegisterRoutes(r *gin.RouterGroup) {
 // @Failure      500  {object}  dto.ErrorResponse
 // @Router /agents/{agentID}/frames [get]
 func (s *StreamHandler) StreamFrames(c *gin.Context) {
-	agentID, err := uuid.Parse(c.Param("agentID"))
+	agentID, err := getPathID(c, "agentID")
 	if err != nil {
-		handleError(c, fmt.Errorf("invalid 'agentID' path parameter: %w", model.ErrBadRequest))
+		handleError(c, err)
 		return
 	}
 

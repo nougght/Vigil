@@ -4,10 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
 	"github.com/nougght/monitoring-system/server/internal/config"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/model/agent_groups"
@@ -38,34 +36,28 @@ func NewAgentGroupsService(cfg *config.Config, groupsRepo *repository.AgentGroup
 }
 
 func (s *AgentGroupsService) CreateGroup(ctx context.Context, group *agent_groups.CreateAgentGroupInput) (*agent_groups.CreateAgentGroupResult, error) {
-	tx, err := s.transactor.Begin(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed begin transaction: %w", err)
-	}
-	defer func() {
-		err := tx.Rollback(ctx)
-		if err != nil && !errors.Is(err, pgx.ErrTxClosed) {
-			log.Printf("rollback failed: %s", err.Error())
+	var (
+		createdGroup *agent_groups.AgentGroup
+		moved        int
+	)
+
+	err := s.transactor.WithinTx(ctx, func(ctx context.Context) (err error) {
+		createdGroup, err = s.groupsRepo.CreateGroup(ctx, &group.AgentGroupInfo)
+		if errors.Is(err, repository.ErrConflict) {
+			return model.ErrorAgentGroupNameIsTaken()
 		}
-	}()
-	ctx = context.WithValue(ctx, model.ContextKeyTx, tx)
+		if err != nil {
+			return fmt.Errorf("failed to create agent group: %w", err)
+		}
 
-	createdGroup, err := s.groupsRepo.CreateGroup(ctx, &group.AgentGroupInfo)
-	if errors.Is(err, repository.ErrConflict) {
-		return nil, model.ErrorAgentGroupNameIsTaken()
-	}
+		moved, err = s.agentRegistry.MoveAgentsToGroup(ctx, group.AgentIDs, createdGroup.ID)
+		if err != nil {
+			return fmt.Errorf("failed to move agents to created group: %w", err)
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to create agent group: %w", err)
-	}
-
-	moved, err := s.agentRegistry.MoveAgentsToGroup(ctx, group.AgentIDs, createdGroup.ID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to move agents to created group: %w", err)
-	}
-
-	err = tx.Commit(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("commit transaction error: %w", err)
+		return nil, err
 	}
 
 	return &agent_groups.CreateAgentGroupResult{
