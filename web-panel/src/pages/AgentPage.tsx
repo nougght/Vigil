@@ -39,7 +39,8 @@ export const AgentPage = ({ metricsProp, activity }: { metricsProp?: Metrics, ac
         isError: _isAgentError,
         error: _agentError,
         isFetching: _isAgentFetching,
-    } = state == null && id != undefined ? useAgent(id) : {}
+    } = useAgent(id ?? "") // TODO: add valid condition
+    // } = state == null && id != undefined ? useAgent(id) : {}
 
     useEffect(() => {
         if (specs?.error != null) {
@@ -54,7 +55,7 @@ export const AgentPage = ({ metricsProp, activity }: { metricsProp?: Metrics, ac
             console.error(agentResp?.error)
             setWarning(`ошибка:${agentResp?.error.status} ${agentResp?.error.message}`)
         }
-        setAgent(agentResp?.agent!)
+        setAgent(agentResp?.agent ?? null)
     }, [agentResp]);
 
     useEffect(() => {

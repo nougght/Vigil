@@ -15,7 +15,7 @@ export const AgentsPage = () => {
         error: _agentsError,
         isFetching: _isAgentsFetching,
     } = useAgents();
-    let navigate = useNavigate()
+    const navigate = useNavigate()
 
 
     useEffect(() => {

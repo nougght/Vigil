@@ -1,4 +1,4 @@
-import { convertBytesToMB } from "../util/units";
+import { convertBytesToMB } from "../../../shared/ui/src/util/units";
 
 interface ProcessData {
     pid: number;

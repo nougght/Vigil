@@ -1,7 +1,7 @@
 import { EMPTY_FOCUSED_WINDOW, type Metrics } from "../domain/metrics";
 import type { Specs } from "../../../shared/ui/src/domain/specs";
-import { getGradientColor } from "../util/gradientColor";
-import { convertBytesToGB } from "../util/units";
+import { getGradientColor } from "../../../shared/ui/src/util/gradientColor";
+import { convertBytesToGB } from "../../../shared/ui/src/util/units";
 
 
 import { ProcessTable } from "./ProcessTable";

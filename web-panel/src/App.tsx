@@ -25,7 +25,7 @@ import type {Overview} from './domain/overview'
 import type {ActivityUpdate} from './domain/activity'
 import {BottomNav, type BottomNavData} from "./components/bottomNav.tsx";
 // import type { SeriesDTO } from './domain/metrics'
-let sideBarData: SideBarData = {
+const sideBarData: SideBarData = {
     iconSrc: "",
     title: "Vigil",
     items: [
@@ -39,7 +39,7 @@ let sideBarData: SideBarData = {
     ]
 
 }
-let bottomNavData: BottomNavData = {
+const bottomNavData: BottomNavData = {
     iconSrc: "",
     title: "Vigil",
     items: [
@@ -108,7 +108,7 @@ function App() {
             console.log("send message ", currentMsg)
             try {
                 wsSocket?.send(JSON.stringify(currentMsg))
-            } catch (ex: any) {
+            } catch (ex: unknown) {
                 console.log(`exception: ${ex}`)
             }
         }

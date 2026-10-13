@@ -49,7 +49,8 @@ export const SideBar = ({ data }: { data: SideBarData }) => {
     const barRef = useRef<HTMLBaseElement>(null);
 
     useEffect(() => {
-        width != null && setWidthVal(`${width}px`)
+        if (width != null)
+            setWidthVal(`${width}px`)
     }, [width])
 
     useEffect(() => {
