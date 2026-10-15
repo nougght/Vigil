@@ -32,6 +32,7 @@ func defaultHashParams() *HashParams {
 		SaltLength:  16,
 		KeyLength:   32,
 	}
+
 }
 func makeHashString(hash, salt string, params *HashParams) string {
 	return fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s",

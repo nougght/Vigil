@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import {  useState } from "react"
 import { Link } from "react-router-dom";
 import { useOverview } from "../hooks/useOverview";
 import SimplePieChart from "../components/pieChart";
@@ -11,33 +11,21 @@ import styles from "./overviewPage.module.css"
 import commonStyles from "../common.module.css"
 
 export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefined }) => {
-    const [warning, setWarning] = useState<string | null>()
     const [info, _setInfo] = useState<string | null>()
     
     
     const {
-        data: overview,
+        data: overviewResp,
         isPending: isOverviewLoading,
         isError: _isOverviewError,
         error: _overviewError,
         isFetching: _isOverviewFetching,
     } = useOverview();
 
-    useEffect(() => {
-        if (overviewProp != undefined) {
-            setWarning(null)
-            overview!.overview = overviewProp
-        }
-    }, [overviewProp]);
+    // TODO: move data receiving logic outside
+    const overview = overviewProp ?? overviewResp?.overview
+    const warning = overviewProp == null && overviewResp?.error != null ? `ошибка:${overviewResp?.error?.status} ${overviewResp?.error?.message}` : null
 
-    useEffect(() => {
-        if (overview?.error != null) {
-            setWarning(`ошибка:${overview?.error?.status} ${overview?.error?.message}`)
-        }
-        // if (overview?.overview != null) {
-        //     setInfo("Данные успешно загружены")
-        // }
-    }, [overview]);
 
     if (isOverviewLoading) {
         return <div>Загрузка...</div>;
@@ -48,75 +36,75 @@ export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefi
         <div>
             <div>
                 <h1>Обзор</h1>
-                {overview?.overview?.summary != null && (
+                {overview?.summary != null && (
 
                     <div>
                         <div className={styles.topCards}>
                             <AgentCount
-                                online={overview?.overview?.summary?.onlineAgents}
-                                count={overview?.overview?.summary?.totalAgents}
+                                online={overview?.summary?.onlineAgents}
+                                count={overview?.summary?.totalAgents}
                             />
                             <AvgCPU
-                                value={overview?.overview?.summary?.averageCPUUsage}
+                                value={overview?.summary?.averageCPUUsage}
                             />
                             <AvgMem
-                                value={overview?.overview?.summary?.averageMemoryUsage}
+                                value={overview?.summary?.averageMemoryUsage}
                             />
                             {/* <label>Среднее использование CPU </label>
-                            <span>{overview?.overview?.summary?.averageCPUUsage.toFixed(2)}%</span>
+                            <span>{overview?.summary?.averageCPUUsage.toFixed(2)}%</span>
                             <br />
                             <label>Среднее использование памяти </label>
-                            <span>{overview?.overview?.summary?.averageMemoryUsage.toFixed(2)}%</span> */}
+                            <span>{overview?.summary?.averageMemoryUsage.toFixed(2)}%</span> */}
                         </div>
                         <div>
                             {/* <label>Распределение использования CPU</label>
                             <br />
-                            <label>Высокое({overview?.overview?.summary?.cpuUsageDistribution?.high?.percent}%) </label>
-                            <span>{overview?.overview?.summary?.cpuUsageDistribution?.high?.count}</span>
+                            <label>Высокое({overview?.summary?.cpuUsageDistribution?.high?.percent}%) </label>
+                            <span>{overview?.summary?.cpuUsageDistribution?.high?.count}</span>
                             <br />
-                            <label>Среднее({overview?.overview?.summary?.cpuUsageDistribution?.medium?.percent}%) </label>
-                            <span>{overview?.overview?.summary?.cpuUsageDistribution?.medium?.count}</span>
+                            <label>Среднее({overview?.summary?.cpuUsageDistribution?.medium?.percent}%) </label>
+                            <span>{overview?.summary?.cpuUsageDistribution?.medium?.count}</span>
                             <br />
-                            <label>Низкое({overview?.overview?.summary?.cpuUsageDistribution?.low?.percent}%) </label>
-                            <span>{overview?.overview?.summary?.cpuUsageDistribution?.low?.count}</span>
+                            <label>Низкое({overview?.summary?.cpuUsageDistribution?.low?.percent}%) </label>
+                            <span>{overview?.summary?.cpuUsageDistribution?.low?.count}</span>
                             <br />
                             <label>Распределение использования памяти</label>
                             <br />
-                            <label>Высокое({overview?.overview?.summary?.memoryUsageDistribution?.high?.percent}%) </label>
-                            <span>{overview?.overview?.summary?.memoryUsageDistribution?.high?.count}</span>
+                            <label>Высокое({overview?.summary?.memoryUsageDistribution?.high?.percent}%) </label>
+                            <span>{overview?.summary?.memoryUsageDistribution?.high?.count}</span>
                             <br />
-                            <label>Среднее({overview?.overview?.summary?.memoryUsageDistribution?.medium?.percent}%) </label>
-                            <span>{overview?.overview?.summary?.memoryUsageDistribution?.medium?.count}</span>
+                            <label>Среднее({overview?.summary?.memoryUsageDistribution?.medium?.percent}%) </label>
+                            <span>{overview?.summary?.memoryUsageDistribution?.medium?.count}</span>
                             <br />
-                            <label>Низкое({overview?.overview?.summary?.memoryUsageDistribution?.low?.percent}%) </label>
-                            <span>{overview?.overview?.summary?.memoryUsageDistribution?.low?.count}</span>
+                            <label>Низкое({overview?.summary?.memoryUsageDistribution?.low?.percent}%) </label>
+                            <span>{overview?.summary?.memoryUsageDistribution?.low?.count}</span>
                             <br />
                             <label>Распределение использования диска</label>
                             <br />
-                            <label>Высокое({overview?.overview?.summary?.diskUsageDistribution?.high?.percent}%) </label>
-                            <span>{overview?.overview?.summary?.diskUsageDistribution?.high?.count}</span>
+                            <label>Высокое({overview?.summary?.diskUsageDistribution?.high?.percent}%) </label>
+                            <span>{overview?.summary?.diskUsageDistribution?.high?.count}</span>
                             <br />
-                            <label>Среднее({overview?.overview?.summary?.diskUsageDistribution?.medium?.percent}%) </label>
-                            <span>{overview?.overview?.summary?.diskUsageDistribution?.medium?.count}</span>
+                            <label>Среднее({overview?.summary?.diskUsageDistribution?.medium?.percent}%) </label>
+                            <span>{overview?.summary?.diskUsageDistribution?.medium?.count}</span>
                             <br />
-                            <label>Низкое({overview?.overview?.summary?.diskUsageDistribution?.low?.percent}%) </label>
-                            <span>{overview?.overview?.summary?.diskUsageDistribution?.low?.count}</span> */}
+                            <label>Низкое({overview?.summary?.diskUsageDistribution?.low?.percent}%) </label>
+                            <span>{overview?.summary?.diskUsageDistribution?.low?.count}</span> */}
 
                             <div className={styles.distPies}>
 
                                 <SimplePieChart
                                     Title="Использование CPU"
-                                    PieData={CountDistToPieList(overview.overview.summary.cpuUsageDistribution)}
+                                    PieData={CountDistToPieList(overview.summary.cpuUsageDistribution)}
                                 />
 
                                 <SimplePieChart
                                     Title="Использование памяти"
-                                    PieData={CountDistToPieList(overview.overview.summary.memoryUsageDistribution)}
+                                    PieData={CountDistToPieList(overview.summary.memoryUsageDistribution)}
                                 />
 
                                 <SimplePieChart
                                     Title="Использование диска"
-                                    PieData={CountDistToPieList(overview.overview.summary.diskUsageDistribution)}
+                                    PieData={CountDistToPieList(overview.summary.diskUsageDistribution)}
                                 />
                             </div>
                         </div>
@@ -132,7 +120,7 @@ export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefi
                                         </tr>
                                     </thead> */}
                                     <tbody>
-                                        {overview?.overview?.topN?.cpuUsage?.map((agent) => (
+                                        {overview?.topN?.cpuUsage?.map((agent) => (
                                             agent.name != "" &&
                                             <tr key={agent.id}>
                                                 <td><Link to={`/agents/${agent.id}`}>{agent.name}</Link></td>
@@ -153,7 +141,7 @@ export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefi
                                         </tr>
                                     </thead> */}
                                     <tbody>
-                                        {overview?.overview?.topN?.memoryUsage?.map((agent) => (
+                                        {overview?.topN?.memoryUsage?.map((agent) => (
                                             agent.name != "" &&
                                             <tr key={agent.id}>
                                                 <td><Link to={`/agents/${agent.id}`}>{agent.name}</Link></td>
