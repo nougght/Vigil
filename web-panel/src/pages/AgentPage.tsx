@@ -3,7 +3,6 @@ import TabBar from '../../../shared/ui/src/components/TabBar';
 import Specifications from '../../../shared/ui/src/components/Specifications';
 import { useSpecs } from "../hooks/useGetSpecs";
 import { useAgent } from "../hooks/useGetAgent";
-import { useEffect, useState } from 'react';
 import type { Agent } from '../domain/agent';
 import { useLocation, useParams } from 'react-router-dom';
 import type { Metrics } from '../domain/metrics';
@@ -11,20 +10,18 @@ import { convertBytesToGB } from '@monitoring-system/shared/src/util/units';
 import { getGradientColor } from '@monitoring-system/shared/src/util/gradientColor';
 import type { ActivityUpdate } from '../domain/activity';
 import { AgentActivity } from '../components/agentActivity';
+import {useState} from "react";
 
 interface Tab {
     text: string;
     content: React.ReactNode;
 }
 
-export const AgentPage = ({ metricsProp, activity }: { metricsProp?: Metrics, activity?: ActivityUpdate }) => {
+export const AgentPage = ({ metricsProp, activityProp }: { metricsProp?: Metrics, activityProp?: ActivityUpdate }) => {
     const { state } = useLocation() as { state: Agent | null }
     const { id } = useParams()
-    const [agent, setAgent] = useState<Agent | null>(state)
     const [activeTab, setActiveTab] = useState(0)
-    const [warning, setWarning] = useState<string | null>()
-    const [metrics, setMetrics] = useState<Metrics | null>()
-    const [activityInfo, setActivity] = useState<ActivityUpdate>()
+
     const {
         data: specs,
         isPending: isSpecsPending,
@@ -39,39 +36,24 @@ export const AgentPage = ({ metricsProp, activity }: { metricsProp?: Metrics, ac
         isError: _isAgentError,
         error: _agentError,
         isFetching: _isAgentFetching,
-    } = state == null && id != undefined ? useAgent(id) : {}
+    } = useAgent(id ?? "") // TODO: add valid condition
+    // } = state == null && id != undefined ? useAgent(id) : {}
 
-    useEffect(() => {
-        if (specs?.error != null) {
-            console.error(specs?.error)
-            setWarning(`ошибка:${specs?.error.status} ${specs?.error.message}`)
-        }
-    }, [specs]);
+    const warning = "" + (_isSpecsError ?`ошибка:${_specsError}` : null)
+        + _isAgentError ? `ошибка:${_agentError}` :null
 
+    // TODO: need store
 
-    useEffect(() => {
-        if (agentResp?.error != null) {
-            console.error(agentResp?.error)
-            setWarning(`ошибка:${agentResp?.error.status} ${agentResp?.error.message}`)
-        }
-        setAgent(agentResp?.agent!)
-    }, [agentResp]);
+    const agent = agentResp?.agent ?? state
 
-    useEffect(() => {
-        if (agent?.id != metricsProp?.agentID) {
-            console.log(`metrics agent id mismatch: ${metricsProp?.agentID} - ${agent?.id}`)
-        } else {
-            setMetrics(metricsProp)
-        }
-    }, [metricsProp, agent?.id])
-
-    useEffect(() => {
-        if (agent?.id != activity?.agentID) {
-            console.log(`activity agent id mismatch: ${activity?.agentID} - ${agent?.id}`)
-        } else {
-            setActivity(activity)
-        }
-    }, [activity, agent?.id])
+    const metrics = agent?.id == metricsProp?.agentID ? metricsProp : undefined
+    if (agent?.id != metricsProp?.agentID) {
+        console.log(`metrics agent id mismatch: ${metricsProp?.agentID} - ${agent?.id}`)
+    }
+    const activity = agent?.id != activityProp?.agentID ? activityProp : undefined
+    if (agent?.id != activity?.agentID) {
+        console.log(`activity agent id mismatch: ${activity?.agentID} - ${agent?.id}`)
+    }
 
 
     const tabs: Tab[] = [
@@ -139,7 +121,7 @@ export const AgentPage = ({ metricsProp, activity }: { metricsProp?: Metrics, ac
             content: isSpecsPending ? <div>Загрузка...</div> :
                 agent != null ?
                     <AgentActivity
-                        activity={activityInfo}
+                        activity={activity}
                         agentID={agent.id}
                     /> :
                     specs?.error?.status == 404 && <div>Агент не найден</div>

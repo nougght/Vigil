@@ -10,7 +10,7 @@ export const useCreateAgents = () => {
 
     return useMutation({
         mutationFn: async (dto: CreateAgentBody) => { 
-            var resp = await createAgent(dto)
+            const resp = await createAgent(dto)
             if (resp.status != 200) {
                 throw new Error(`error: ${resp.data}`)
             }

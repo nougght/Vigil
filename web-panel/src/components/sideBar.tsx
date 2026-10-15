@@ -42,15 +42,12 @@ const SideBarButton = ({ data }: { data: NavItem }) => {
 
 export const SideBar = ({ data }: { data: SideBarData }) => {
     const [width, setWidth] = useState<number | null>();
-    const [widthVal, setWidthVal] = useState<string | null>();
     const [isResizing, setIsResizing] = useState(false);
 
     const [theme, setTheme] = useTheme();
     const barRef = useRef<HTMLBaseElement>(null);
 
-    useEffect(() => {
-        width != null && setWidthVal(`${width}px`)
-    }, [width])
+    const widthVal = width != null ? `${width}px` : null
 
     useEffect(() => {
         if (isResizing) {

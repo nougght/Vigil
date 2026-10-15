@@ -1,0 +1,56 @@
+name: frontend CI
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'web-panel/**'
+      - 'agent-ui/**'
+      - 'shared/ui/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/frontend-ci.yaml'
+  pull_request:
+    paths:
+      - 'web-panel/**'
+      - 'agent-ui/**'
+      - 'shared/ui/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/frontend-ci.yaml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:            # separate jobs for packages
+      fail-fast: false   # don't exit on single job fail
+      matrix:
+        include:
+          - pkg: web-panel
+            out: web-panel/dist
+          - pkg: agent-ui
+            out: agent/static/files
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --workspace=${{ matrix.pkg }}
+
+      - name: Build
+        run: npm run build --workspace=${{ matrix.pkg }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.pkg }}
+          path: ${{ matrix.pkg }}
+          if-no-files-found: error
+          retention-days: 14

@@ -31,7 +31,7 @@ export const useDownloadConfig = () => {
 
     return useMutation({
         mutationFn: async (vars: SetupConfigVariables) => {
-            var error = await downloadConfig(vars)
+            const error = await downloadConfig(vars)
             if (error) {
                 throw new Error(`status: ${error.status} message: ${error.message}`)
             }

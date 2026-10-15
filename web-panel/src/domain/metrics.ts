@@ -56,7 +56,7 @@ export interface Metrics {
 }
 
 export const FillMetricsFromSeries = (s: SeriesDTO, metrics: Metrics, agentID: string):Metrics => {
-    let m: Metrics = {
+    const m: Metrics = {
         cpuPercent: metrics.cpuPercent,
         memoryUsed: metrics.memoryUsed,
         diskUsage: metrics.diskUsage,

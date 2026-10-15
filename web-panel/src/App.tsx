@@ -25,7 +25,7 @@ import type {Overview} from './domain/overview'
 import type {ActivityUpdate} from './domain/activity'
 import {BottomNav, type BottomNavData} from "./components/bottomNav.tsx";
 // import type { SeriesDTO } from './domain/metrics'
-let sideBarData: SideBarData = {
+const sideBarData: SideBarData = {
     iconSrc: "",
     title: "Vigil",
     items: [
@@ -39,7 +39,7 @@ let sideBarData: SideBarData = {
     ]
 
 }
-let bottomNavData: BottomNavData = {
+const bottomNavData: BottomNavData = {
     iconSrc: "",
     title: "Vigil",
     items: [
@@ -108,17 +108,19 @@ function App() {
             console.log("send message ", currentMsg)
             try {
                 wsSocket?.send(JSON.stringify(currentMsg))
-            } catch (ex: any) {
+            } catch (ex: unknown) {
                 console.log(`exception: ${ex}`)
             }
         }
     }
+
     useEffect(() => {
         const wsProto = location.protocol === 'https:' ? 'wss' : 'ws';
         const socket = new WebSocket(`${wsProto}://${location.host}/api/v1/ws`);
         socket.addEventListener("open", () => {
             console.log("start")
             setConnected(true)
+            setWSSocket(socket)
         });
 
         socket.onclose = () => {
@@ -144,7 +146,6 @@ function App() {
             }
         });
 
-        setWSSocket(socket)
 
         return () => {
             socket.close()
@@ -152,7 +153,7 @@ function App() {
     }, []);
 
     useEffect(() => {
-        if (socketConnected === true) {
+        if (socketConnected) {
             sendMsg()
         }
     }, [socketConnected])
@@ -204,7 +205,7 @@ function App() {
                         <Route path="/agents" element={<AgentsPage/>}/>
                         <Route path="/agents/:id" element={<AgentPage
                             metricsProp={metrics}
-                            activity={activity}/>}/>
+                            activityProp={activity}/>}/>
                         <Route path="/agents/new" element={<NewAgentPage/>}/>
                         <Route path="/groups" element={<NotImplemented/>}/>
                         <Route path="/reports" element={<NotImplemented/>}/>
