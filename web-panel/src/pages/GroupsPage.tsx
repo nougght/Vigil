@@ -1,15 +1,16 @@
 // import { Link, useNavigate } from "react-router-dom"
-import { useMemo, useState} from "react";
+import { useMemo, useState } from "react";
 // import { GroupCard } from "../components/groupCard";
 import styles from "./groupsPage.module.css"
 // import TabBar from "../../../shared/ui/src/components/TabBar.tsx";
-import {Checkbox, Dialog} from "radix-ui";
-import {CheckIcon} from "@radix-ui/react-icons";
-import {useGroups} from "../hooks/useGetGroups.ts";
-import {GroupCard} from "../components/groupCard.tsx";
-import {useCreateGroup} from "../hooks/useCreateGroup.ts";
-import {useAgents} from "../hooks/useGetAgents.ts";
-import type {Agent} from "../domain/agent";
+import { Checkbox, Dialog } from "radix-ui";
+import { CheckIcon } from "@radix-ui/react-icons";
+import { useGroups } from "../hooks/useGetGroups.ts";
+import { GroupCard } from "../components/groupCard.tsx";
+import { useCreateGroup } from "../hooks/useCreateGroup.ts";
+import { useAgents } from "../hooks/useGetAgents.ts";
+import type { Agent } from "../domain/agent";
+import { HideOptions, TextInput } from "@monitoring-system/shared/src/components/TextInput"
 
 interface GroupInfo {
     Name: string
@@ -17,13 +18,19 @@ interface GroupInfo {
     Agents?: string[]
 }
 
-const AgentsPicker = ({agents, checked, onChange}: {
+const AgentsPicker = ({ agents, checked, onChange }: {
     agents: Agent[],
-    checked: Record<string, boolean>,
-    onChange: (checked: Record<string, boolean>) => void
+    checked: Set<string>,
+    onChange: (checked: Set<string>) => void
 }) => {
-    const setChecked = (id: string, value: boolean) => {
-        onChange({...checked, [id]: value})
+    const toggleChecked = (id: string) => {
+        const newSet = new Set(checked)
+        if (newSet.has(id)) {
+            newSet.delete(id)
+        } else {
+            newSet.add(id)
+        }
+        onChange(newSet)
     }
 
     return (
@@ -31,11 +38,11 @@ const AgentsPicker = ({agents, checked, onChange}: {
             {
                 agents && agents.map(
                     a => (<div className={styles.checkRow}>
-                        <Checkbox.Root className={styles.checkboxRoot} checked={checked[a.id]}
-                                       onCheckedChange={() => setChecked(a.id, !checked[a.id])}
-                                       id={a.id}>
+                        <Checkbox.Root className={styles.checkboxRoot} checked={checked.has(a.id)}
+                            onCheckedChange={() => toggleChecked(a.id)}
+                            id={a.id}>
                             <Checkbox.Indicator className={styles.checkboxInd}>
-                                <CheckIcon/>
+                                <CheckIcon />
                             </Checkbox.Indicator>
                         </Checkbox.Root>
                         <label className="Label" htmlFor="c1">
@@ -52,6 +59,8 @@ export const GroupsPage = () => {
     const [groupInfo, setGroupInfo] = useState<GroupInfo>({
         Name: ""
     })
+    const [agentsChecked, setAgentsChecked] = useState<Set<string>>(new Set())
+    const [nameWarning, setNameWarning] = useState<string>()
 
     const {
         data: groups,
@@ -78,20 +87,17 @@ export const GroupsPage = () => {
 
     } = useAgents();
 
-    const defaultAgentsChecked = useMemo(() => (agents ?
-        agents.reduce((acc, ag) => {
-            acc[ag.id] = false
-            return acc
-        }, {} as Record<string, boolean>) : {}), [agents])
-
-    const [agentsChecked, setAgentsChecked] = useState<Record<string, boolean>>({})
 
     const handleCreate = () => {
+        if (!groupInfo.Name) {
+            setNameWarning("Название группы не может быть пустым")
+            return
+        }
         createGroup(
             {
                 name: groupInfo.Name,
                 description: groupInfo.Description,
-                agentIDs: Object.keys(agentsChecked).filter(id => agentsChecked[id])
+                agentIDs: Array.from(agentsChecked)
             },
         )
     }
@@ -101,30 +107,36 @@ export const GroupsPage = () => {
         <Dialog.Root>
             <Dialog.Trigger className={styles.createButton}>Новая группа</Dialog.Trigger>
             <Dialog.Portal>
-                <Dialog.Overlay className={styles.overlay}/>
+                <Dialog.Overlay className={styles.overlay} />
                 <Dialog.Content className={styles.content} asChild>
                     <div>
                         <div>
                             <label className={styles.formLabel} htmlFor="name">Название</label>
-                            <input type="text" id="name" name="name" value={groupInfo?.Name}
-                                   required onChange={e =>
-                                setGroupInfo({
-                                    ...groupInfo,
-                                    Name: e.target.value
-                                })}/>
-                            <br/>
+                            <TextInput value={groupInfo?.Name}
+                                placeholder="Введите название группы"
+                                warning={nameWarning}
+                                onChange={value => {
+                                    value.length > 0 && setNameWarning(undefined);
+                                    setGroupInfo({
+                                        ...groupInfo,
+                                        Name: value
+                                    })}
+                                 } />
+                            <br />
                             <label className={styles.formLabel} htmlFor="description">Описание</label>
-                            <input type="text" id="description" name="description"
-                                   value={groupInfo?.Description}
-                                   onChange={e =>
-                                       setGroupInfo({
-                                           ...groupInfo,
-                                           Description: e.target.value
-                                       })}/>
+                            <TextInput
+                                value={groupInfo?.Description}
+                                placeholder="Введите описание группы"
+                                onChange={v =>
+                                    setGroupInfo({
+                                        ...groupInfo,
+                                        Description: v
+                                    })} />
 
+                            {nameWarning && <p className={styles.warning}>{nameWarning}</p>}
                             <AgentsPicker agents={agents ?? []}
-                                          checked={{...defaultAgentsChecked, ...agentsChecked}}
-                                          onChange={setAgentsChecked}/>
+                                checked={agentsChecked}
+                                onChange={setAgentsChecked} />
 
                             {_isAgentsPending && <a>Загрузка...</a>}
                             <button onClick={handleCreate}>Создать</button>
@@ -149,7 +161,7 @@ export const GroupsPage = () => {
                 <div className={styles.groupCardsContainer}>{
                     groups && groups.map((g) =>
                         <GroupCard key={g.id} group={g} onClick={() => {
-                        }}/>
+                        }} />
                     )
                 }
 

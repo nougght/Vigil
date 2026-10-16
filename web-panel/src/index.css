@@ -12,6 +12,9 @@
     --color-scn: rgb(227.8, 237.12, 247.16);
 
     --color-txt: rgb(19, 19, 19);
+    --color-mx: black;
+
+    --color-error: rgb(255, 0, 0);
 }
 
 [app-theme="dark"] {
@@ -27,6 +30,9 @@
 
     
     --color-txt: rgb(204, 204, 204);
+    --color-mx: white;
+    
+    --color-error: rgb(255, 0, 0);
 }
 
 h1 {
