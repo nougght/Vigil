@@ -1,0 +1,28 @@
+
+
+
+.TabBar {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.TabButton {
+    border-radius: 10px;
+    border: none;
+    background-color: transparent;
+    outline: 1px solid var(--color-brd);
+    padding: 5px;
+    margin: 5px;
+    color: var(--color-scn-txt);
+}
+
+.TabButton:hover {
+    outline: 1px solid var(--color-prm);
+}
+
+.TabButton.active {
+    background-color: var(--color-scn);
+    color: var(--color-txt);
+}

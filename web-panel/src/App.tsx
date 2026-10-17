@@ -6,8 +6,8 @@ import {AgentPage} from './pages/AgentPage'
 import {NewAgentPage} from './pages/NewAgentPage'
 import {SideBar, type SideBarData} from './components/sideBar'
 import {useEffect, useRef, useState} from 'react'
-import dashIcon from "../public/assets/dashboard.svg"
-import agentsIcon from "../public/assets/cpu.svg"
+import dashIcon from "./assets/dashboard.svg"
+import agentsIcon from "./assets/cpu.svg"
 import {
     type AgentDetailedMessage,
     type ClientMessage,
