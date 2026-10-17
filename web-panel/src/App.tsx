@@ -114,12 +114,14 @@ function App() {
             }
         }
     }
+
     useEffect(() => {
         const wsProto = location.protocol === 'https:' ? 'wss' : 'ws';
         const socket = new WebSocket(`${wsProto}://${location.host}/api/v1/ws`);
         socket.addEventListener("open", () => {
             console.log("start")
             setConnected(true)
+            setWSSocket(socket)
         });
 
         socket.onclose = () => {
@@ -145,7 +147,6 @@ function App() {
             }
         });
 
-        setWSSocket(socket)
 
         return () => {
             socket.close()
@@ -153,7 +154,7 @@ function App() {
     }, []);
 
     useEffect(() => {
-        if (socketConnected === true) {
+        if (socketConnected) {
             sendMsg()
         }
     }, [socketConnected])
@@ -205,7 +206,7 @@ function App() {
                         <Route path="/agents" element={<AgentsPage/>}/>
                         <Route path="/agents/:id" element={<AgentPage
                             metricsProp={metrics}
-                            activity={activity}/>}/>
+                            activityProp={activity}/>}/>
                         <Route path="/agents/new" element={<NewAgentPage/>}/>
                         <Route path="/groups" element={<GroupsPage/>}/>
                         <Route path="/reports" element={<NotImplemented/>}/>

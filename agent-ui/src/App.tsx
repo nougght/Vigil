@@ -54,7 +54,7 @@ function App() {
             }
         }
         fetchSpecs();
-    }, []);
+    });
 
     useEffect(() => {
         const socket = new WebSocket("ws://127.0.0.1:8111/ws");

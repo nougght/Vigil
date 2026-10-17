@@ -1,16 +1,9 @@
 import { getGradientColor } from '@monitoring-system/shared/src/util/gradientColor'
 import styles from './loadBar.module.css'
-import { useEffect, useState } from 'react'
 
 export const LoadBar = ({ value, width, height }: { value: number, width?: number, height?: number }) => {
-    const [wdValue, setWd] = useState<string>('100%')
-    const [hgValue, setHg] = useState<string>('20px')
-    useEffect(() => {
-        setWd(width == undefined ? '100%' : `${width}px`)
-    }, [width])
-    useEffect(() => {
-        setHg(height == undefined ? '100%' : `${height}px`)
-    }, [height])
+    const wdValue =width == undefined ? '100%' : `${width}px`
+    const hgValue = height == undefined ? '100%' : `${height}px`
 
     return (
         <div className={styles.container}

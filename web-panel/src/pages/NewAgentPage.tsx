@@ -19,7 +19,7 @@ interface NewAgentProps {
 
 export const NewAgentPage = (_props: NewAgentProps) => {
     const [resp, setResp] = useState<CreateAgentResponse | null>(null)
-    const [name, setName] = useState<string>(Math.random().toString(36).substring(2))
+    const [name, setName] = useState<string>(() => Math.random().toString(36).substring(2))
     const [description, setDescription] = useState<string | null>(null)
     const [warning, setWarning] = useState<string | null>()
     const [info, setInfo] = useState<string | null>()
