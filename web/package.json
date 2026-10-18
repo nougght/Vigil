@@ -13,7 +13,7 @@
     "dev:web": "npm run dev --workspace=web-panel",
     "dev:agent-ui": "npm run dev --workspace=agent-ui",
     "gen:api": "npm run generate:api --workspace=web-panel",
-    "rmp": "npm run dev --workspace=.temp/rm"
+    "rmp": "npm run dev --workspace=../.temp/rm"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",

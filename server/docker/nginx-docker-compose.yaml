@@ -15,7 +15,7 @@ services:
       - ./certbot/conf:/etc/letsencrypt:ro
       - ./monit-nginx.conf:/etc/nginx/conf.d/monit-nginx.conf:ro
       - /conf:/etc/nginx/conf.d  # for linux 
-      - ../../web-panel/dist:/usr/share/nginx/html:ro
+      - ../../web/web-panel/dist:/usr/share/nginx/html:ro
   certbot:
     image: certbot/certbot
     volumes:
