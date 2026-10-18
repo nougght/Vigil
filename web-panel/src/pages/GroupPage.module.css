@@ -1,0 +1,14 @@
+
+.checkboxRoot {
+    background-color: white;
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkboxInd{
+    color: var(--color-prm)
+}
