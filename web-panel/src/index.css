@@ -3,7 +3,7 @@
 
     --color-bg: rgb(245, 244, 241);
     /* borders */
-    --color-brd: rgba(20,20,20,.08);
+    --color-brd: #d5dae1;
     /* surface */
     --color-srf: rgb(247, 247, 247);
     /* primary */
@@ -12,37 +12,47 @@
     --color-scn: rgb(227.8, 237.12, 247.16);
 
     --color-txt: rgb(19, 19, 19);
+    --color-scn-txt: #5b616a;
+
+    --color-mx: black;
+
+    --color-error: #c9302d;
 }
 
 [app-theme="dark"] {
     --color-bg: rgb(15, 17, 21);;
     /* borders */
-    --color-brd: rgba(255,255,255,.09);
+    --color-brd: #262d39;
     /* surface */
-    --color-srf:  rgb(23, 26, 32);
+    --color-srf: rgb(23, 26, 32);
     /* primary */
     --color-prm: rgb(16.85, 107.36, 181.34);
     /* secondary */
     --color-scn: rgba(16.85, 107.36, 181.34, 0.22);
 
-    
+
     --color-txt: rgb(204, 204, 204);
+    --color-scn-txt: #9ca1a9;
+
+    --color-mx: white;
+
+    --color-error: #f75d59;
 }
 
 h1 {
     text-align: center;
 }
 
-html, 
-body, 
+html,
+body,
 #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background-color: var(--color-bg);
-  /* font-family: 'Inter'; */
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-bg);
+    /* font-family: 'Inter'; */
 }
 
 h1, h2, h3, h4, h5, h6 {
-  margin-top: 0;
+    margin-top: 0;
 }

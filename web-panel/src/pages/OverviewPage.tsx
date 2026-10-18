@@ -1,19 +1,19 @@
-import {  useState } from "react"
-import { Link } from "react-router-dom";
-import { useOverview } from "../hooks/useOverview";
+import { useState} from "react"
+import {Link} from "react-router-dom";
+import {useOverview} from "../hooks/useOverview";
 import SimplePieChart from "../components/pieChart";
-import { CountDistToPieList, type Overview } from "../domain/overview";
-import { AgentCount } from "../components/agentCount";
-import { LoadBar } from "../components/loadBar";
-import { AvgCPU } from "../components/avgCPU";
-import { AvgMem } from "../components/avgMem";
+import {CountDistToPieList, type Overview} from "../domain/overview";
+import {AgentCount} from "../components/agentCount";
+import {LoadBar} from "../components/loadBar";
+import {AvgCPU} from "../components/avgCPU";
+import {AvgMem} from "../components/avgMem";
 import styles from "./overviewPage.module.css"
 import commonStyles from "../common.module.css"
 
-export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefined }) => {
+export const OverviewPage = ({overviewProp}: { overviewProp: Overview | undefined }) => {
     const [info, _setInfo] = useState<string | null>()
-    
-    
+
+
     const {
         data: overviewResp,
         isPending: isOverviewLoading,
@@ -23,8 +23,8 @@ export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefi
     } = useOverview();
 
     // TODO: move data receiving logic outside
-    const overview = overviewProp ?? overviewResp?.overview
-    const warning = overviewProp == null && overviewResp?.error != null ? `ошибка:${overviewResp?.error?.status} ${overviewResp?.error?.message}` : null
+    const overview = overviewProp ?? overviewResp
+    const warning = overviewProp == null && _isOverviewError ? `ошибка: ${_overviewError}` : null
 
 
     if (isOverviewLoading) {
@@ -120,14 +120,14 @@ export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefi
                                         </tr>
                                     </thead> */}
                                     <tbody>
-                                        {overview?.topN?.cpuUsage?.map((agent) => (
-                                            agent.name != "" &&
-                                            <tr key={agent.id}>
-                                                <td><Link to={`/agents/${agent.id}`}>{agent.name}</Link></td>
-                                                <td><LoadBar value={agent.cpuUsage} width={70} height={10} /></td>
-                                                <td>{agent.cpuUsage.toFixed(2)}%</td>
-                                            </tr>
-                                        ))}
+                                    {overview.topN?.cpuUsage?.map((agent) => (
+                                        agent.name != "" &&
+                                        <tr key={agent.id}>
+                                            <td><Link to={`/agents/${agent.id}`}>{agent.name}</Link></td>
+                                            <td><LoadBar value={agent.cpuUsage} width={70} height={10}/></td>
+                                            <td>{agent.cpuUsage.toFixed(2)}%</td>
+                                        </tr>
+                                    ))}
                                     </tbody>
                                 </table>
                             </div>
@@ -141,14 +141,14 @@ export const OverviewPage = ({ overviewProp }: { overviewProp: Overview | undefi
                                         </tr>
                                     </thead> */}
                                     <tbody>
-                                        {overview?.topN?.memoryUsage?.map((agent) => (
-                                            agent.name != "" &&
-                                            <tr key={agent.id}>
-                                                <td><Link to={`/agents/${agent.id}`}>{agent.name}</Link></td>
-                                                <td><LoadBar value={agent.memoryUsage} width={70} height={10} /></td>
-                                                <td>{agent.memoryUsage.toFixed(2)}%</td>
-                                            </tr>
-                                        ))}
+                                    {overview?.topN?.memoryUsage?.map((agent) => (
+                                        agent.name != "" &&
+                                        <tr key={agent.id}>
+                                            <td><Link to={`/agents/${agent.id}`}>{agent.name}</Link></td>
+                                            <td><LoadBar value={agent.memoryUsage} width={70} height={10}/></td>
+                                            <td>{agent.memoryUsage.toFixed(2)}%</td>
+                                        </tr>
+                                    ))}
                                     </tbody>
                                 </table>
                             </div>

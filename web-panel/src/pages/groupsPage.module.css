@@ -1,0 +1,115 @@
+/* groupsPage.module.css */
+
+.groupCardsContainer {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: auto auto;
+    margin: 10px;
+}
+
+.topNav {
+    display: flex;
+    justify-content: space-between;
+}
+
+.createButton, .bottomArea > button{
+    font-size: 16px;
+    background-color: var(--color-prm);
+    border-radius: 5px;
+    border: none;
+    color: var(--color-srf);
+    padding: 5px 10px;
+    margin: 5px 10px 5px 5px;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+
+.content {
+    position: fixed;
+    display: flex;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    left: 60%;
+    /*transform: translate(-50%, -50%);*/
+    background-color: var(--color-srf) ;
+    color: var(--color-txt);
+    border-radius: 8px;
+    border-left: 1px solid var(--color-brd);
+    padding: 10px 0 0 0;
+}
+h2 {
+    margin: 5px 5px 5px 16px;
+}
+
+.sidePanelContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: inherit;
+}
+
+.sidePanelContent {
+    min-height: 0;
+    overflow-y: auto;
+    height: max-content;
+    padding: 16px;
+}
+
+.checkRow {
+    display: flex;
+    justify-content: left;
+    gap: 5px;
+}
+
+.checkboxRoot {
+    background-color: var(--color-bg);
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-scn-txt);
+    padding-top: 5px;
+}
+
+.checkboxRoot:active {
+    border: 1px solid var(--color-txt);
+    outline: 1px solid var(--color-txt);
+}
+.checkboxInd{
+    color: var(--color-prm)
+}
+
+.tabBar {
+    justify-content: start;
+    margin: 10px;
+    width: 100%;
+}
+
+.bottomArea {
+    position: absolute;
+    overflow: hidden;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    width: 100%;
+    padding: 10px 20px 10px 10px;
+    border-top: 1px solid var(--color-brd);
+    background-color: inherit;
+}
+
+.bottomArea button {
+    margin-right: 20px;
+}

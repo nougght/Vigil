@@ -1,0 +1,59 @@
+
+.checkboxRoot {
+    background-color: var(--color-bg);
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-scn-txt);
+    padding-top: 5px;
+}
+
+.checkboxRoot:active {
+    border: 1px solid var(--color-txt);
+    outline: 1px solid var(--color-txt);
+}
+.checkboxInd{
+    color: var(--color-prm)
+}
+
+
+.TableWrapper {
+    overflow-x: auto;
+    overflow-y: auto;
+    width: fit-content;
+    max-width: 80%;
+    max-height: 100%;
+    border: 1px solid var(--color-brd);
+    border-radius: 6px;
+    margin: 4px;
+    background-color: var(--color-srf);
+}
+
+tr {
+    border: 1px solid var(--color-srf);
+}
+thead th {
+    border-bottom: 2px solid var(--color-brd);
+}
+td, th {
+    width: max-content;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 4px;
+    text-align: left;
+    color: var(--color-txt);
+}
+
+th {
+    font-weight: bold;
+    padding: 6px 4px;
+}
+td {
+    border-bottom: 1px solid var(--color-brd);
+}
+table, th, td {
+    border-collapse: collapse;
+}

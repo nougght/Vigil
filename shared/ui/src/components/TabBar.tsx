@@ -1,13 +1,30 @@
-import TabButton from "./TabButton"
+import  styles from "./TabBar.module.css"
 
-interface TabBarProps {
+export interface TabBarProps {
+    className?: string;
     tabs: string[];
     onSwitch: (index: number) => void;
     activeTab: number;
 }
-const TabBar = ({ tabs, onSwitch, activeTab }: TabBarProps) => {
+
+interface TabButtonProps {
+    text: string;
+    onClick: () => void;
+    isActive: boolean;
+}
+
+const TabButton = ({text, onClick, isActive}: TabButtonProps) => {
     return (
-        <div className="tabBar">
+        <button className={styles.TabButton + (isActive ? ` ${styles.active}` : '')} onClick={onClick}>
+            {text}
+        </button>
+    )
+}
+
+
+const TabBar = ({ className, tabs, onSwitch, activeTab }: TabBarProps) => {
+    return (
+        <div className={`${styles.TabBar} ${className ?? ""}`}>
             {tabs.map((tab, i) => (
                 <TabButton key={tab} text={tab} onClick={() => onSwitch(i)} isActive={i === activeTab} />
             ))}

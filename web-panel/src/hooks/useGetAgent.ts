@@ -1,36 +1,18 @@
-
-import { useQuery } from '@tanstack/react-query';
-import { getAgentByID } from '../api/client/monitoringServerAPI';
-import { convertAgentFromDTO } from '../api/mapper';
-import type { Agent } from '../domain/agent';
-import type {Error} from './common'
-
-interface UseAgentResult {
-    agent?: Agent
-    error: Error | null
-}
-
-const getAgent = async (id: string): Promise<UseAgentResult> => {
-    const resp = await getAgentByID(id);
-    return resp.status == 200 ?
-    {
-        agent: convertAgentFromDTO(resp.data),
-        error: null
-    } : 
-    {
-        error: {
-            status: resp.status,
-            message: JSON.stringify(resp.data)
-        }
-    }
-}
+import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {getAgentByID} from '../api/client/monitoringServerAPI';
+import {convertAgentFromDTO} from '../api/mapper';
+import type {Agent} from "../domain/agent";
 
 
 export function useAgent(id: string) {
-    return useQuery({
-        queryKey: [`agent-${id}`],
-        queryFn: () => getAgent(id),
-        staleTime: 60000,
-        retry: 2,
-    });
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryKey: [`agent-${id}`],
+    queryFn: async () => convertAgentFromDTO(await getAgentByID(id)),
+    initialData: () => {
+      const itemsList = queryClient.getQueryData<Agent[]>(['agents']);
+      return itemsList?.find((item) => item.id === id);
+    },
+    staleTime: 60000,
+  });
 }

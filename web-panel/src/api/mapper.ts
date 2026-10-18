@@ -9,6 +9,8 @@ import type { AgentsSummary as AgentsSummaryDTO } from "./models";
 import type { AgentsSummary } from "../domain/overview";
 import type { TopNAgents as TopNAgentsDTO } from "./models";
 import type { TopNAgents } from "../domain/overview";
+import type {AgentGroup as AgentGroupDTO} from "./models"
+import type {Group} from "../domain/group.ts";
 
 
 export const convertAgentFromDTO = (agentDTO: AgentDTO): Agent => {
@@ -16,13 +18,22 @@ export const convertAgentFromDTO = (agentDTO: AgentDTO): Agent => {
         id: agentDTO.id ?? '',
         name: agentDTO.name ?? '',
         description: agentDTO.description,
-        createdAt: agentDTO.createdAt ?? '',
+        createdAt: new Date(agentDTO.createdAt ?? ''),
         status: agentDTO.status,
         lastSeenAt: agentDTO.lastSeenAt ? new Date(agentDTO.lastSeenAt) : undefined,
         isOnline: agentDTO.isOnline ?? false
     }
 }
 
+export const convertGroupFromDTO = (dto: AgentGroupDTO): Group => {
+    return {
+        id: dto.id!,
+        name: dto.name!,
+        description: dto.description,
+        createdAt: new Date(dto.createdAt!),
+        deletedAt: dto.deletedAt ? new Date(dto.deletedAt) : undefined,
+    }
+}
 export const convertSpecsFromDTO = (specsDTO: AgentSpecs): Specs => {
     return {
         cpu: {

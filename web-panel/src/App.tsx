@@ -6,8 +6,8 @@ import {AgentPage} from './pages/AgentPage'
 import {NewAgentPage} from './pages/NewAgentPage'
 import {SideBar, type SideBarData} from './components/sideBar'
 import {useEffect, useRef, useState} from 'react'
-import dashIcon from "../public/assets/dashboard.svg"
-import agentsIcon from "../public/assets/cpu.svg"
+import dashIcon from "./assets/dashboard.svg"
+import agentsIcon from "./assets/cpu.svg"
 import {
     type AgentDetailedMessage,
     type ClientMessage,
@@ -23,7 +23,9 @@ import {
 import {OverviewPage} from './pages/OverviewPage'
 import type {Overview} from './domain/overview'
 import type {ActivityUpdate} from './domain/activity'
+import {GroupsPage} from "./pages/GroupsPage.tsx";
 import {BottomNav, type BottomNavData} from "./components/bottomNav.tsx";
+import {GroupPage} from "./pages/GroupPage.tsx";
 // import type { SeriesDTO } from './domain/metrics'
 const sideBarData: SideBarData = {
     iconSrc: "",
@@ -207,7 +209,8 @@ function App() {
                             metricsProp={metrics}
                             activityProp={activity}/>}/>
                         <Route path="/agents/new" element={<NewAgentPage/>}/>
-                        <Route path="/groups" element={<NotImplemented/>}/>
+                        <Route path="/groups" element={<GroupsPage/>}/>
+                      <Route path="/groups/:id" element={<GroupPage/>}/>
                         <Route path="/reports" element={<NotImplemented/>}/>
                         <Route path="/events" element={<NotImplemented/>}/>
                         <Route path="/streams" element={<NotImplemented/>}/>

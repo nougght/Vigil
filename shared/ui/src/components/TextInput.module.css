@@ -1,0 +1,51 @@
+
+
+.TextInputContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    outline: 1px solid var(--color-txt);
+    border-radius: 6px;
+    margin: 5px;
+    padding: 2px 6px;
+    overflow: hidden;
+}
+
+.TextInputContainer:hover {
+    outline: 1px solid var(--color-prm) ;
+}
+
+.TextInputContainer:focus-within, .TextInputContainer:focus {
+    outline: 2px solid var(--color-prm);
+}
+
+.TextInputContainer.warning {
+    outline: 1px solid var(--color-error);
+}
+
+.TextInput {
+    border: none;
+    background-color: transparent;
+    flex-grow: 1;
+    height: var(--height);
+    max-height: var(--max-height);
+}
+.TextInput:focus {
+    outline: none;
+}
+.HideToggle {
+    color: var(--color-txt);
+    margin: 0px 2px;
+}
+
+.HideToggle:hover {
+    color: color-mix(in srgb, var(--color-txt), var(--color-mx));
+    cursor: pointer;
+}
+
+.warning {
+    color: var(--color-error);
+    font-size: 12px;
+    margin: 3px;
+}

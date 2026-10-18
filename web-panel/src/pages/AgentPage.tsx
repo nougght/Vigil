@@ -18,7 +18,7 @@ interface Tab {
 }
 
 export const AgentPage = ({ metricsProp, activityProp }: { metricsProp?: Metrics, activityProp?: ActivityUpdate }) => {
-    const { state } = useLocation() as { state: Agent | null }
+    const { state } = useLocation() as { state: Agent | undefined }
     const { id } = useParams()
     const [activeTab, setActiveTab] = useState(0)
 
@@ -44,7 +44,8 @@ export const AgentPage = ({ metricsProp, activityProp }: { metricsProp?: Metrics
 
     // TODO: need store
 
-    const agent = agentResp?.agent ?? state
+
+    const agent = agentResp ?? state
 
     const metrics = agent?.id == metricsProp?.agentID ? metricsProp : undefined
     if (agent?.id != metricsProp?.agentID) {
@@ -63,7 +64,7 @@ export const AgentPage = ({ metricsProp, activityProp }: { metricsProp?: Metrics
             content: isAgentPending ? <div>Загрузка...</div> :
                 agent != null ?
                     <div>
-                        <p>{`Имя хоста: ${specs?.specs?.host?.hostName ?? "NO DATA"}`}</p>
+                        <p>{`Имя хоста: ${specs?.host?.hostName ?? "NO DATA"}`}</p>
                         <p>{`Идентификатор агента: ${agent.id}`}</p>
                         <section>
                             {/* <h2>Active window</h2>
@@ -81,18 +82,18 @@ export const AgentPage = ({ metricsProp, activityProp }: { metricsProp?: Metrics
                             </div>
                             <h2>Memory usage</h2>
                             <div>{metrics?.memoryUsed == null ? "No data" :
-                                convertBytesToGB(metrics?.memoryUsed ?? 0).toFixed(2)} / {convertBytesToGB(specs?.specs?.memory?.total ?? 0).toFixed(2)} GB <span
+                                convertBytesToGB(metrics?.memoryUsed ?? 0).toFixed(2)} / {convertBytesToGB(specs?.memory?.total ?? 0).toFixed(2)} GB <span
                                     style={{
-                                        color: metrics?.memoryUsed != null && specs?.specs?.memory?.total != null ?
+                                        color: metrics?.memoryUsed != null && specs?.memory?.total != null ?
                                             getGradientColor(["#4cd485", "#e0cb51", "#d44c4c"], Math.round((convertBytesToGB(metrics?.memoryUsed) /
-                                                convertBytesToGB(specs?.specs?.memory?.total)) * 100)) : "black"
+                                                convertBytesToGB(specs?.memory?.total)) * 100)) : "black"
                                     }}>
-                                    ({Math.round((convertBytesToGB(metrics?.memoryUsed ?? 0) / convertBytesToGB(specs?.specs?.memory?.total ?? 0)) * 100)}%)
+                                    ({Math.round((convertBytesToGB(metrics?.memoryUsed ?? 0) / convertBytesToGB(specs?.memory?.total ?? 0)) * 100)}%)
                                 </span>
                             </div>
                             <h2>Disk usage</h2>
                             <div>
-                                {specs?.specs?.disk?.map((disk) => {
+                                {specs?.disk?.map((disk) => {
                                     return (
                                         <div key={disk.device}>
                                             <p>
@@ -114,7 +115,7 @@ export const AgentPage = ({ metricsProp, activityProp }: { metricsProp?: Metrics
                                 processes={metrics?.processList ?? []} /> */}
                         </section>
                     </div> :
-                    agentResp?.error?.status == 404 && <div>Агент не найден</div>
+                    _isAgentError && <div>Агент не найден</div>
         },
         {
             text: "Активность",
@@ -124,17 +125,17 @@ export const AgentPage = ({ metricsProp, activityProp }: { metricsProp?: Metrics
                         activity={activity}
                         agentID={agent.id}
                     /> :
-                    specs?.error?.status == 404 && <div>Агент не найден</div>
+                    specs == undefined && <div>Агент не найден</div>
         },
         
         {
             text: "Характеристики",
             content: isSpecsPending ? <div>Загрузка...</div> :
-                specs?.specs != null ?
+                specs != null ?
                     <div>
-                        <Specifications specs={specs.specs} />
+                        <Specifications specs={specs} />
                     </div> :
-                    specs?.error?.status == 404 && <div>Характеристики не найдены</div>
+                     <div>Характеристики не найдены</div>
         }
     ]
     return (

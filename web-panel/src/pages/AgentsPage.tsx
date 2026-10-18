@@ -15,8 +15,6 @@ export const AgentsPage = () => {
     } = useAgents();
     const navigate = useNavigate()
 
-    const warning = agents?.error != null ? `ошибка:${agents?.error.status} ${agents?.error.message}` : null
-
     if (isAgentsPending) {
         return <div>Загрузка...</div>;
     }
@@ -25,8 +23,8 @@ export const AgentsPage = () => {
             <h1>Агенты</h1>
             <main>
                 <div className={styles.agentCardsContainer}>
-                    {agents?.agents != null && agents?.agents.length > 0 &&
-                        agents?.agents?.filter((a) => a.status != null)
+                    {agents && agents?.length > 0 &&
+                        agents.filter((a) => a.status != null)
                             .sort((a, b) => {
                                 if (a.isOnline == b.isOnline)
                                     return 0
@@ -51,9 +49,9 @@ export const AgentsPage = () => {
                 </div>
             </main>
             {
-                warning != null &&
+                _isAgentsError &&
                 <div>
-                    <p>{warning}</p>
+                    <p>ошибка: {_agentsError.message}</p>
                 </div>
             }
         </div>
