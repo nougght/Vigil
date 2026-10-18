@@ -25,6 +25,7 @@ interface TableProps<T> {
 
 const TableCheckbox = ({id, checked, toggleChecked}: { id: string, checked: boolean, toggleChecked: () => void }) => {
   return (
+    // TODO: move to shared components
     <Checkbox.Root id={id}
                    className={styles.checkboxRoot}
                    checked={checked}
@@ -80,7 +81,7 @@ export function Table<T extends { id: string }>(props: TableProps<T>) {
           props.rows.map((row: T) => {
             return (
               <tr onClick={() => {props.onRowClick?.(row.id)}}>
-                <td><TableCheckbox id={row.id}
+                <td onClick={e => e.stopPropagation()}><TableCheckbox id={row.id}
                                    checked={props.selected.has(row.id)}
                                    toggleChecked={() => props.onSelect?.([row.id])}/>
                 </td>

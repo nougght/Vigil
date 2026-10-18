@@ -68,16 +68,23 @@ h2 {
     justify-content: left;
     gap: 5px;
 }
+
 .checkboxRoot {
-    background-color: white;
+    background-color: var(--color-bg);
     width: 15px;
     height: 15px;
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid var(--color-scn-txt);
+    padding-top: 5px;
 }
 
+.checkboxRoot:active {
+    border: 1px solid var(--color-txt);
+    outline: 1px solid var(--color-txt);
+}
 .checkboxInd{
     color: var(--color-prm)
 }
