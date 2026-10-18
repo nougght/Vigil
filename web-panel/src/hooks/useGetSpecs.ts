@@ -5,7 +5,7 @@ import {convertSpecsFromDTO} from '../api/mapper';
 
 export function useSpecs(id: string) {
     return useQuery({
-        queryKey: ['specs'],
+        queryKey: ['specs', id],
         queryFn: async () => convertSpecsFromDTO(await getAgentSpecs(id)),
         retry: 2,
     });

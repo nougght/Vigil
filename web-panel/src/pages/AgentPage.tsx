@@ -44,6 +44,7 @@ export const AgentPage = ({ metricsProp, activityProp }: { metricsProp?: Metrics
 
     // TODO: need store
 
+
     const agent = agentResp ?? state
 
     const metrics = agent?.id == metricsProp?.agentID ? metricsProp : undefined
