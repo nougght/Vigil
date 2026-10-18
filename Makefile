@@ -87,3 +87,7 @@ nginx-up:
 
 gen-logo:
 	npx @vite-pwa/assets-generator --preset minimal-2023 web-panel/public/logo.png
+
+certbot:
+	cd server/docker && docker compose exec certbot certbot certonly --webroot -w /var/www/certbot \
+	  -d monitoring.nought.ru --email you@example.com --agree-tos --no-eff-email -n
