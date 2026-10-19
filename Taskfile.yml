@@ -1,0 +1,145 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+dotenv: ['.env.local', '.env']
+
+includes:
+  web:
+    taskfile: ./web/Taskfile.yml
+    dir: ./web
+
+vars:
+
+tasks:
+  lint:
+    desc: lint go files in agent, server, shared
+    cmds:
+      - task: lint-agent
+      - task: lint-server
+      - task: lint-shared
+
+  lint-agent:
+    desc: lint agent
+    cmds:
+      - docker run -t --rm -v .:/app -w /app/agent golangci/golangci-lint:v2.12.2
+        golangci-lint run --no-config -E govet,staticcheck
+
+  lint-server:
+    desc: lint server
+    cmds:
+      - docker run -t --rm -v .:/app -w /app/server golangci/golangci-lint:v2.12.2
+        golangci-lint run --no-config -E govet,staticcheck
+
+  lint-shared:
+    desc: lint go shared files
+    cmds:
+      - docker run -t --rm -v .:/app -w /app/shared/go golangci/golangci-lint:v2.12.2
+        golangci-lint run --no-config -E govet,staticcheck
+
+  gen-swag-agent:
+    desc: generate swagger docs for agent
+    cmds:
+      - cd agent && swag init -g cmd/main.go -o api --parseDependency --parseInternal
+
+  gen-swag-server:
+    desc: generate swagger docs for server
+    cmds:
+      - cd server && swag init -g cmd/main.go -o api --parseDependency --parseInternal
+
+
+  build-agent:
+    desc: build agent binaries for linux and windows, saves in bin/
+    cmds:
+      - cd agent && GOOS=linux GOARCH=amd64 go build -o ../bin/agent ./cmd
+      - cd agent && GOOS=windows GOARCH=amd64 go build -o ../bin/agent.exe ./cmd
+
+  build-server-bin:
+    desc: build server binary for current OS, saves in bin/
+    cmds:
+      - go build -o bin/server{{exeExt}} ./server/cmd/
+
+
+  timescale-up:
+    desc: start timescale db container
+    cmds:
+      - docker compose --env-file ./server/.env -f ./server/docker/docker-compose.yaml -p monitoring-system up -d --build timescale
+
+  server-build:
+    desc: build server docker image
+    cmds:
+      - docker compose -f ./server/docker/docker-compose.yaml -p monitoring-system --build monitoring-backend
+
+  server-up:
+    desc: build and start server container
+    cmds:
+      - docker compose --env-file ./server/.env -f ./server/docker/docker-compose.yaml -p monitoring-system up -d  --build monitoring-backend
+
+  server-down:
+    desc: stop and remove server containers
+    cmds:
+      - docker compose --env-file ./server/.env  --file ./server/docker/docker-compose.yaml  --project-name 'monitoring-system'  down
+
+  nginx-up:
+    desc: build and start nginx container
+    cmds:
+      - docker compose  -f ./server/docker/nginx-docker-compose.yaml -p nginx up -d  --build nginx
+
+  certbot:
+    desc: request/renew letsencrypt cert for monitoring.nought.ru via certbot
+    cmds:
+      - cd server/docker && docker compose exec certbot certbot certonly --webroot -w /var/www/certbot
+        -d monitoring.nought.ru --email you@example.com --agree-tos --no-eff-email -n
+
+  run-agent:
+    desc: run agent locally with go run
+    cmds:
+      - cd agent && go run cmd/main.go
+
+  run-server:
+    desc: run server locally with go run
+    cmds:
+      - cd server && go run cmd/main.go
+
+  gen-root-ca:
+    desc: generate self-signed root CA key and cert
+    cmds:
+      # root — самоподписанный
+      - openssl ecparam -genkey -name prime256v1 -noout -out ./cert-config/root-ca.key
+      - openssl req -x509 -new -key ./cert-config/root-ca.key -days 3650
+        -subj "/CN=Monitoring Root CA" -out ./cert-config/root-ca.crt
+
+  gen-intermedate-ca:
+    desc: generate intermediate CA key, CSR and cert signed by root CA
+    cmds:
+      # intermediate — CSR подписывается root
+      - openssl ecparam -genkey -name prime256v1 -noout -out ./server/creds/intermediate-ca.key
+      - openssl req -new -key ./server/creds/intermediate-ca.key -subj "/CN=Monitoring Intermediate CA" -out ./server/creds/intermediate-ca.csr
+      - openssl x509 -req -in ./server/creds/intermediate-ca.csr -CA ./cert-config/root-ca.crt -CAkey ./cert-config/root-ca.key
+        -CAcreateserial -days 1825 -extfile cert-config/int.cnf
+        -out ./server/creds/intermediate-ca.crt
+
+  copy-root-ca:
+    desc: copy root CA cert into server/creds
+    cmds:
+      - cp ./cert-config/root-ca.crt ./server/creds/root-ca.crt
+
+  migrate-create:
+    desc: Create new migration with NAME=
+    preconditions:
+      - sh: '[ -n "{{.NAME}}" ]'
+        msg: "migrate name is required, use `make migrate-create MIGRATE_NAME=your_migration_name`"
+    env:
+      NAME: '{{.NAME}}'
+    cmds:
+      - migrate create -ext sql -dir server/internal/storage/timescale/migrations -seq ${NAME}
+
+  migrate-force:
+    desc: Force migrate with VERSION=
+    preconditions:
+      - sh: '[ -n "{{.VERSION}}" ]'
+        msg: "migrate version is required, use `make migrate-force MIGRATE_VERSION=your_migration_version`"
+    env:
+      NAME: '{{.VERSION}}'
+    cmds:
+      - migrate -database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable -path server/internal/storage/timescale/migrations force ${MIGRATE_VERSION}

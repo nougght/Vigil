@@ -30,7 +30,7 @@ jobs:
 
       - name: Run Linters
         run: |
-          make lint
+          task lint
   test:
     runs-on: ubuntu-latest
     steps:
