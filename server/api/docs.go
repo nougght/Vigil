@@ -578,6 +578,9 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "group_id": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -833,6 +836,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "enrollmentKey": {
+                    "type": "string"
+                },
+                "group_id": {
                     "type": "string"
                 },
                 "id": {

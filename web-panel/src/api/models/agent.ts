@@ -8,6 +8,7 @@
 export interface Agent {
   createdAt?: string;
   description?: string;
+  group_id?: string;
   id?: string;
   isOnline?: boolean;
   lastSeenAt?: string;

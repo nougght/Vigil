@@ -11,6 +11,7 @@ type AgentDTO struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description *string   `json:"description,omitempty"`
+	GroupID     uuid.UUID `json:"group_id"`
 	CreatedAt   time.Time `json:"createdAt"`
 	Status      *string   `json:"status,omitempty"`
 	LastSeenAt  time.Time `json:"lastSeenAt"`

@@ -23,6 +23,7 @@ func AgentToDTO(domain *agent_model.Agent) (res *dto.AgentDTO) {
 		ID:          domain.ID,
 		Name:        domain.Name,
 		Description: domain.Description,
+		GroupID:     domain.GroupID,
 		CreatedAt:   domain.CreatedAt,
 		LastSeenAt:  domain.LastSeenAt,
 		Status:      domain.Status,

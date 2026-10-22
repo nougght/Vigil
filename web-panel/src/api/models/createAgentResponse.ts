@@ -9,6 +9,7 @@ export interface CreateAgentResponse {
   createdAt?: string;
   description?: string;
   enrollmentKey?: string;
+  group_id?: string;
   id?: string;
   isOnline?: boolean;
   lastSeenAt?: string;

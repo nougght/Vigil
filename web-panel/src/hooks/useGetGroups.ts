@@ -4,7 +4,7 @@ import {convertGroupFromDTO} from "../api/mapper.ts";
 import type {Group} from "../domain/group.ts";
 
 
-export function useGroup(id: string) {
+export function useGroup(id: string, enabled: boolean = true) {
   const queryClient = useQueryClient();
   return useQuery({
     queryKey: [`group-${id}`],
@@ -14,6 +14,7 @@ export function useGroup(id: string) {
       const itemsList = queryClient.getQueryData<Group[]>(['groups']);
       return itemsList?.find((item) => item.id === id);
     },
+    enabled: enabled && id != "",
     staleTime: 60000,
   });
 }
