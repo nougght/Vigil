@@ -52,20 +52,20 @@ export const GroupPage = () => {
   const navigate = useNavigate();
 
   const {
-    data: agents,
-    isPending: isAgentsPending,
-    isError: _isAgentsError,
-    error: _agentsError,
-    isFetching: _isAgentsFetching,
-  } = useAgents()
-
-  const {
     data: group,
     isPending: _isGroupPending,
     isError: _isGroupError,
     error: _groupError,
     isFetching: _isGroupFetching,
   } = useGroup(id ?? "")
+
+  const {
+    data: agents,
+    isPending: isAgentsPending,
+    isError: _isAgentsError,
+    error: _agentsError,
+    isFetching: _isAgentsFetching,
+  } = useAgents({groupIds: group === undefined ? [] : [group?.id]}, !!group || _isGroupError)  // query after group received
 
   const tabs: tab[] = [
     {

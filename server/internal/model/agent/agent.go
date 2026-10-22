@@ -24,6 +24,10 @@ type Agent struct {
 	IsOnline    *bool     `db:"-"`
 }
 
+type AgentFilters struct {
+	GroupIDs []uuid.UUID
+}
+
 type AgentShort struct {
 	ID   uuid.UUID `db:"id"`
 	Name string    `db:"name"`

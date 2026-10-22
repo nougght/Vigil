@@ -38,7 +38,7 @@ func (r *AgentRepository) CreateAgent(ctx context.Context, agent *agent_model.Ag
 	return agent, nil
 }
 
-func (r *AgentRepository) GetAllAgents(ctx context.Context) (res []*agent_model.Agent, err error) {
+func (r *AgentRepository) GetAllAgents(ctx context.Context, filters *agent_model.AgentFilters) (res []*agent_model.Agent, err error) {
 	query := `
 		SELECT a.id,
 			   a.name,
@@ -54,15 +54,22 @@ func (r *AgentRepository) GetAllAgents(ctx context.Context) (res []*agent_model.
 			   a.last_seen_at
 		FROM agents a
 		LEFT JOIN agent_groups ag
-			ON a.group_id = ag.id;
+			ON a.group_id = ag.id
 		`
+	vars := []interface{}{}
+	if filters != nil {
+		if len(filters.GroupIDs) > 0 {
+			query += `WHERE a.group_id = ANY($1)`
+			vars = append(vars, filters.GroupIDs)
+		}
+	}
 	// SELECT *,  EXISTS (
 	//     SELECT 1
 	//     FROM enrollment_keys keys
 	//     WHERE keys.agent_id = agent.id AND keys.used_at != NULL
 	// ) AS is_enrolled FROM agents
 	// `
-	rows, err := r.conn(ctx).Query(ctx, query)
+	rows, err := r.conn(ctx).Query(ctx, query, vars...)
 	if err != nil {
 		return nil, fmt.Errorf("select failed: %w", err)
 	}

@@ -320,8 +320,8 @@ func (s *AgentRegistryService) GetAgentByID(ctx context.Context, id uuid.UUID) (
 	agent.IsOnline = utilShared.Ptr(s.IsOnline(agent.ID))
 	return agent, nil
 }
-func (s *AgentRegistryService) GetAllAgents(ctx context.Context) ([]*agent_model.Agent, error) {
-	agents, err := s.agentRepo.GetAllAgents(ctx)
+func (s *AgentRegistryService) GetAllAgents(ctx context.Context, filters *agent_model.AgentFilters) ([]*agent_model.Agent, error) {
+	agents, err := s.agentRepo.GetAllAgents(ctx, filters)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get agents: %w", err)
 	}

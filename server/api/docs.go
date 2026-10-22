@@ -17,14 +17,23 @@ const docTemplate = `{
     "paths": {
         "/agents": {
             "get": {
-                "produces": [
-                    "application/json"
-                ],
                 "tags": [
                     "agents"
                 ],
                 "summary": "Get all agents",
                 "operationId": "getAllAgents",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "filter for agent groups",
+                        "name": "groupIds",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

@@ -21,6 +21,7 @@ export * from './createAgentGroupBody';
 export * from './createAgentResponse';
 export * from './diskSpecs';
 export * from './errorResponse';
+export * from './getAllAgentsParams';
 export * from './hostSpecs';
 export * from './memorySpecs';
 export * from './physicalMemoryInfo';

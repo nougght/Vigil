@@ -287,8 +287,14 @@ paths:
   /agents:
     get:
       operationId: getAllAgents
-      produces:
-      - application/json
+      parameters:
+      - collectionFormat: multi
+        description: filter for agent groups
+        in: query
+        items:
+          type: string
+        name: groupIds
+        type: array
       responses:
         "200":
           description: OK

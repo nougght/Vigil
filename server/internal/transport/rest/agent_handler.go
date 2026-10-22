@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nougght/monitoring-system/server/internal/model"
 	agent "github.com/nougght/monitoring-system/server/internal/service/agent_interaction"
 	agentregistry "github.com/nougght/monitoring-system/server/internal/service/agent_registry"
 	"github.com/nougght/monitoring-system/server/internal/transport/dto/mapper"
@@ -114,14 +115,26 @@ func (h *AgentHandler) DownloadAgentFiles(c *gin.Context) {
 // @Id getAllAgents
 // @Tags agents
 // @Summary Get all agents
-// @Produce json
+// @Param groupIds query []string false "filter for agent groups" collectionFormat(multi)
 // @Success 200 {array} dto.AgentDTO
 // @Failure      400  {object}  dto.ErrorResponse
 // @Failure      404  {object}  dto.ErrorResponse
 // @Failure      500  {object}  dto.ErrorResponse
 // @Router /agents [get]
 func (h *AgentHandler) GetAllAgents(c *gin.Context) {
-	res, err := h.agentRegistryService.GetAllAgents(c.Request.Context())
+	params := &dto.ListAgentsQueryParams{}
+	if err := c.ShouldBindQuery(params); err != nil {
+		handleError(c, fmt.Errorf("%w: %w", err, model.ErrBadRequest))
+		return
+	}
+
+	log.Println("params:", params)
+
+	filters, err := mapper.AgentFiltersFromDTO(params)
+	if err != nil {
+		handleError(c, fmt.Errorf("%w: %w", err, model.ErrBadRequest))
+	}
+	res, err := h.agentRegistryService.GetAllAgents(c.Request.Context(), filters)
 	if err != nil {
 		handleError(c, err)
 		return

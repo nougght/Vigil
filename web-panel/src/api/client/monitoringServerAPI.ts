@@ -13,25 +13,39 @@ import type {
   CreateAgentBody,
   CreateAgentGroupBody,
   CreateAgentResponse,
+  GetAllAgentsParams,
   UpdateAgentGroupBody
 } from '../models';
 
 import { customFetch } from '../apiFetch';
 
-export const getGetAllAgentsUrl = () => {
+export const getGetAllAgentsUrl = (params?: GetAllAgentsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["groupIds"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) => {
+        normalizedParams.append(key, v === null ? 'null' : String(v));
+      });
+      return;
+    }
 
 
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/v1/agents`
+  return stringifiedParams.length > 0 ? `/api/v1/agents?${stringifiedParams}` : `/api/v1/agents`
 }
 
 /**
  * @summary Get all agents
  */
-export const getAllAgents = async ( options?: Parameters<typeof customFetch>[1]): Promise<Agent[]> => {
+export const getAllAgents = async (params?: GetAllAgentsParams, options?: Parameters<typeof customFetch>[1]): Promise<Agent[]> => {
 
-  return customFetch<Agent[]>(getGetAllAgentsUrl(),
+  return customFetch<Agent[]>(getGetAllAgentsUrl(params),
   {
     ...options,
     method: 'GET'

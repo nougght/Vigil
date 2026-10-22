@@ -23,6 +23,10 @@ type AgentShortDTO struct {
 	Name string    `json:"name"`
 } // @Name AgentShort
 
+type ListAgentsQueryParams struct {
+	GroupIDs []string `form:"groupIds"`
+}
+
 type EnrollmentResponse struct {
 	EnrollmentKey string
 	AgentID       uuid.UUID

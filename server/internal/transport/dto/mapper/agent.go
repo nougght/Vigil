@@ -1,8 +1,10 @@
 package mapper
 
 import (
+	"fmt"
 	"log"
 
+	"github.com/google/uuid"
 	agent_model "github.com/nougght/monitoring-system/server/internal/model/agent"
 	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
 )
@@ -41,6 +43,22 @@ func AgentShortToDTO(domain *agent_model.AgentShort) (res *dto.AgentShortDTO) {
 		Name: domain.Name,
 	}
 	return
+}
+
+func AgentFiltersFromDTO(dto *dto.ListAgentsQueryParams) (res *agent_model.AgentFilters, err error) {
+	if dto == nil {
+		return
+	}
+	res = &agent_model.AgentFilters{}
+	res.GroupIDs = make([]uuid.UUID, len(dto.GroupIDs))
+	for i, id := range dto.GroupIDs {
+		groupID, err := uuid.Parse(id)
+		if err != nil {
+			return nil, fmt.Errorf("error parsing group id: %s", err)
+		}
+		res.GroupIDs[i] = groupID
+	}
+	return res, nil
 }
 
 func CreateAgentResultToDTO(domain *agent_model.CreateAgentResult) (res *dto.CreateAgentResponse) {
