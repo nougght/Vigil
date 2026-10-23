@@ -35,3 +35,11 @@ type AgentGroupDTO struct {
 	CreatedAt   time.Time  `json:"createdAt"`
 	DeletedAt   *time.Time `json:"deletedAt,omitempty"`
 } // @Name AgentGroup
+
+type MoveAgentsToGroupRequestBody struct {
+	AgentIDs []uuid.UUID `json:"agentIds"`
+}
+
+type MoveAgentToGroupQueryParams struct {
+	GroupID string `form:"groupId" binding:"required"`
+}

@@ -50,7 +50,7 @@ func (s *AgentGroupsService) CreateGroup(ctx context.Context, group *agent_group
 			return fmt.Errorf("failed to create agent group: %w", err)
 		}
 
-		moved, err = s.agentRegistry.MoveAgentsToGroup(ctx, group.AgentIDs, createdGroup.ID)
+		moved, err = s.MoveAgentsToGroup(ctx, group.AgentIDs, createdGroup.ID)
 		if err != nil {
 			return fmt.Errorf("failed to move agents to created group: %w", err)
 		}
@@ -112,4 +112,60 @@ func (s *AgentGroupsService) DeleteGroupByID(ctx context.Context, id uuid.UUID) 
 	}
 
 	return nil
+}
+
+func (s *AgentGroupsService) MoveAgentsToGroup(ctx context.Context, agentIDs []uuid.UUID, groupID uuid.UUID) (moved int, err error) {
+	err = s.transactor.WithinTx(ctx, func(ctx context.Context) (err error) {
+		group, err := s.groupsRepo.GetGroupByID(ctx, groupID)
+		if errors.Is(err, repository.ErrNotFound) {
+			return fmt.Errorf("not found group to move agents: %w", model.ErrNotFound)
+		}
+		if err != nil {
+			return fmt.Errorf("failed to get group to move: %w", err)
+		}
+
+		moved, err = s.moveAgentsToGroup(ctx, agentIDs, group.ID)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return 0, err
+	}
+	return moved, nil
+}
+
+func (s *AgentGroupsService) MoveAgentToGroup(ctx context.Context, agentID uuid.UUID, groupID uuid.UUID) (err error) {
+	err = s.transactor.WithinTx(ctx, func(ctx context.Context) (err error) {
+		group, err := s.groupsRepo.GetGroupByID(ctx, groupID)
+		if errors.Is(err, repository.ErrNotFound) {
+			return fmt.Errorf("not found group to move agents: %w", model.ErrNotFound)
+		}
+		if err != nil {
+			return fmt.Errorf("failed to get group to move: %w", err)
+		}
+
+		moved, err := s.moveAgentsToGroup(ctx, []uuid.UUID{agentID}, group.ID)
+		if err != nil {
+			return err
+		}
+		if moved == 0 {
+			return fmt.Errorf("agent not found: %w", model.ErrNotFound)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *AgentGroupsService) moveAgentsToGroup(ctx context.Context, agentIDs []uuid.UUID, groupID uuid.UUID) (moved int, err error) {
+	moved, err = s.agentRegistry.UpdateAgentsGroup(ctx, agentIDs, groupID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to move agents to group: %w", err)
+	}
+	return moved, nil
 }

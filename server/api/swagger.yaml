@@ -278,6 +278,13 @@ definitions:
       name:
         type: string
     type: object
+  github_com_nougght_monitoring-system_server_internal_transport_dto_types.MoveAgentsToGroupRequestBody:
+    properties:
+      agentIds:
+        items:
+          type: string
+        type: array
+    type: object
 host: montoring.nought.ru
 info:
   contact: {}
@@ -486,6 +493,41 @@ paths:
       summary: Get agent specifications
       tags:
       - agents
+  /agents/{id}/group:
+    put:
+      operationId: moveAgentToGroup
+      parameters:
+      - description: Agent ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Group ID to move agent
+        in: query
+        items:
+          type: string
+        name: groupIds
+        required: true
+        type: array
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Move agent to group
+      tags:
+      - agent-groups
   /fleet/overview:
     get:
       operationId: getFleetOverview
@@ -655,6 +697,40 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
       summary: Update agent group
+      tags:
+      - agent-groups
+  /groups/{id}/agents:
+    post:
+      operationId: moveAgentsToGroup
+      parameters:
+      - description: Group ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Move agents to group request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_nougght_monitoring-system_server_internal_transport_dto_types.MoveAgentsToGroupRequestBody'
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Move agents to group by agent IDs
       tags:
       - agent-groups
 swagger: "2.0"

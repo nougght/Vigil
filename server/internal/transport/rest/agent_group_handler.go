@@ -1,10 +1,13 @@
 package rest
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/service/agent_groups"
 	"github.com/nougght/monitoring-system/server/internal/transport/dto/mapper"
 	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
@@ -32,6 +35,9 @@ func (h *AgentGroupHandler) RegisterRoutes(r *gin.RouterGroup) {
 	group.GET("", h.GetAllGroups)
 	group.PATCH("/:id", h.UpdateGroup)
 	group.DELETE("/:id", h.DeleteGroup)
+
+	group.POST("/:id/agents", h.MoveAgentsToGroup)
+	r.PUT("/agents/:id/group", h.MoveAgentToGroup)
 }
 
 // CreateGroup godoc
@@ -169,6 +175,81 @@ func (h *AgentGroupHandler) DeleteGroup(c *gin.Context) {
 	}
 
 	err = h.groupService.DeleteGroupByID(ctx, id)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+// MoveAgentsToGroup godoc
+// @Id moveAgentsToGroup
+// @Tags agent-groups
+// @Summary Move agents to group by agent IDs
+// @Param id path string true "Group ID" format(uuid)
+// @Param request body dto.MoveAgentsToGroupRequestBody true "Move agents to group request body"
+// @Success 200
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
+// @Router /groups/{id}/agents [POST]
+func (h *AgentGroupHandler) MoveAgentsToGroup(c *gin.Context) {
+	ctx := c.Request.Context()
+	groupID, err := getPathID(c, "id")
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+
+	var body dto.MoveAgentsToGroupRequestBody
+	err = c.ShouldBindJSON(&body)
+	if err != nil {
+		handleInvalidRequestBody(c, err)
+		return
+	}
+
+	_, err = h.groupService.MoveAgentsToGroup(ctx, body.AgentIDs, groupID)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+// MoveAgentToGroup godoc
+// @Id moveAgentToGroup
+// @Tags agent-groups
+// @Summary Move agent to group
+// @Param id path string true "Agent ID" format(uuid)
+// @Param groupId query string true "Group ID to move agent" collectionFormat(single)
+// @Success 200
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
+// @Router /agents/{id}/group [PUT]
+func (h *AgentGroupHandler) MoveAgentToGroup(c *gin.Context) {
+	ctx := c.Request.Context()
+	agentID, err := getPathID(c, "id")
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+
+	var params dto.MoveAgentToGroupQueryParams
+	err = c.ShouldBindQuery(&params)
+	if err != nil {
+		handleError(c, fmt.Errorf("%w: %w", err, model.ErrBadRequest))
+		return
+	}
+	groupID, err := uuid.Parse(params.GroupID)
+	if err != nil {
+		handleError(c, fmt.Errorf("%w: %w", err, model.ErrBadRequest))
+		return
+	}
+
+	err = h.groupService.MoveAgentToGroup(ctx, agentID, groupID)
 	if err != nil {
 		handleError(c, err)
 		return

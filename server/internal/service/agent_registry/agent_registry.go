@@ -369,14 +369,15 @@ func (s *AgentRegistryService) GetAgentNamesByIDs(ctx context.Context, agentIDs 
 	return names, nil
 }
 
-func (s *AgentRegistryService) MoveAgentsToGroup(ctx context.Context, agentIDs []uuid.UUID, groupID uuid.UUID) (updated int, err error) {
-	updated, err = s.agentRepo.UpdateAgentsGroup(ctx, agentIDs, groupID)
+func (s *AgentRegistryService) UpdateAgentsGroup(ctx context.Context, agentIDs []uuid.UUID, groupID uuid.UUID) (updatedCount int, err error) {
+	updatedCount, err = s.agentRepo.UpdateAgentsGroup(ctx, agentIDs, groupID)
 	if errors.Is(err, repository.ErrInvalidGroup) {
-		return 0, fmt.Errorf("invalid group to move: %w", model.ErrBadRequest)
+		return 0, fmt.Errorf("invalid agent group to update: %w", model.ErrBadRequest)
 	}
 	if err != nil {
-		return 0, fmt.Errorf("failed to get agent names by IDs: %w", err)
+		return 0, fmt.Errorf("failed to update agents group: %w", err)
 	}
+	log.Printf("updated agents group count: %d / %d", updatedCount, len(agentIDs))
 
-	return updated, nil
+	return updatedCount, nil
 }
