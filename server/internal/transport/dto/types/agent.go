@@ -25,6 +25,7 @@ type AgentShortDTO struct {
 
 type ListAgentsQueryParams struct {
 	GroupIDs []string `form:"groupIds"`
+	Search   *string  `form:"search"`
 }
 
 type EnrollmentResponse struct {

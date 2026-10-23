@@ -302,6 +302,10 @@ paths:
           type: string
         name: groupIds
         type: array
+      - description: search agent by name
+        in: query
+        name: search
+        type: string
       responses:
         "200":
           description: OK
@@ -505,11 +509,9 @@ paths:
         type: string
       - description: Group ID to move agent
         in: query
-        items:
-          type: string
-        name: groupIds
+        name: groupId
         required: true
-        type: array
+        type: string
       responses:
         "200":
           description: OK

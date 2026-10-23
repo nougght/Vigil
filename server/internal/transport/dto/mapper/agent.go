@@ -58,6 +58,7 @@ func AgentFiltersFromDTO(dto *dto.ListAgentsQueryParams) (res *agent_model.Agent
 		}
 		res.GroupIDs[i] = groupID
 	}
+	res.Search = dto.Search
 	return res, nil
 }
 

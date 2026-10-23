@@ -14,6 +14,8 @@ import type {
   CreateAgentGroupBody,
   CreateAgentResponse,
   GetAllAgentsParams,
+  GithubComNougghtMonitoringSystemServerInternalTransportDtoTypesMoveAgentsToGroupRequestBody,
+  MoveAgentToGroupParams,
   UpdateAgentGroupBody
 } from '../models';
 
@@ -32,7 +34,9 @@ export const getGetAllAgentsUrl = (params?: GetAllAgentsParams,) => {
       return;
     }
 
-
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
   });
 
   const stringifiedParams = normalizedParams.toString();
@@ -170,6 +174,39 @@ export const getAgentSpecs = async (agentID: string, options?: Parameters<typeof
   {
     ...options,
     method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getMoveAgentToGroupUrl = (id: string,
+    params: MoveAgentToGroupParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/agents/${id}/group?${stringifiedParams}` : `/api/v1/agents/${id}/group`
+}
+
+/**
+ * @summary Move agent to group
+ */
+export const moveAgentToGroup = async (id: string,
+    params: MoveAgentToGroupParams, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getMoveAgentToGroupUrl(id,params),
+  {
+    ...options,
+    method: 'PUT'
 
 
   }
@@ -317,6 +354,31 @@ export const updateAgentGroup = async (id: string,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(updateAgentGroupBody)
+  }
+);}
+
+
+
+export const getMoveAgentsToGroupUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/groups/${id}/agents`
+}
+
+/**
+ * @summary Move agents to group by agent IDs
+ */
+export const moveAgentsToGroup = async (id: string,
+    githubComNougghtMonitoringSystemServerInternalTransportDtoTypesMoveAgentsToGroupRequestBody: GithubComNougghtMonitoringSystemServerInternalTransportDtoTypesMoveAgentsToGroupRequestBody, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getMoveAgentsToGroupUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(githubComNougghtMonitoringSystemServerInternalTransportDtoTypesMoveAgentsToGroupRequestBody)
   }
 );}
 

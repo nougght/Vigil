@@ -2,36 +2,41 @@ package repository
 
 import (
 	"context"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-type DB interface {
-	Exec(ctx context.Context, sql string, args ...any) (pgconn.CommandTag, error)
-	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
-	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
-	CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error)
-	SendBatch(ctx context.Context, b *pgx.Batch) pgx.BatchResults
-	// begin real or pseudo transaction
-	Begin(ctx context.Context) (pgx.Tx, error)
-}
+type (
+	DB interface {
+		Exec(ctx context.Context, sql string, args ...any) (pgconn.CommandTag, error)
+		Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
+		QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
+		CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error)
+		SendBatch(ctx context.Context, b *pgx.Batch) pgx.BatchResults
+		// begin real or pseudo transaction
+		Begin(ctx context.Context) (pgx.Tx, error)
+	}
 
-type BaseRepository struct {
-	db DB
-}
+	BaseRepository struct {
+		db DB
+	}
+
+	Repositories struct {
+		agentRpository           *AgentRepository
+		enrollmentKeysRepository *EnrollmentKeysRepository
+		specsRepository          *SpecsRepository
+		metricsRepository        *MetricsRepository
+		seriesRepository         *SeriesRepository
+		agentGroupsRepository    *AgentGroupsRepository
+	}
+)
+
+var searchEscaper = strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`)
 
 func (r *BaseRepository) conn(ctx context.Context) DB {
 	return conn(ctx, r.db)
-}
-
-type Repositories struct {
-	agentRpository           *AgentRepository
-	enrollmentKeysRepository *EnrollmentKeysRepository
-	specsRepository          *SpecsRepository
-	metricsRepository        *MetricsRepository
-	seriesRepository         *SeriesRepository
-	agentGroupsRepository    *AgentGroupsRepository
 }
 
 func New(db DB) *Repositories {

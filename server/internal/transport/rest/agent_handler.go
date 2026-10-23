@@ -116,6 +116,7 @@ func (h *AgentHandler) DownloadAgentFiles(c *gin.Context) {
 // @Tags agents
 // @Summary Get all agents
 // @Param groupIds query []string false "filter for agent groups" collectionFormat(multi)
+// @Param search query string false "search agent by name"
 // @Success 200 {array} dto.AgentDTO
 // @Failure      400  {object}  dto.ErrorResponse
 // @Failure      404  {object}  dto.ErrorResponse

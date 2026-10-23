@@ -32,6 +32,12 @@ const docTemplate = `{
                         "description": "filter for agent groups",
                         "name": "groupIds",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "search agent by name",
+                        "name": "search",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -336,12 +342,9 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
+                        "type": "string",
                         "description": "Group ID to move agent",
-                        "name": "groupIds",
+                        "name": "groupId",
                         "in": "query",
                         "required": true
                     }

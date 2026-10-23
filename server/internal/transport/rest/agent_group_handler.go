@@ -223,7 +223,7 @@ func (h *AgentGroupHandler) MoveAgentsToGroup(c *gin.Context) {
 // @Tags agent-groups
 // @Summary Move agent to group
 // @Param id path string true "Agent ID" format(uuid)
-// @Param groupId query string true "Group ID to move agent" collectionFormat(single)
+// @Param groupId query string true "Group ID to move agent"
 // @Success 200
 // @Failure      400  {object}  dto.ErrorResponse
 // @Failure      404  {object}  dto.ErrorResponse

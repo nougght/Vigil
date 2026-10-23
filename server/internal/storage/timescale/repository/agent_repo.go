@@ -55,14 +55,20 @@ func (r *AgentRepository) GetAllAgents(ctx context.Context, filters *agent_model
 		FROM agents a
 		LEFT JOIN agent_groups ag
 			ON a.group_id = ag.id
+		WHERE 1=1
 		`
 	vars := []interface{}{}
 	if filters != nil {
 		if len(filters.GroupIDs) > 0 {
-			query += `WHERE a.group_id = ANY($1)`
+			query += ` AND a.group_id = ANY($1)`
 			vars = append(vars, filters.GroupIDs)
 		}
+		if filters.Search != nil {
+			query += " AND a.name ILIKE '%' || " + fmt.Sprintf("$%d", len(vars)+1) + " || '%' ESCAPE '\\'"
+			vars = append(vars, searchEscaper.Replace(*filters.Search))
+		}
 	}
+	//log.Println(query, vars)
 	// SELECT *,  EXISTS (
 	//     SELECT 1
 	//     FROM enrollment_keys keys
