@@ -9,9 +9,13 @@ import {useGroups} from "../hooks/useGetGroups.ts";
 import {GroupCard} from "../components/groupCard.tsx";
 import {useCreateGroup} from "../hooks/useCreateGroup.ts";
 import {useAgents} from "../hooks/useGetAgents.ts";
-import type {Agent} from "../domain/agent";
+import {type Agent, IsDefaultGroup} from "../domain/agent";
 import {TextInput} from "@monitoring-system/shared/src/components/TextInput"
 import {useNavigate} from "react-router-dom";
+import {DropDownPicker} from "@monitoring-system/shared/src/components/DropDownPicker.tsx";
+import type {Group} from "../domain/group.ts";
+import {ToggleChips} from "@monitoring-system/shared/src/components/ToggleChips.tsx";
+import {DefaultId} from "../domain/common.ts";
 
 interface GroupInfo {
   Name: string
@@ -20,9 +24,9 @@ interface GroupInfo {
 }
 
 
-
-const AgentsPicker = ({agents, checked, onChange}: {
+const AgentsPicker = ({agents, groupNames, checked, onChange}: {
   agents: Agent[],
+  groupNames: { [k: string]: string },
   checked: Set<string>,
   onChange: (checked: Set<string>) => void
 }) => {
@@ -37,21 +41,27 @@ const AgentsPicker = ({agents, checked, onChange}: {
   }
 
   return (
-    <div>
+    <div className={styles.agentsPicker}>
       {
         agents && agents.map(
-          a => (<div className={styles.checkRow}>
-            <Checkbox.Root className={styles.checkboxRoot} checked={checked.has(a.id)}
-                           onCheckedChange={() => toggleChecked(a.id)}
-                           id={a.id}>
-              <Checkbox.Indicator className={styles.checkboxInd}>
-                <CheckIcon/>
-              </Checkbox.Indicator>
-            </Checkbox.Root>
-            <label className="Label" htmlFor="c1">
-              {a.name}
-            </label>
-          </div>)
+          a => (
+            <div className={styles.checkRow}>
+              <Checkbox.Root className={styles.checkboxRoot} checked={checked.has(a.id)}
+                             onCheckedChange={() => toggleChecked(a.id)}
+                             id={a.id}>
+                <Checkbox.Indicator className={styles.checkboxInd}>
+                  <CheckIcon/>
+                </Checkbox.Indicator>
+              </Checkbox.Root>
+              <div className={styles.checkRowLabelCont}>
+                <span>
+                  {a.name}
+                </span>
+                <span className={styles.groupLabel}>
+                  {IsDefaultGroup(a) ? "Без группы" : groupNames[a.groupID]}
+                </span>
+              </div>
+            </div>)
         )
       }
     </div>
@@ -70,8 +80,13 @@ export const GroupsPage = () => {
   const [groupInfo, setGroupInfo] = useState<GroupInfo>({
     Name: ""
   })
+  const [agentSearch, setAgentSearch] = useState<string>()
+
   const [agentsChecked, setAgentsChecked] = useState<Set<string>>(new Set())
   const [nameWarning, setNameWarning] = useState<string>()
+
+  const [pickerGroupsChecked, setPickerGroupsChecked] = useState<string[]>([DefaultId])
+  const [pickerModeToggle, setPickerModeToggle] = useState("without")
 
   const navigate = useNavigate()
 
@@ -83,6 +98,13 @@ export const GroupsPage = () => {
     isFetching: _isGroupsFetching,
   } = useGroups();
 
+  const pickerGroupItems = groups?.map((group: Group) => {
+    return {
+      value: group.id,
+      label: group.name,
+    }
+  }) ?? []
+
   const {
     mutate: createGroup,
     isPending: isCreatePending,
@@ -91,14 +113,19 @@ export const GroupsPage = () => {
     error: _createError,
   } = useCreateGroup()
 
+  const groupNames = Object.fromEntries(groups?.map(g => [g.id, g.name]) ?? [])
+
   const {
     data: agents,
     isPending: _isAgentsPending,
     isError: _isAgentsError,
     error: _agentsError,
+    refetch: refetchAgents,
     isFetching: _isAgentsFetching,
-
-  } = useAgents();
+  } = useAgents({
+    search: agentSearch,
+    groupIds: pickerGroupsChecked,
+  });
 
 
   const handleNext = () => {
@@ -118,12 +145,27 @@ export const GroupsPage = () => {
     )
   }
 
+  const toggleGroupItems = [
+    {
+      value: "without",
+      label: "Без группы"
+    },
+    {
+      value: "select",
+      label: "Выбрать группу"
+    },
+    {
+      value: "all",
+      label: "Все группы"
+    },
+  ]
+
   const tabs: tab[] = [
     {
       title: "Основное",
       nextTitle: "Далее",
       content:
-        <div>
+        <div className={styles.sidePanelTabContent + " " + styles.sidePanelMainTabContent}>
           <label className={styles.formLabel} htmlFor="name">Название</label>
           <TextInput value={groupInfo?.Name}
                      placeholder="Введите название группы"
@@ -158,8 +200,50 @@ export const GroupsPage = () => {
       title: "Добавить агентов",
       nextTitle: "Создать",
       content:
-        <div>
+        <div className={styles.sidePanelTabContent}>
+          <div className={styles.sidePanelAgentsTop}>
+            <ToggleChips
+              className={styles.pickerGroupModeToggle}
+              items={toggleGroupItems}
+              multiple={false}
+              defaultValue={pickerModeToggle}
+              onChange={(value) => {
+                setPickerModeToggle(value)
+                if (value === "all") {
+                  setPickerGroupsChecked([])
+                }
+                if (value === "select") {
+                  setPickerGroupsChecked([])
+                }
+                if (value === "without") {
+                  setPickerGroupsChecked([DefaultId])
+                }
+              }
+              }
+            />
+            {
+              pickerModeToggle === "select" &&
+                <DropDownPicker items={pickerGroupItems}
+                                multiple={true}
+                                triggerPlaceholder={"Выберите группу"}
+                                checked={pickerGroupsChecked}
+                                onChange={setPickerGroupsChecked}
+                                needSearch={true}/>
+            }
+            <TextInput
+              className={styles.searchField}
+              onChange={(value) => {
+                setAgentSearch(value);
+                if (!_isAgentsPending) {
+                  refetchAgents();
+                }
+              }}
+              value={agentSearch}
+              placeholder={"Поиск"}
+            />
+          </div>
           <AgentsPicker agents={agents ?? []}
+                        groupNames={groupNames ?? []}
                         checked={agentsChecked}
                         onChange={setAgentsChecked}/>
 

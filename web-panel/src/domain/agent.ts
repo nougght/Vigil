@@ -1,4 +1,4 @@
-import {  validate } from 'uuid';
+import {DefaultId} from "./common.ts";
 
 export interface Agent {
     id: string
@@ -11,6 +11,9 @@ export interface Agent {
     isOnline: boolean
 }
 
-export const IsDefaultGroup = (agent: Agent)=> {
-  return !validate(agent.groupID)
+export const IsDefaultGroup = (agent?: Agent)=> {
+  if (!agent) {
+    return false;
+  }
+  return agent.groupID == DefaultId;
 }

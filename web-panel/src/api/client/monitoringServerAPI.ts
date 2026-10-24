@@ -14,8 +14,8 @@ import type {
   CreateAgentGroupBody,
   CreateAgentResponse,
   GetAllAgentsParams,
-  GithubComNougghtMonitoringSystemServerInternalTransportDtoTypesMoveAgentsToGroupRequestBody,
   MoveAgentToGroupParams,
+  MoveAgentsToGroupRequestBody,
   UpdateAgentGroupBody
 } from '../models';
 
@@ -371,14 +371,14 @@ export const getMoveAgentsToGroupUrl = (id: string,) => {
  * @summary Move agents to group by agent IDs
  */
 export const moveAgentsToGroup = async (id: string,
-    githubComNougghtMonitoringSystemServerInternalTransportDtoTypesMoveAgentsToGroupRequestBody: GithubComNougghtMonitoringSystemServerInternalTransportDtoTypesMoveAgentsToGroupRequestBody, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+    moveAgentsToGroupRequestBody: MoveAgentsToGroupRequestBody, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
 
   return customFetch<void>(getMoveAgentsToGroupUrl(id),
   {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(githubComNougghtMonitoringSystemServerInternalTransportDtoTypesMoveAgentsToGroupRequestBody)
+    body: JSON.stringify(moveAgentsToGroupRequestBody)
   }
 );}
 

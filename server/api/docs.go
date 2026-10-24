@@ -653,7 +653,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_nougght_monitoring-system_server_internal_transport_dto_types.MoveAgentsToGroupRequestBody"
+                            "$ref": "#/definitions/MoveAgentsToGroupRequestBody"
                         }
                     }
                 ],
@@ -1035,6 +1035,17 @@ const docTemplate = `{
                 }
             }
         },
+        "MoveAgentsToGroupRequestBody": {
+            "type": "object",
+            "properties": {
+                "agentIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "PhysicalMemoryInfo": {
             "type": "object",
             "properties": {
@@ -1108,17 +1119,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                }
-            }
-        },
-        "github_com_nougght_monitoring-system_server_internal_transport_dto_types.MoveAgentsToGroupRequestBody": {
-            "type": "object",
-            "properties": {
-                "agentIds": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 }
             }
         }

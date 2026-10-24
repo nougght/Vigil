@@ -38,8 +38,8 @@ type AgentGroupDTO struct {
 
 type MoveAgentsToGroupRequestBody struct {
 	AgentIDs []uuid.UUID `json:"agentIds"`
-}
+} // @Name MoveAgentsToGroupRequestBody
 
 type MoveAgentToGroupQueryParams struct {
 	GroupID string `form:"groupId" binding:"required"`
-}
+} // @Name MoveAgentsToGroupQueryParams

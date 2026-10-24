@@ -59,6 +59,9 @@ export const TextInput = (props: TextInputProps) => {
                       value={props.value}
                       onChange={e =>
                         props.onChange(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key.length === 1) e.stopPropagation();
+                      }}
             />
             : <input className={styles.TextInput}
                      type={hide ? "password" : "text"}
@@ -66,6 +69,9 @@ export const TextInput = (props: TextInputProps) => {
                      value={props.value}
                      onChange={e =>
                        props.onChange(e.target.value)}
+                     onKeyDown={(e) => {
+                       if (e.key.length === 1) e.stopPropagation();
+                     }}
             />
         }
         {
