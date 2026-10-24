@@ -1,0 +1,29 @@
+
+
+.DropDownContent {
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-brd);
+    border-radius: 4px;
+    max-height: 20%;
+    overflow-y: auto;
+}
+
+.RadioItem, .CheckboxItem {
+    padding: 4px 8px;
+}
+
+.CheckboxIndicator, .RadioIndicator {
+    border: 1px solid var(--color-scn-txt);
+    flex: none; display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px;
+}
+
+.CheckboxIndicator {
+    border-radius: 4px;
+}
+.RadioIndicator {
+    border-radius: 999px;
+}
+.Icon{
+    height: 40px;
+}
