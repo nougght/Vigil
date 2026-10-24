@@ -1,6 +1,8 @@
 package agent_groups
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -38,3 +40,24 @@ type (
 		Description model.Optional[string] `db:"description"`
 	}
 )
+
+func (g *CreateAgentGroupInput) Validate() error {
+	return validateName(g.Name)
+}
+
+func (g *UpdateAgentGroupInput) Validate() error {
+	if g.Name != nil {
+		return validateName(*g.Name)
+	}
+	return nil
+}
+
+func validateName(name string) error {
+	if strings.Contains(name, " ") {
+		return fmt.Errorf("name must not contain spaces: %w", model.ErrBadRequest)
+	}
+	if name == "" {
+		return fmt.Errorf("name must not be empty: %w", model.ErrBadRequest)
+	}
+	return nil
+}

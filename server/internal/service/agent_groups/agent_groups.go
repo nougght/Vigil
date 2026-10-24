@@ -41,6 +41,10 @@ func (s *AgentGroupsService) CreateGroup(ctx context.Context, group *agent_group
 		moved        int
 	)
 
+	if err := group.Validate(); err != nil {
+		return nil, err
+	}
+
 	err := s.transactor.WithinTx(ctx, func(ctx context.Context) (err error) {
 		createdGroup, err = s.groupsRepo.CreateGroup(ctx, &group.AgentGroupInfo)
 		if errors.Is(err, repository.ErrConflict) {
@@ -88,6 +92,10 @@ func (s *AgentGroupsService) GetAllGroups(ctx context.Context) ([]*agent_groups.
 }
 
 func (s *AgentGroupsService) UpdateGroup(ctx context.Context, group *agent_groups.UpdateAgentGroupInput) error {
+	if err := group.Validate(); err != nil {
+		return err
+	}
+
 	err := s.groupsRepo.UpdateGroup(ctx, group)
 	if errors.Is(err, repository.ErrConflict) {
 		return model.ErrorAgentGroupNameIsTaken()

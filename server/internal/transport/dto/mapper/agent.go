@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	agent_model "github.com/nougght/monitoring-system/server/internal/model/agent"
 	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
+	"github.com/nougght/monitoring-system/shared/go/util"
 )
 
 // -- agents --
@@ -51,10 +52,19 @@ func AgentFiltersFromDTO(dto *dto.ListAgentsQueryParams) (res *agent_model.Agent
 	}
 	res = &agent_model.AgentFilters{}
 	res.GroupIDs = make([]uuid.UUID, len(dto.GroupIDs))
+	res.WithoutGroup = util.Ptr(false)
+	passed := make(map[string]struct{}, len(dto.GroupIDs))
 	for i, id := range dto.GroupIDs {
+		if _, ok := passed[id]; ok {
+			continue
+		}
 		groupID, err := uuid.Parse(id)
 		if err != nil {
 			return nil, fmt.Errorf("error parsing group id: %s", err)
+		}
+		if groupID == uuid.Nil {
+			res.WithoutGroup = new(true)
+			continue
 		}
 		res.GroupIDs[i] = groupID
 	}

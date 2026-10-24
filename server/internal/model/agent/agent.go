@@ -25,8 +25,9 @@ type Agent struct {
 }
 
 type AgentFilters struct {
-	GroupIDs []uuid.UUID
-	Search   *string
+	GroupIDs     []uuid.UUID
+	WithoutGroup *bool
+	Search       *string
 }
 
 type AgentShort struct {

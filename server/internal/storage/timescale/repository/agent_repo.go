@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	agent_model "github.com/nougght/monitoring-system/server/internal/model/agent"
+	"github.com/nougght/monitoring-system/shared/go/util"
 )
 
 type AgentRepository struct {
@@ -60,7 +61,11 @@ func (r *AgentRepository) GetAllAgents(ctx context.Context, filters *agent_model
 	vars := []interface{}{}
 	if filters != nil {
 		if len(filters.GroupIDs) > 0 {
-			query += ` AND a.group_id = ANY($1)`
+			query += ` AND (a.group_id = ANY($1)`
+			if util.UnPtr(filters.WithoutGroup) {
+				query += ` OR a.group_id IS NULL`
+			}
+			query += `)`
 			vars = append(vars, filters.GroupIDs)
 		}
 		if filters.Search != nil {
