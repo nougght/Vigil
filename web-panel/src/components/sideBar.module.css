@@ -36,7 +36,7 @@
 
 .bottomContainer {
     /* background-color: red; */
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .themeButton {
@@ -44,8 +44,63 @@
     border: none;
     font-size: 16px;
     font-family: 'Roboto';
-    margin: 5px;
+    margin: 10px 5px 5px 5px;
     padding: 5px 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-txt);
+}
+
+
+.ThemeSwitch {
+    width: 36px;
+    height: 20px;
+    background-color: color-mix(in srgb, var(--color-prm) 50%, grey);
+    border-radius: 9999px;
+    position: relative;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 2px 1px var(--color-txt);
+    &:hover {
+        outline: 2px solid var(--color-txt);
+    }
+    &:active {
+        box-shadow: none;
+    }
+
+    &[data-state="checked"] {
+        background-color: color-mix(in srgb, var(--color-prm) 50%, grey);
+    }
+}
+
+.ThemeSwitchThumb {
+    width: 16px;
+    height: 16px;
+    background-color: var(--color-bg);
+    border-radius: 9999px;
+    transition: transform 100ms;
+    transform: translateX(3px);
+    will-change: transform;
+    color: var(--color-txt);
+
+    display: flex;
+    align-items: center;
+
+    &[data-state="checked"] {
+        transform: translateX(17px);
+    }
+}
+
+.themeIcon {
+    color: var(--color-scn-txt);
+    height: 16px;
+}
+.themeIcon.activeThemeIcon {
+    color: var(--color-txt);
 }
 
 .sideBar nav {

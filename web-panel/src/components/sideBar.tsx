@@ -2,7 +2,9 @@ import {NavLink} from "react-router-dom"
 import styles from "./sideBar.module.css"
 import {useCallback, useEffect, useRef, useState} from "react"
 import {useTheme} from "../hooks/useTheme"
-import type {Icon} from "@phosphor-icons/react";
+import  type {Icon} from "@phosphor-icons/react";
+import {Switch} from "radix-ui";
+import {Sun, Moon} from "lucide-react";
 
 
 export interface NavItem {
@@ -132,10 +134,19 @@ export const SideBar = ({data}: { data: SideBarData }) => {
               path: "/settings"
             }}
           />
+
           <button className={styles.themeButton}
                   onClick={handleTheme}
           >
-            Поменять тему
+            {/*<span>Темная тема</span>*/}
+            <Sun className={styles.themeIcon + ` ${theme === 'light' ? styles.activeThemeIcon : ""}`}/>
+            <Switch.Root
+              className={styles.ThemeSwitch}
+              checked={theme == 'dark'}
+            >
+              <Switch.Thumb className={styles.ThemeSwitchThumb}/>
+            </Switch.Root>
+            <Moon className={styles.themeIcon + ` ${theme === 'dark' ? styles.activeThemeIcon : ""}`}/>
           </button>
         </div>
       </div>
