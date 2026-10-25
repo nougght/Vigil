@@ -9,12 +9,12 @@ services:
     ports:
       - "5433:5432"
     env_file:
-      - ../.env
+      - ./.env
   
   monitoring-backend:
     build:
-      # repo root so shared/go is available for the go.mod replace
-      context: ../..
+      # repo root so /pkg is available for the go.mod replace
+      context: ..
       dockerfile: server/docker/server.Dockerfile
     image: monitoring-backend
     networks:
@@ -27,7 +27,7 @@ services:
       - "8093:8093" 
       
     env_file:
-      - ../.env
+      - ../server/.env
       
     environment:
       POSTGRES_HOST: "timescale"
@@ -40,7 +40,7 @@ services:
       - timescale
     stop_grace_period: 10s
     volumes:
-      - .${HOST_CREDS_PATH}:${CONTAINER_CREDS_PATH}
+      - ${HOST_CREDS_PATH}:${CONTAINER_CREDS_PATH}
 
 volumes:
   db-data:

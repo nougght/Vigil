@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+
+tasks:
+  gen-logo:
+    cmds:
+      - npx @vite-pwa/assets-generator --preset minimal-2023 web-panel/public/logo.png
+
+  run:
+    cmds:
+      - npm run dev:web
