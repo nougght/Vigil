@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	metrickinds "github.com/nougght/monitoring-system/shared/go/metric_kinds"
+	metrickinds "github.com/nougght/monitoring-system/pkg/metric_kinds"
 )
 
 type AgentSeriesKey struct {

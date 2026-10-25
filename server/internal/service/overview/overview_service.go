@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/nougght/monitoring-system/pkg/util"
 	"github.com/nougght/monitoring-system/server/internal/config"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	agent_model "github.com/nougght/monitoring-system/server/internal/model/agent"
@@ -16,7 +17,6 @@ import (
 	overview_model "github.com/nougght/monitoring-system/server/internal/model/overview"
 	agentregistry "github.com/nougght/monitoring-system/server/internal/service/agent_registry"
 	"github.com/nougght/monitoring-system/server/internal/service/metrics"
-	"github.com/nougght/monitoring-system/shared/go/util"
 )
 
 type OverviewService struct {

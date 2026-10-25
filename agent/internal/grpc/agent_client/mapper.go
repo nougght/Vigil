@@ -3,7 +3,7 @@ package agent_client
 import (
 	"agent/internal/model"
 
-	pb "github.com/nougght/monitoring-system/shared/go/proto/gen/agent/v1"
+	pb "github.com/nougght/monitoring-system/pkg/proto/gen/agent/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

@@ -3,7 +3,7 @@ package enrollment_client
 import (
 	"agent/internal/model"
 
-	pb "github.com/nougght/monitoring-system/shared/go/proto/gen/enrollment/v1"
+	pb "github.com/nougght/monitoring-system/pkg/proto/gen/enrollment/v1"
 )
 
 func convertEnrollParamsToProto(p *model.EnrollParams) *pb.EnrollRequest {

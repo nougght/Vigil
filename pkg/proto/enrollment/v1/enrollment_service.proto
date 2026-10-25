@@ -4,7 +4,7 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 package monitoring.enrollment.v1;
 
-option go_package = "github.com/nougght/monitoring-system/shared/go/proto/gen/enrollment/v1;enrollmentv1";
+option go_package = "github.com/nougght/monitoring-system/pkg/proto/gen/enrollment/v1;enrollmentv1";
 
 service AgentEnrollmentService {
   rpc Enroll(EnrollRequest) returns (EnrollResponse);

@@ -2,17 +2,19 @@ name: agent and server CI
 
 on:
   push:
-    branches: 
-      - '**'
-    paths:
-      - 'server/**' 
-      - 'agent/**'
-  pull_request:
-    branches: 
+    branches:
       - '**'
     paths:
       - 'server/**'
       - 'agent/**'
+      - '.github/workflows/ci.yaml'
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - 'server/**'
+      - 'agent/**'
+      - '.github/workflows/ci.yaml'
 
 jobs:
   lint:
@@ -23,6 +25,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Install Task
+        uses: go-task/setup-task@v2
+
       - name: Copy env template
         run: |
           cd server
@@ -30,14 +35,11 @@ jobs:
 
       - name: Run Linters
         run: |
-          make lint
+          task lint
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
 
       - name: Copy env template
         run: |
@@ -53,5 +55,5 @@ jobs:
         run: |
           go test -v -cover ./agent/...
           go test -v -cover ./server/...
-          go test -v -cover ./shared/go/...
+          go test -v -cover ./pkg/...
 

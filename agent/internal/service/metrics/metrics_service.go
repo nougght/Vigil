@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/nougght/monitoring-system/shared/go/util"
+	"github.com/nougght/monitoring-system/pkg/util"
 )
 
 type Sender interface {

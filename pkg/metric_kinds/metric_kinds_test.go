@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	agentv1 "github.com/nougght/monitoring-system/shared/go/proto/gen/agent/v1"
+	agentv1 "github.com/nougght/monitoring-system/pkg/proto/gen/agent/v1"
 	"github.com/stretchr/testify/require"
 )
 

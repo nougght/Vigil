@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	sharedUtil "github.com/nougght/monitoring-system/pkg/util"
 	"github.com/nougght/monitoring-system/server/internal/service/agent_groups"
 	"github.com/nougght/monitoring-system/server/internal/transport/dto/mapper"
 	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
-	sharedUtil "github.com/nougght/monitoring-system/shared/go/util"
 )
 
 type AgentGroupHandler struct {

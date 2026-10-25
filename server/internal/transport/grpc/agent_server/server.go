@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	pb "github.com/nougght/monitoring-system/pkg/proto/gen/agent/v1"
 	agent_model "github.com/nougght/monitoring-system/server/internal/model/agent"
 	agent "github.com/nougght/monitoring-system/server/internal/service/agent_interaction"
 	"github.com/nougght/monitoring-system/server/internal/util"
-	pb "github.com/nougght/monitoring-system/shared/go/proto/gen/agent/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

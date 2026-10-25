@@ -3,8 +3,8 @@ package enrollment_server
 import (
 	"context"
 
+	pb "github.com/nougght/monitoring-system/pkg/proto/gen/enrollment/v1"
 	agent_model "github.com/nougght/monitoring-system/server/internal/model/agent"
-	pb "github.com/nougght/monitoring-system/shared/go/proto/gen/enrollment/v1"
 	"google.golang.org/grpc"
 )
 

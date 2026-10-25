@@ -17,13 +17,13 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	utilShared "github.com/nougght/monitoring-system/pkg/util"
+	"github.com/nougght/monitoring-system/pkg/util/fsutil"
 	"github.com/nougght/monitoring-system/server/internal/config"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	agent_model "github.com/nougght/monitoring-system/server/internal/model/agent"
 	"github.com/nougght/monitoring-system/server/internal/storage/timescale/repository"
 	"github.com/nougght/monitoring-system/server/internal/util"
-	utilShared "github.com/nougght/monitoring-system/shared/go/util"
-	"github.com/nougght/monitoring-system/shared/go/util/fsutil"
 )
 
 type AgentRegistryService struct {

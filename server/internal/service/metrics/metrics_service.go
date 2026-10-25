@@ -17,8 +17,8 @@ import (
 	"github.com/nougght/monitoring-system/server/internal/storage/timescale/repository"
 	"github.com/nougght/monitoring-system/server/internal/util"
 
-	metrickinds "github.com/nougght/monitoring-system/shared/go/metric_kinds"
-	sharedUtil "github.com/nougght/monitoring-system/shared/go/util"
+	metrickinds "github.com/nougght/monitoring-system/pkg/metric_kinds"
+	sharedUtil "github.com/nougght/monitoring-system/pkg/util"
 )
 
 type MetricsService struct {

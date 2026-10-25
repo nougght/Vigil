@@ -3,7 +3,7 @@ FROM golang:1.26-alpine AS build
 WORKDIR /build
 
 # Context is repo root so the go.mod replace ../shared/go resolves.
-COPY shared/go ./shared/go
+COPY pkg ./pkg
 COPY server/go.mod ./server/go.mod
 COPY server/go.sum ./server/go.sum
 

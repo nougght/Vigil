@@ -24,7 +24,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
-	"github.com/nougght/monitoring-system/shared/go/cert_store"
+	"github.com/nougght/monitoring-system/pkg/cert_store"
 )
 
 type App struct {
