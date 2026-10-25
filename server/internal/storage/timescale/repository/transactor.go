@@ -53,8 +53,8 @@ func (t *Transactor) WithinTx(ctx context.Context, fn func(ctx context.Context) 
 }
 
 // returns tx from ctx or nil
-func getTx(ctx context.Context) (tx *pgx.Tx) {
-	tx, ok := ctx.Value(model.ContextKeyTx).(*pgx.Tx)
+func getTx(ctx context.Context) (tx pgx.Tx) {
+	tx, ok := ctx.Value(model.ContextKeyTx).(pgx.Tx)
 	if !ok {
 		return
 	}
@@ -64,7 +64,7 @@ func getTx(ctx context.Context) (tx *pgx.Tx) {
 // try get tx from ctx or use provided db
 func conn(ctx context.Context, db DB) DB {
 	if tx := getTx(ctx); tx != nil {
-		return *tx
+		return tx
 	}
 	return db
 }

@@ -8,11 +8,14 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/nougght/monitoring-system/server/internal/config"
 	model "github.com/nougght/monitoring-system/server/internal/model/event"
 )
 
-type SubChans []chan model.Event
+type SubID uuid.UUID
+
+type SubChans map[SubID]chan<- model.Event
 
 var (
 	ErrInvalidSubjecName       = errors.New("invalid subject name")
@@ -25,7 +28,7 @@ type EventBus struct {
 	subs map[string]SubChans
 
 	busCtx       context.Context
-	candelBusCtx context.CancelFunc
+	cancelBusCtx context.CancelFunc
 	once         sync.Once
 	wg           sync.WaitGroup
 }
@@ -38,55 +41,73 @@ func NewEventBus(cfg *config.Config) *EventBus {
 }
 
 func (b *EventBus) Start(ctx context.Context) {
-	b.busCtx, b.candelBusCtx = context.WithCancel(ctx)
+	b.busCtx, b.cancelBusCtx = context.WithCancel(ctx)
 }
 
 func (b *EventBus) Shutdown(ctx context.Context) error {
+	if b.cancelBusCtx == nil {
+		return errors.New("bus not started")
+	}
 	b.once.Do(func() {
-		b.candelBusCtx()
+		b.cancelBusCtx()
 		b.mu.Lock()
 		defer b.mu.Unlock()
-		for _, subChans := range b.subs {
-			for _, ch := range subChans {
-				close(ch)
+		for _, subs := range b.subs {
+			for _, s := range subs {
+				close(s)
 			}
 		}
+		b.subs = make(map[string]SubChans)
 	})
 
 	wgDone := make(chan struct{})
 
+	go func() {
+		b.wg.Wait()
+		close(wgDone)
+	}()
+
+	var err error
 	select {
 	case <-wgDone:
-		return nil
 	case <-ctx.Done():
-		return ctx.Err()
+		err = ctx.Err()
 	}
+
+	return err
 }
 
-func (b *EventBus) Subscribe(subject string, handler model.EventHandler, bufferSize int, droppedCount *int) error {
+func (b *EventBus) Subscribe(subject string, handler model.EventHandler, bufferSize int, droppedCount *int) (uuid.UUID, error) {
+	if b.cancelBusCtx == nil {
+		return uuid.Nil, errors.New("bus not started")
+	}
 	log.Printf("sub event: %s", subject)
 	if !isValidSubject(subject) {
-		return ErrInvalidSubjecName
+		return uuid.Nil, ErrInvalidSubjecName
 	}
 	if bufferSize == 0 {
 		bufferSize = 1
 	}
 	ch := make(chan model.Event, bufferSize)
 
+	id := uuid.New()
 	b.mu.Lock()
-	b.subs[subject] = append(b.subs[subject], ch)
+	subs, ok := b.subs[subject]
+	if !ok { // new map for new subject
+		subs = make(SubChans)
+		b.subs[subject] = subs
+	}
+	subs[SubID(id)] = ch
 	b.mu.Unlock()
 
 	b.wg.Add(1)
 	go func() {
 		defer b.wg.Done()
 		for {
-			if b.busCtx == nil {
-				continue
-			}
 			select {
 			case <-b.busCtx.Done():
 				return
+
 			case event, ok := <-ch:
 				if !ok {
 					return
@@ -95,6 +116,31 @@ func (b *EventBus) Subscribe(subject string, handler model.EventHandler, bufferS
 			}
 		}
 	}()
+	return id, nil
+}
+
+func (b *EventBus) Unsubscribe(subject string, id uuid.UUID) error {
+	log.Printf("unsub event: %s", subject)
+	if !isValidSubject(subject) {
+		return ErrInvalidSubjecName
+	}
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	subs, ok := b.subs[subject]
+	if !ok {
+		log.Printf("no such subject to unsub: %s", subject)
+		return nil
+	}
+	ch, ok := subs[SubID(id)]
+	if !ok {
+		log.Printf("no such sub to unsub: %s", subject)
+		return nil
+	}
+	close(ch)
+	delete(subs, SubID(id))
+	if len(subs) == 0 {
+		delete(b.subs, subject)
+	}
 	return nil
 }
 
@@ -103,24 +149,32 @@ func (b *EventBus) Publish(ctx context.Context, event model.Event) error {
 	if !isFullSubject(event.Subject()) {
 		return ErrFullSubjectNameRequired
 	}
-	isWildcard, tokens := isWildcard(event.Subject())
-	if !isWildcard {
-		b.mu.RLock()
-		defer b.mu.RUnlock()
-		subs, ok := b.subs[event.Subject()]
-		if ok {
-			for _, sub := range subs {
-				sub <- event
-			}
-		}
-		return nil
-	}
+
+	//for subject, ch := range b.subs {
+	//
+	//}
+	//isWildcard, tokens := isWildcard(event.Subject())
+	//if !isWildcard {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
-	for subject, subs := range b.subs {
-		if matchFullSubject(strings.Split(subject, "."), tokens) {
-			for _, sub := range subs {
-				sub <- event
+	chans, ok := b.subs[event.Subject()]
+	if ok {
+		for _, ch := range chans {
+			select {
+			case ch <- event:
+			default:
+			}
+		}
+	}
+	target := strings.Split(event.Subject(), ".")
+	for subject, chans := range b.subs {
+		ok, tokens := isWildcard(subject)
+		if ok && matchSubject(tokens, target) {
+			for _, ch := range chans {
+				select {
+				case ch <- event:
+				default:
+				}
 			}
 		}
 	}
@@ -128,8 +182,24 @@ func (b *EventBus) Publish(ctx context.Context, event model.Event) error {
 }
 
 func isValidSubject(subject string) bool {
-	if i := strings.Index(subject, ">"); i != -1 && i != len(subject)-1 {
-		return false
+	tokens := strings.Split(subject, ".")
+	return isValidSubjectByTokens(tokens)
+}
+
+func isValidSubjectByTokens(subject []string) bool {
+	for i, token := range subject {
+		switch {
+		case token == "":
+			return false
+		case token == ">": // only at end
+			if i != len(subject)-1 {
+				return false
+			}
+		case token == "*":
+		case strings.ContainsAny(token, ">* \t\r\n"):
+			// can't contain wildcard or space inside token
+			return false
+		}
 	}
 	return true
 }
@@ -149,15 +219,21 @@ func isWildcard(subject string) (bool, []string) {
 	return false, nil
 }
 
-func matchFullSubject(subject, fullSubject []string) bool {
+func matchSubject(subject, target []string) bool {
 	for i, token := range subject {
-		if i >= len(subject) || token != "*" && token != fullSubject[i] {
+		// can't be longer than target
+		if i >= len(target) {
 			return false
 		}
+		// skip all remaining tokens
 		if token == ">" {
 			return true
 		}
+		// skip current token
+		if token != "*" && token != target[i] {
+			return false
+		}
 	}
-
-	return len(subject) == len(fullSubject)
+	// if all subject tokens match, check is there remaining target tokens
+	return len(subject) == len(target)
 }

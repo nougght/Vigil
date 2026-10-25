@@ -107,7 +107,7 @@ func (s *RealtimeService) HandleSubscription(subject string) {
 	default:
 		return
 	}
-	err := s.bus.Subscribe(subject, s.handlers[name], 1000, nil)
+	_, err := s.bus.Subscribe(subject, s.handlers[name], 1000, nil)
 	if err != nil {
 		log.Printf("failed to sub bus: %s", err.Error())
 	}
