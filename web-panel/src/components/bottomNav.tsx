@@ -1,12 +1,14 @@
 import {NavLink} from "react-router-dom";
 import styles from "./bottomNav.module.css";
 import {useTheme} from "../hooks/useTheme.ts";
+import type {Icon} from "@phosphor-icons/react";
 
 
 export interface NavItem {
     id: string
     title: string
     iconSrc?: string
+    icon?: Icon
     path: string
     countLabel?: number
 }
@@ -26,7 +28,8 @@ const BottomNavButton = ({data}: { data: NavItem }) => {
             className={({isActive}) => `${styles.bottomNavButton} ${isActive ? styles.active : ""}`}
         >
             <div className={styles.imgCont}>
-                {data.iconSrc && data.iconSrc != "" && <img src={data.iconSrc} width="15px" height="15px"/>}
+              {data.iconSrc && data.iconSrc != "" && <img src={data.iconSrc} width="15px" height="15px"/>}
+              {data.icon && <data.icon size={16}/>}
             </div>
             <span className={styles.bottomNavButtonTitle}>{data.title}</span>
             {/*<span className={styles.bottomNavButtonCount}>{data.countLabel}</span>*/}
