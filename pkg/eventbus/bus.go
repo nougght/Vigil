@@ -9,13 +9,18 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
-	"github.com/nougght/monitoring-system/server/internal/config"
-	model "github.com/nougght/monitoring-system/server/internal/model/event"
 )
+
+type Event interface {
+	Name() string
+	Subject() string
+}
+
+type EventHandler func(ctx context.Context, event Event)
 
 type SubID uuid.UUID
 
-type SubChans map[SubID]chan<- model.Event
+type SubChans map[SubID]chan<- Event
 
 var (
 	ErrInvalidSubjecName       = errors.New("invalid subject name")
@@ -23,7 +28,6 @@ var (
 )
 
 type EventBus struct {
-	cfg  *config.Config
 	mu   sync.RWMutex
 	subs map[string]SubChans
 
@@ -33,9 +37,8 @@ type EventBus struct {
 	wg           sync.WaitGroup
 }
 
-func NewEventBus(cfg *config.Config) *EventBus {
+func NewEventBus() *EventBus {
 	return &EventBus{
-		cfg:  cfg,
 		subs: make(map[string]SubChans),
 	}
 }
@@ -77,7 +80,7 @@ func (b *EventBus) Shutdown(ctx context.Context) error {
 	return err
 }
 
-func (b *EventBus) Subscribe(subject string, handler model.EventHandler, bufferSize int, droppedCount *int) (uuid.UUID, error) {
+func (b *EventBus) Subscribe(subject string, handler EventHandler, bufferSize int, droppedCount *int) (uuid.UUID, error) {
 	if b.cancelBusCtx == nil {
 		return uuid.Nil, errors.New("bus not started")
 	}
@@ -88,7 +91,7 @@ func (b *EventBus) Subscribe(subject string, handler model.EventHandler, bufferS
 	if bufferSize == 0 {
 		bufferSize = 1
 	}
-	ch := make(chan model.Event, bufferSize)
+	ch := make(chan Event, bufferSize)
 
 	id := uuid.New()
 	b.mu.Lock()
@@ -144,7 +147,7 @@ func (b *EventBus) Unsubscribe(subject string, id uuid.UUID) error {
 	return nil
 }
 
-func (b *EventBus) Publish(ctx context.Context, event model.Event) error {
+func (b *EventBus) Publish(ctx context.Context, event Event) error {
 	log.Printf("pub event: %s", event.Subject())
 	if !isFullSubject(event.Subject()) {
 		return ErrFullSubjectNameRequired

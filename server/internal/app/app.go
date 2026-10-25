@@ -12,8 +12,9 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/nougght/monitoring-system/pkg/eventbus"
+	"github.com/nougght/monitoring-system/pkg/storage"
 	"github.com/nougght/monitoring-system/server/internal/config"
-	"github.com/nougght/monitoring-system/server/internal/infrastructure/eventbus"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/service"
 	"github.com/nougght/monitoring-system/server/internal/storage/timescale"
@@ -86,7 +87,7 @@ func New(ctx context.Context, cfg *config.Config) *App {
 	services := service.New(service.ServicesOptions{
 		Config:       cfg,
 		Repositories: repository.New(db),
-		Transactor:   repository.NewTransactor(db),
+		Transactor:   storage.NewTransactor(db),
 		Cert: &model.Certs{
 			CA:     intCA,
 			Key:    intKey,

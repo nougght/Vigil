@@ -1,21 +1,11 @@
 package config
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/joho/godotenv"
 	"github.com/nougght/monitoring-system/pkg/util"
 )
-
-type PostgresConfig struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	DBName   string
-	SSLMode  string
-}
 
 type HTTPConfig struct {
 	ServerPort int
@@ -34,11 +24,6 @@ type CertConfig struct {
 type SettingsConfig struct {
 	AgentEnrollmentKeyLength int    `yaml:"enrollment_key_length"`
 	Address                  string `yaml:"address"`
-}
-
-func (c *PostgresConfig) ConnString() string {
-	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		c.Host, c.Port, c.User, c.Password, c.DBName, c.SSLMode)
 }
 
 type Config struct {

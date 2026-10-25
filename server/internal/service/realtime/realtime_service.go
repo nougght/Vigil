@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/nougght/monitoring-system/pkg/eventbus"
 	"github.com/nougght/monitoring-system/pkg/util"
 	"github.com/nougght/monitoring-system/server/internal/config"
-	"github.com/nougght/monitoring-system/server/internal/infrastructure/eventbus"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/model/event"
 	realtime_model "github.com/nougght/monitoring-system/server/internal/model/realtime"

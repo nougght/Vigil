@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/nougght/monitoring-system/pkg/eventbus"
 	"github.com/nougght/monitoring-system/server/internal/config"
-	"github.com/nougght/monitoring-system/server/internal/infrastructure/eventbus"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/model/event"
 	metrics_model "github.com/nougght/monitoring-system/server/internal/model/metrics"

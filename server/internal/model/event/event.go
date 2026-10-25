@@ -5,22 +5,16 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/nougght/monitoring-system/pkg/eventbus"
 	metrics_model "github.com/nougght/monitoring-system/server/internal/model/metrics"
 	overview_model "github.com/nougght/monitoring-system/server/internal/model/overview"
 )
 
-type Event interface {
-	Name() string
-	Subject() string
-}
-
-type EventHandler func(ctx context.Context, event Event)
-
 type EventBus interface {
 	Start(ctx context.Context)
 	Shutdown(ctx context.Context) error
-	Subscribe(subject string, handler EventHandler) error
-	Publish(ctx context.Context, event Event) error
+	Subscribe(subject string, handler eventbus.EventHandler) error
+	Publish(ctx context.Context, event eventbus.Event) error
 }
 
 const (

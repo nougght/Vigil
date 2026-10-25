@@ -3,8 +3,8 @@ package service
 import (
 	"log"
 
+	"github.com/nougght/monitoring-system/pkg/eventbus"
 	"github.com/nougght/monitoring-system/server/internal/config"
-	"github.com/nougght/monitoring-system/server/internal/infrastructure/eventbus"
 	"github.com/nougght/monitoring-system/server/internal/model"
 	"github.com/nougght/monitoring-system/server/internal/service/agent_groups"
 	agent "github.com/nougght/monitoring-system/server/internal/service/agent_interaction"

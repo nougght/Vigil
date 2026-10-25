@@ -4,25 +4,15 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/nougght/monitoring-system/pkg/storage"
 )
-
-type DB interface {
-	Exec(ctx context.Context, sql string, args ...any) (pgconn.CommandTag, error)
-	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
-	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
-	CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error)
-	SendBatch(ctx context.Context, b *pgx.Batch) pgx.BatchResults
-	// begin real or pseudo transaction
-	Begin(ctx context.Context) (pgx.Tx, error)
-}
 
 type BaseRepository struct {
 	db DB
 }
 
 func (r *BaseRepository) conn(ctx context.Context) DB {
-	return conn(ctx, r.db)
+	return storage.conn(ctx, r.db)
 }
 
 type Repositories struct {

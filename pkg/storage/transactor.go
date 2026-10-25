@@ -1,4 +1,4 @@
-package repository
+package storage
 
 import (
 	"context"
@@ -7,8 +7,11 @@ import (
 	"log"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/nougght/monitoring-system/server/internal/model"
 )
+
+type contextKey string
+
+const contextKeyTx contextKey = "tx"
 
 type Transactor struct {
 	db DB
@@ -40,7 +43,7 @@ func (t *Transactor) WithinTx(ctx context.Context, fn func(ctx context.Context) 
 		}
 	}()
 
-	ctx = context.WithValue(ctx, model.ContextKeyTx, tx)
+	ctx = context.WithValue(ctx, contextKeyTx, tx)
 	if err = fn(ctx); err != nil {
 		return err
 	}
@@ -54,7 +57,7 @@ func (t *Transactor) WithinTx(ctx context.Context, fn func(ctx context.Context) 
 
 // returns tx from ctx or nil
 func getTx(ctx context.Context) (tx pgx.Tx) {
-	tx, ok := ctx.Value(model.ContextKeyTx).(pgx.Tx)
+	tx, ok := ctx.Value(contextKeyTx).(pgx.Tx)
 	if !ok {
 		return
 	}
