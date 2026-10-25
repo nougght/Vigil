@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nougght/monitoring-system/pkg/util"
 	agent "github.com/nougght/monitoring-system/server/internal/service/agent_interaction"
 	agentregistry "github.com/nougght/monitoring-system/server/internal/service/agent_registry"
 	"github.com/nougght/monitoring-system/server/internal/transport/dto/mapper"
 	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
-	"github.com/nougght/monitoring-system/shared/go/util"
 )
 
 type AgentHandler struct {

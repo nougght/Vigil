@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/nougght/monitoring-system/shared/go/util"
+	"github.com/nougght/monitoring-system/pkg/util"
 )
 
 type SetupConfig struct {

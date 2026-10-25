@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/nougght/monitoring-system/shared/go/util"
+	"github.com/nougght/monitoring-system/pkg/util"
 )
 
 type Config struct {

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/nougght/monitoring-system/pkg/util"
 	"github.com/nougght/monitoring-system/server/internal/config"
 	"github.com/nougght/monitoring-system/server/internal/infrastructure/eventbus"
 	"github.com/nougght/monitoring-system/server/internal/model"
@@ -19,7 +20,6 @@ import (
 	"github.com/nougght/monitoring-system/server/internal/transport/dto/mapper"
 	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
 	"github.com/nougght/monitoring-system/server/internal/transport/ws"
-	"github.com/nougght/monitoring-system/shared/go/util"
 )
 
 type RealtimeService struct {

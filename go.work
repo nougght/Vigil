@@ -1,7 +1,7 @@
 go 1.26.0
 
 use (
-    ./shared/go
-    ./agent
-    ./server
+	./agent
+	./pkg
+	./server
 )

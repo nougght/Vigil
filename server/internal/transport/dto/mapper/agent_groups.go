@@ -1,9 +1,9 @@
 package mapper
 
 import (
+	"github.com/nougght/monitoring-system/pkg/util"
 	"github.com/nougght/monitoring-system/server/internal/model/agent_groups"
 	dto "github.com/nougght/monitoring-system/server/internal/transport/dto/types"
-	"github.com/nougght/monitoring-system/shared/go/util"
 )
 
 func AgentGroupInfoToDTO(d *agent_groups.AgentGroupInfo) *dto.AgentGroupInfoDTO {

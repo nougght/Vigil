@@ -2,10 +2,10 @@ package agent_server
 
 import (
 	"github.com/google/uuid"
+	agentv1 "github.com/nougght/monitoring-system/pkg/proto/gen/agent/v1"
+	"github.com/nougght/monitoring-system/pkg/util"
 	agent_model "github.com/nougght/monitoring-system/server/internal/model/agent"
 	metrics_model "github.com/nougght/monitoring-system/server/internal/model/metrics"
-	agentv1 "github.com/nougght/monitoring-system/shared/go/proto/gen/agent/v1"
-	"github.com/nougght/monitoring-system/shared/go/util"
 )
 
 func convertMetricSampleFromProto(p *agentv1.MetricSample) *metrics_model.MetricSample {

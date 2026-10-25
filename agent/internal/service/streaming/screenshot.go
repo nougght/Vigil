@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/kbinani/screenshot"
-	"github.com/nougght/monitoring-system/shared/go/util"
+	"github.com/nougght/monitoring-system/pkg/util"
 )
 
 func TakeScreenshot() (image.Image, error) {

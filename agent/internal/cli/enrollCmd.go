@@ -6,7 +6,7 @@ import (
 	"agent/internal/service/agentcore"
 	"fmt"
 
-	"github.com/nougght/monitoring-system/shared/go/cert_store"
+	"github.com/nougght/monitoring-system/pkg/cert_store"
 	"github.com/spf13/cobra"
 )
 

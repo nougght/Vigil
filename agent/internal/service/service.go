@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nougght/monitoring-system/shared/go/cert_store"
+	"github.com/nougght/monitoring-system/pkg/cert_store"
 )
 
 type Service struct {

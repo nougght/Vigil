@@ -4,7 +4,7 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 package monitoring.agent.v1;
 
-option go_package = "github.com/nougght/monitoring-system/shared/go/proto/gen/agent/v1;agentv1";
+option go_package = "github.com/nougght/monitoring-system/pkg/proto/gen/agent/v1;agentv1";
 
 service AgentService {
   rpc Connect(stream AgentMessage) returns (stream ServerMessage);

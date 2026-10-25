@@ -1994,7 +1994,7 @@ const file_agent_v1_agent_service_proto_rawDesc = "" +
 	"\x13ACTOVITY_KIND_FOCUS\x10\x022\xd5\x01\n" +
 	"\fAgentService\x12T\n" +
 	"\aConnect\x12!.monitoring.agent.v1.AgentMessage\x1a\".monitoring.agent.v1.ServerMessage(\x010\x01\x12o\n" +
-	"\x10StartStreamMJPEG\x12*.monitoring.agent.v1.StreamingAgentMessage\x1a+.monitoring.agent.v1.StreamingServerMessage(\x010\x01BKZIgithub.com/nougght/monitoring-system/shared/go/proto/gen/agent/v1;agentv1b\x06proto3"
+	"\x10StartStreamMJPEG\x12*.monitoring.agent.v1.StreamingAgentMessage\x1a+.monitoring.agent.v1.StreamingServerMessage(\x010\x01BEZCgithub.com/nougght/monitoring-system/pkg/proto/gen/agent/v1;agentv1b\x06proto3"
 
 var (
 	file_agent_v1_agent_service_proto_rawDescOnce sync.Once

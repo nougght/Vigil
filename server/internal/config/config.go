@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/joho/godotenv"
-	"github.com/nougght/monitoring-system/shared/go/util"
+	"github.com/nougght/monitoring-system/pkg/util"
 )
 
 type PostgresConfig struct {

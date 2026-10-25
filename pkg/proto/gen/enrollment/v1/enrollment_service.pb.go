@@ -148,7 +148,7 @@ const file_enrollment_v1_enrollment_service_proto_rawDesc = "" +
 	"caChainDer\x127\n" +
 	"\tnot_after\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\bnotAfter2u\n" +
 	"\x16AgentEnrollmentService\x12[\n" +
-	"\x06Enroll\x12'.monitoring.enrollment.v1.EnrollRequest\x1a(.monitoring.enrollment.v1.EnrollResponseBUZSgithub.com/nougght/monitoring-system/shared/go/proto/gen/enrollment/v1;enrollmentv1b\x06proto3"
+	"\x06Enroll\x12'.monitoring.enrollment.v1.EnrollRequest\x1a(.monitoring.enrollment.v1.EnrollResponseBOZMgithub.com/nougght/monitoring-system/pkg/proto/gen/enrollment/v1;enrollmentv1b\x06proto3"
 
 var (
 	file_enrollment_v1_enrollment_service_proto_rawDescOnce sync.Once

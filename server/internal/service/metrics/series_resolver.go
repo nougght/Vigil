@@ -7,8 +7,8 @@ import (
 	"slices"
 	"sync"
 
+	metrickinds "github.com/nougght/monitoring-system/pkg/metric_kinds"
 	metrics_model "github.com/nougght/monitoring-system/server/internal/model/metrics"
-	metrickinds "github.com/nougght/monitoring-system/shared/go/metric_kinds"
 )
 
 type SeriesRepository interface {
