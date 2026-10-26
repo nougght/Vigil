@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	pb "github.com/nougght/monitoring-system/pkg/proto/gen/enrollment/v1"
+	pb "github.com/nougght/monitoring-system/gen/proto/enrollment/v1"
 	"google.golang.org/grpc"
 )
 

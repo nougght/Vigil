@@ -5,14 +5,14 @@ on:
     branches:
       - '**'
     paths:
-      - 'server/**'
+      - 'backend/**'
       - 'agent/**'
       - '.github/workflows/ci.yaml'
   pull_request:
     branches:
       - '**'
     paths:
-      - 'server/**'
+      - 'backend/**'
       - 'agent/**'
       - '.github/workflows/ci.yaml'
 

@@ -5,7 +5,7 @@ import (
 	"slices"
 	"time"
 
-	agentv1 "github.com/nougght/monitoring-system/pkg/proto/gen/agent/v1"
+	agentv1 "github.com/nougght/monitoring-system/gen/proto/agent/v1"
 )
 
 type MetricKindInfo struct {

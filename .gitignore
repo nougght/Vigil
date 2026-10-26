@@ -20,7 +20,7 @@ bin/*
 .dev.docs.md
 
 .idea
-server/docker/certbot/*
+backend/services/core/docker/certbot/*
 
 # use yaml spec
 *swagger.json

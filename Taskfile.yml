@@ -25,10 +25,10 @@ tasks:
       - docker run -t --rm -v .:/app -w /app/agent golangci/golangci-lint:v2.12.2
         golangci-lint run --no-config -E govet,staticcheck
 
-  lint-server:
-    desc: lint server
+  lint-backend:
+    desc: lint backend
     cmds:
-      - docker run -t --rm -v .:/app -w /app/server golangci/golangci-lint:v2.12.2
+      - docker run -t --rm -v .:/app -w /app/backend golangci/golangci-lint:v2.12.2
         golangci-lint run --no-config -E govet,staticcheck
 
   lint-pkg:
@@ -73,7 +73,7 @@ tasks:
   server-up:
     desc: build and start server container
     cmds:
-      - docker compose --env-file ./deploy/.env -f ./deploy/docker-compose.yaml -p monitoring-system up -d  --build monitoring-backend
+      - docker compose --env-file ./deploy/.env -f ./deploy/docker-compose.yaml -p monitoring-system up -d  --build
 
   server-down:
     desc: stop and remove server containers
@@ -147,6 +147,6 @@ tasks:
 
   gen-proto:
     cmds:
-      - cd pkg/proto && protoc -I . --go_out=gen --go_opt=paths=source_relative 
-        --go-grpc_out=gen --go-grpc_opt=paths=source_relative 
+      - cd api/proto && protoc -I . --go_out=../../gen/proto --go_opt=paths=source_relative 
+        --go-grpc_out=../../gen/proto --go-grpc_opt=paths=source_relative 
         agent/v1/agent_service.proto enrollment/v1/enrollment_service.proto

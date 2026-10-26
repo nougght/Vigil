@@ -7,9 +7,10 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/kbinani/screenshot v0.0.0-20250624051815-089614a94018
+	github.com/nougght/monitoring-system/gen v0.0.0-00010101000000-000000000000
 	github.com/nougght/monitoring-system/pkg v0.0.0-00010101000000-000000000000
 	github.com/shirou/gopsutil/v4 v4.26.6
-	google.golang.org/protobuf v1.36.11
+	google.golang.org/protobuf v1.36.12
 )
 
 require (
@@ -56,13 +57,13 @@ require (
 	go.mongodb.org/mongo-driver/v2 v2.7.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.28.0 // indirect
-	golang.org/x/crypto v0.53.0 // indirect
+	golang.org/x/crypto v0.54.0 // indirect
 	golang.org/x/mod v0.37.0 // indirect
-	golang.org/x/net v0.56.0 // indirect
-	golang.org/x/sync v0.21.0 // indirect
-	golang.org/x/text v0.38.0 // indirect
+	golang.org/x/net v0.57.0 // indirect
+	golang.org/x/sync v0.22.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 	golang.org/x/tools v0.47.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260414002931-afd174a4e478 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260706201446-f0a921348800 // indirect
 )
 
 require (
@@ -78,9 +79,11 @@ require (
 	github.com/tklauser/go-sysconf v0.4.0 // indirect
 	github.com/tklauser/numcpus v0.12.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4
-	golang.org/x/sys v0.46.0 // indirect
-	google.golang.org/grpc v1.82.0
+	golang.org/x/sys v0.47.0 // indirect
+	google.golang.org/grpc v1.84.0
 )
 
 // for go mod tidy
 replace github.com/nougght/monitoring-system/pkg => ../pkg
+
+replace github.com/nougght/monitoring-system/gen => ../gen

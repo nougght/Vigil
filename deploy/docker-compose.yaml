@@ -11,11 +11,11 @@ services:
     env_file:
       - ./.env
   
-  monitoring-backend:
+  monitoring-core:
     build:
       # repo root so /pkg is available for the go.mod replace
       context: ..
-      dockerfile: server/docker/server.Dockerfile
+      dockerfile: backend/services/core/docker/core.Dockerfile
     image: monitoring-backend
     networks:
           default:
@@ -27,7 +27,7 @@ services:
       - "8093:8093" 
       
     env_file:
-      - ../server/.env
+      - ../backend/services/core/.env
       
     environment:
       POSTGRES_HOST: "timescale"

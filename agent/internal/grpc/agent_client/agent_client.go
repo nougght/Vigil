@@ -15,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	pb "github.com/nougght/monitoring-system/pkg/proto/gen/agent/v1"
+	pb "github.com/nougght/monitoring-system/gen/proto/agent/v1"
 	"google.golang.org/grpc"
 )
 
