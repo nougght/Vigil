@@ -38,6 +38,7 @@ func New(ctx context.Context, cfg *config.Config) *App {
 	//	case <-ctx.Done():
 	//		log.Panicf("%s", ctx.Err().Error())
 	//	}
+
 	//}
 
 	//services := service.New(service.ServicesOptions{
