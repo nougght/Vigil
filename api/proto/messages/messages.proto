@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package monitoring.messages;
+
+option go_package = "github.com/nougght/monitoring-system/gen/proto/messages";
+
+
+
+message LiveMessage {
+  LiveMeta meta = 1;
+
+}
+
+message LiveMeta {
+  google.protobuf.Timestamp timestamp = 1;
+
+}
+
+message EventMessage {
+  EventMeta meta = 1;
+  oneof payload {
+    SystemEvent systemEvent = 2;
+
+  }
+}
+
+message EventMeta {
+  google.protobuf.Timestamp timestamp = 1;
+
+}
+
+message SystemEvent {
+  oneof payload {
+    AgentConnected agentConnected = 1;
+    AgentDisconnected agentDisconnected = 2;
+  }
+}
+
+message AgentDisconnected {
+  string agent_uuid = 1;
+}
+
+message AgentConnected {
+  string agent_uuid = 1;
+}

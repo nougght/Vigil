@@ -128,11 +128,15 @@ tasks:
     desc: Create new migration with NAME=
     preconditions:
       - sh: '[ -n "{{.NAME}}" ]'
-        msg: "migrate name is required, use `make migrate-create MIGRATE_NAME=your_migration_name`"
+        msg: "migrate name is required, use `make migrate-create NAME=your_migration_name`"
+      - sh: '[ -n "{{.SERVICE}}" ]'
+        msg: "migrate service is required, use `make migrate-create service=[core || alerts]`"
+      - sh: ''
     env:
       NAME: '{{.NAME}}'
     cmds:
-      - migrate create -ext sql -dir server/internal/storage/timescale/migrations -seq ${NAME}
+      - cmd: migrate create -ext sql -dir server/internal/storage/timescale/migrations -seq ${NAME}
+        if: '{{and (eq .SERVICE "core") (eq .ENV "production")}}'
 
   migrate-force:
     desc: Force migrate with VERSION=
