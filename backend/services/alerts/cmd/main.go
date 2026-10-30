@@ -6,8 +6,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	_ "github.com/nougght/monitoring-system/backend/services/core/api"
-
 	"github.com/nougght/monitoring-system/backend/services/alerts/internal/app"
 	"github.com/nougght/monitoring-system/backend/services/alerts/internal/config"
 )

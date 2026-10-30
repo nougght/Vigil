@@ -5,11 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"log"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type contextKey string
 
-const contextKeyTx contextKey = "tx"
+const ContextKeyTx contextKey = "tx"
 
 type Transactor struct {
 	db DB
@@ -41,7 +43,7 @@ func (t *Transactor) WithinTx(ctx context.Context, fn func(ctx context.Context) 
 		}
 	}()
 
-	ctx = context.WithValue(ctx, contextKeyTx, tx)
+	ctx = context.WithValue(ctx, ContextKeyTx, tx)
 	if err = fn(ctx); err != nil {
 		return err
 	}
@@ -55,7 +57,7 @@ func (t *Transactor) WithinTx(ctx context.Context, fn func(ctx context.Context) 
 
 // returns tx from ctx or nil
 func getTx(ctx context.Context) (tx pgx.Tx) {
-	tx, ok := ctx.Value(contextKeyTx).(pgx.Tx)
+	tx, ok := ctx.Value(ContextKeyTx).(pgx.Tx)
 	if !ok {
 		return
 	}
@@ -63,7 +65,7 @@ func getTx(ctx context.Context) (tx pgx.Tx) {
 }
 
 // try get tx from ctx or use provided db
-func conn(ctx context.Context, db DB) DB {
+func Conn(ctx context.Context, db DB) DB {
 	if tx := getTx(ctx); tx != nil {
 		return tx
 	}

@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+	"github.com/nougght/monitoring-system/backend/pkg/storage"
 	agent_model "github.com/nougght/monitoring-system/backend/services/core/internal/model/agent"
 )
 
@@ -15,7 +17,7 @@ type EnrollmentKeysRepository struct {
 	BaseRepository
 }
 
-func NewEnrollmentKeysRepository(db DB) *EnrollmentKeysRepository {
+func NewEnrollmentKeysRepository(db storage.DB) *EnrollmentKeysRepository {
 	return &EnrollmentKeysRepository{
 		BaseRepository{db: db},
 	}

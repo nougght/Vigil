@@ -7,8 +7,10 @@ import (
 	"io/fs"
 	"log"
 
+	"github.com/golang-migrate/migrate/v4"
 	migrate_pgx "github.com/golang-migrate/migrate/v4/database/pgx"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"

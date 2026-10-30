@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+	"github.com/nougght/monitoring-system/backend/pkg/storage"
 	agent_model "github.com/nougght/monitoring-system/backend/services/core/internal/model/agent"
 )
 
@@ -17,7 +19,7 @@ var (
 	ErrInvalidGroup = errors.New("invalid group")
 )
 
-func NewAgentRepository(db DB) *AgentRepository {
+func NewAgentRepository(db storage.DB) *AgentRepository {
 	return &AgentRepository{
 		BaseRepository{db: db},
 	}

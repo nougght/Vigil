@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/nougght/monitoring-system/backend/pkg/natsclient"
 	"github.com/nougght/monitoring-system/backend/services/alerts/internal/config"
+	"github.com/nougght/monitoring-system/backend/services/alerts/internal/service/event"
 	"google.golang.org/grpc"
 )
 
@@ -40,14 +42,17 @@ func New(ctx context.Context, cfg *config.Config) *App {
 	//	}
 
 	//}
-
 	//services := service.New(service.ServicesOptions{
 	//	Config:       cfg,
 	//	Repositories: repository.New(db),
 	//	Transactor:   storage.NewTransactor(db),
 	//})
 
-	//httpServer := rest.NewServer(cfg, *services)
+	r := gin.New()
+	httpServer := http.Server{
+		Addr:    fmt.Sprintf(":%d", cfg.HTTP.ServerPort),
+		Handler: r.Handler(),
+	}
 
 	//alertsServer := grpc.NewServer(
 	//	grpc.ConnectionTimeout(5*time.Second),
@@ -69,7 +74,7 @@ func New(ctx context.Context, cfg *config.Config) *App {
 		//Repositories:         repository.New(db),
 		//Services:             services,
 		//Bus:                  bus,
-		//HTTPServer:           httpServer,
+		HTTPServer: &httpServer,
 		//AlertsGRPCServer:     alertsServer,
 	}
 
@@ -82,6 +87,14 @@ func New(ctx context.Context, cfg *config.Config) *App {
 }
 
 func (a *App) Run(ctx context.Context) error {
+
+	natsClient := natsclient.NewClient(a.Config.NatsURL)
+	eventService := event.NewEventService(natsClient.Durable())
+	err := eventService.Start(ctx)
+	if err != nil {
+		return fmt.Errorf("failed start event service: %w", err)
+	}
+
 	httpErrChan := make(chan error)
 	go func() {
 		log.Println("starting HTTP server")
@@ -90,21 +103,21 @@ func (a *App) Run(ctx context.Context) error {
 		}
 	}()
 
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.Config.GRPC.ServerPort))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	grpcErrChan := make(chan error)
-	go func() {
-		log.Printf("starting gRPC server :%d", a.Config.GRPC.ServerPort)
-		if err := a.AlertsGRPCServer.Serve(l); err != nil {
-			grpcErrChan <- err
-		}
-	}()
+	//l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.Config.GRPC.ServerPort))
+	//if err != nil {
+	//	log.Fatalf("failed to listen: %v", err)
+	//}
+	//grpcErrChan := make(chan error)
+	//go func() {
+	//	log.Printf("starting gRPC server :%d", a.Config.GRPC.ServerPort)
+	//	if err := a.AlertsGRPCServer.Serve(l); err != nil {
+	//		grpcErrChan <- err
+	//	}
+	//}()
 
 	select {
-	case err := <-grpcErrChan:
-		log.Fatalf("failed to serve gRPC  server: %v", err)
+	//case err := <-grpcErrChan:
+	//	log.Fatalf("failed to serve gRPC  server: %v", err)
 	case err := <-httpErrChan:
 		log.Fatalf("failed to serve HTTP: %v", err)
 	case <-ctx.Done():

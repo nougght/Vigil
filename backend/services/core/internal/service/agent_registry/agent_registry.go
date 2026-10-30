@@ -22,10 +22,15 @@ import (
 	agent_model "github.com/nougght/monitoring-system/backend/services/core/internal/model/agent"
 	"github.com/nougght/monitoring-system/backend/services/core/internal/storage/timescale/repository"
 	"github.com/nougght/monitoring-system/backend/services/core/internal/util"
+	"github.com/nougght/monitoring-system/gen/proto/messages"
 	utilShared "github.com/nougght/monitoring-system/pkg/util"
 	"github.com/nougght/monitoring-system/pkg/util/fsutil"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+type EventPublisher interface {
+	Publish(ctx context.Context, subject string, message *messages.EventMessage) error
+}
 type AgentRegistryService struct {
 	cfg                *config.Config
 	agentRepo          *repository.AgentRepository
@@ -35,12 +40,15 @@ type AgentRegistryService struct {
 	cert               *model.Certs
 	sessions           map[uuid.UUID]*agent_model.AgentSession
 	mu                 sync.RWMutex
+	eventPublisher     EventPublisher
 }
 
 func NewAgentRegistryService(cfg *config.Config, agentRepo *repository.AgentRepository,
 	enrollmentKeysRepo *repository.EnrollmentKeysRepository,
 	specsRepo *repository.SpecsRepository,
-	transactor model.Transactor, cert *model.Certs) (*AgentRegistryService, error) {
+	transactor model.Transactor, cert *model.Certs,
+	eventPublisher EventPublisher,
+) (*AgentRegistryService, error) {
 	if cfg == nil || agentRepo == nil || enrollmentKeysRepo == nil || transactor == nil {
 		return nil, fmt.Errorf("params required")
 	}
@@ -52,6 +60,7 @@ func NewAgentRegistryService(cfg *config.Config, agentRepo *repository.AgentRepo
 		transactor:         transactor,
 		cert:               cert,
 		sessions:           make(map[uuid.UUID]*agent_model.AgentSession, 10),
+		eventPublisher:     eventPublisher,
 	}, nil
 }
 
@@ -70,6 +79,26 @@ func (s *AgentRegistryService) CreateSession(agentID uuid.UUID) *agent_model.Age
 	defer s.mu.Unlock()
 	session := agent_model.NewAgentSession(agentID)
 	s.sessions[agentID] = session
+
+	err := s.eventPublisher.Publish(context.Background(), fmt.Sprintf("event.system.agent.%s.created", agentID),
+		&messages.EventMessage{
+			Meta: &messages.EventMeta{
+				Timestamp: timestamppb.New(time.Now()),
+			},
+			Payload: &messages.EventMessage_SystemEvent{
+				&messages.SystemEvent{
+					Payload: &messages.SystemEvent_AgentConnected{
+						AgentConnected: &messages.AgentConnected{
+							AgentUuid: agentID.String(),
+						},
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		log.Printf("failed publish agent connected event: %v", err.Error())
+	}
 	return session
 }
 

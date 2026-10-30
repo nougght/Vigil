@@ -126,18 +126,23 @@ tasks:
 
   migrate-create:
     desc: Create new migration with NAME=
+    vars:
+      VALID_SERVICE: '{{or (eq .SERVICE "core") (eq .SERVICE "alerts")}}'
     preconditions:
       - sh: '[ -n "{{.NAME}}" ]'
         msg: "migrate name is required, use `make migrate-create NAME=your_migration_name`"
       - sh: '[ -n "{{.SERVICE}}" ]'
         msg: "migrate service is required, use `make migrate-create service=[core || alerts]`"
-      - sh: ''
+      - sh: '{{.VALID_SERVICE}}'
+        msg: "migrate service name unexpected"
     env:
       NAME: '{{.NAME}}'
+      SERVICE: '{{.SERVICE}}'
     cmds:
-      - cmd: migrate create -ext sql -dir server/internal/storage/timescale/migrations -seq ${NAME}
-        if: '{{and (eq .SERVICE "core") (eq .ENV "production")}}'
-
+      - cmd: migrate create -ext sql -dir backend/services/core/internal/storage/timescale/migrations -seq ${NAME}
+        if: '{{eq .SERVICE "core"}}'
+      - cmd: migrate create -ext sql -dir backend/services/${SERVICE}/internal/storage/postgres/migrations -seq ${NAME}
+        if: '{{not (eq .SERVICE "core")}}'
   migrate-force:
     desc: Force migrate with VERSION=
     preconditions:
@@ -153,4 +158,4 @@ tasks:
     cmds:
       - cd api/proto && protoc -I . --go_out=../../gen/proto --go_opt=paths=source_relative 
         --go-grpc_out=../../gen/proto --go-grpc_opt=paths=source_relative 
-        agent/v1/agent_service.proto enrollment/v1/enrollment_service.proto
+        agent/v1/agent_service.proto enrollment/v1/enrollment_service.proto messages/messages.proto

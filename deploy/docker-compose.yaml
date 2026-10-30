@@ -16,7 +16,7 @@ services:
       # repo root so /pkg is available for the go.mod replace
       context: ..
       dockerfile: backend/services/core/docker/core.Dockerfile
-    image: monitoring-backend
+    image: monitoring-core
     networks:
           default:
           proxy:
@@ -32,6 +32,7 @@ services:
     environment:
       POSTGRES_HOST: "timescale"
       POSTGRES_PORT: "5432"
+      NATS_URL: "nats:4222"
       CA_PATH: ${CONTAINER_CA_PATH}
       INT_CA_PATH:  ${CONTAINER_INT_CA_PATH}
       INT_KEY_PATH: ${CONTAINER_INT_KEY_PATH}
@@ -41,6 +42,28 @@ services:
     stop_grace_period: 10s
     volumes:
       - ${HOST_CREDS_PATH}:${CONTAINER_CREDS_PATH}
+
+  monitoring-alerts:
+    build:
+      # repo root so /pkg is available for the go.mod replace
+      context: ..
+      dockerfile: backend/services/alerts/docker/alerts.Dockerfile
+    image: monitoring-alerts
+    networks:
+      default:
+      proxy:
+
+
+    env_file:
+      - ../backend/services/alerts/.env
+
+    environment:
+      NATS_URL: "nats:4222"
+
+    depends_on:
+      - timescale
+      - monitoring-core
+    stop_grace_period: 10s
 
   nats:
     image: nats:2.11-alpine
