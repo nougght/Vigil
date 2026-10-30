@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,6 +20,17 @@ type JetStreamClient struct {
 
 func NewJetStreamClient(conn *nats.Conn, js jetstream.JetStream) *JetStreamClient {
 	return &JetStreamClient{conn: conn, js: js}
+}
+func (c *JetStreamClient) InitStream() error {
+	_, err := c.js.CreateOrUpdateStream(context.Background(), jetstream.StreamConfig{
+		Name:      toStreamName(""),
+		Subjects:  []string{},
+		Storage:   jetstream.FileStorage,
+		Retention: jetstream.LimitsPolicy,
+		MaxAge:    24 * time.Hour,
+		MaxMsgs:   100000,
+	})
+	return err
 }
 
 func (c *JetStreamClient) PublishRaw(ctx context.Context, subject string, data []byte) error {
@@ -46,15 +56,21 @@ func (c *JetStreamClient) PublishRaw(ctx context.Context, subject string, data [
 func (c *JetStreamClient) Publish(ctx context.Context, subject string, message *messages.EventMessage) error {
 	data, err := proto.Marshal(message)
 	if err != nil {
-		log.Fatalf("failed to marshal proto: %v", err)
+		log.Fatalf("failed to marshal proto: %s", err.Error())
 	}
 
-	return c.PublishRaw(ctx, subject, data)
+	err = c.PublishRaw(ctx, subject, data)
+	if err != nil {
+		log.Printf("failed to publish, subject '%s': %s", subject, err.Error())
+	} else {
+		log.Printf("published message with subject: %s", subject)
+	}
+	return err
 }
 
 func (c *JetStreamClient) SubscribeRaw(ctx context.Context, subject string, handler func(ctx context.Context, data []byte) error) error {
 	consumer, err := c.js.CreateOrUpdateConsumer(ctx, toStreamName(subject), jetstream.ConsumerConfig{
-		Durable:       fmt.Sprintf("%s.%s", subject, uuid.NewString()), // Name that persists across restarts
+		Durable:       fmt.Sprintf("%s_%s", toStreamName(subject), uuid.NewString()), // Name that persists across restarts
 		AckPolicy:     jetstream.AckExplicitPolicy,
 		DeliverPolicy: jetstream.DeliverAllPolicy, // start from beginning
 		AckWait:       30 * time.Minute,           // time to wait for ack
@@ -93,6 +109,8 @@ func (c *JetStreamClient) Subscribe(ctx context.Context, subject string, handler
 	return c.SubscribeRaw(ctx, subject, func(ctx context.Context, data []byte) error {
 		msg := &messages.EventMessage{}
 
+		log.Printf("received message with subject: %s", subject)
+
 		err := proto.Unmarshal(data, msg)
 		if err != nil {
 			log.Fatalf("failed to unmarshal proto: %v", err)
@@ -108,13 +126,6 @@ func (c *JetStreamClient) Subscribe(ctx context.Context, subject string, handler
 }
 
 func toStreamName(subject string) string {
-	return strings.ReplaceAll(
-		strings.ReplaceAll(
-			strings.ReplaceAll(subject, ".", "_"),
-			">",
-			"a"),
-		"*",
-		"o",
-	)
-
+	// TODO: add stream names
+	return "events"
 }

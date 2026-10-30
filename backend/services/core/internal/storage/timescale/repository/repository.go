@@ -3,15 +3,16 @@ package repository
 import (
 	"context"
 
-	"backend/pkg/storage"
+	"github.com/jackc/pgx/v5"
+	"github.com/nougght/monitoring-system/backend/pkg/storage"
 )
 
 type BaseRepository struct {
-	db DB
+	db storage.DB
 }
 
-func (r *BaseRepository) conn(ctx context.Context) DB {
-	return storage.conn(ctx, r.db)
+func (r *BaseRepository) conn(ctx context.Context) storage.DB {
+	return storage.Conn(ctx, r.db)
 }
 
 type Repositories struct {
@@ -23,7 +24,7 @@ type Repositories struct {
 	agentGroupsRepository    *AgentGroupsRepository
 }
 
-func New(db DB) *Repositories {
+func New(db storage.DB) *Repositories {
 	return &Repositories{
 		agentRpository:           NewAgentRepository(db),
 		enrollmentKeysRepository: NewEnrollmentKeysRepository(db),

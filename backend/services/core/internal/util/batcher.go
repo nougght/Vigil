@@ -82,7 +82,7 @@ func (b *Batcher[T]) runWorker(ctx context.Context) {
 				b.flush(flushContext) // proccess last items
 				return
 			case <-ticker.C:
-				log.Println("metrics ticker")
+				//log.Println("metrics ticker")
 				b.flush(ctx)
 			case <-b.signal:
 				b.flush(ctx)

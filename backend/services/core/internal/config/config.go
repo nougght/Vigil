@@ -3,9 +3,8 @@ package config
 import (
 	"log"
 
-	"backend/pkg/storage"
-
 	"github.com/joho/godotenv"
+	"github.com/nougght/monitoring-system/backend/pkg/storage"
 	"github.com/nougght/monitoring-system/pkg/util"
 )
 
@@ -34,6 +33,7 @@ type Config struct {
 	GRPC           *GRPCConfig
 	Cert           *CertConfig
 	SettingsConfig *SettingsConfig
+	NatsURL        string
 }
 
 func MustLoadConfig(path string) *Config {
@@ -77,5 +77,8 @@ func MustLoadConfig(path string) *Config {
 		IntCAPath:  intCAPath,
 		IntKeyPath: intKeyPath,
 	}
+
+	cfg.NatsURL = util.MustGetEnvVar("NATS_URL")
+
 	return cfg
 }

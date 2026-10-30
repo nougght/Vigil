@@ -3,6 +3,7 @@ package service
 import (
 	"log"
 
+	"github.com/nougght/monitoring-system/backend/pkg/natsclient"
 	"github.com/nougght/monitoring-system/backend/services/core/internal/config"
 	"github.com/nougght/monitoring-system/backend/services/core/internal/model"
 	"github.com/nougght/monitoring-system/backend/services/core/internal/service/agent_groups"
@@ -31,6 +32,7 @@ type ServicesOptions struct {
 	Transactor   model.Transactor
 	Cert         *model.Certs
 	Bus          *eventbus.EventBus
+	NatsClient   *natsclient.Client
 }
 
 func New(opts ServicesOptions) *Services {
@@ -41,6 +43,7 @@ func New(opts ServicesOptions) *Services {
 		opts.Repositories.SpecsRepository(),
 		opts.Transactor,
 		opts.Cert,
+		opts.NatsClient.Durable(),
 	)
 	if err != nil {
 		log.Panicf("failed initialize agent registry: %s", err.Error())

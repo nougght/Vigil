@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/nougght/monitoring-system/backend/pkg/storage"
 	"github.com/nougght/monitoring-system/backend/services/core/internal/model/agent_groups"
 )
 
@@ -14,7 +15,7 @@ type AgentGroupsRepository struct {
 	BaseRepository
 }
 
-func NewAgentGroupsRepository(db DB) *AgentGroupsRepository {
+func NewAgentGroupsRepository(db storage.DB) *AgentGroupsRepository {
 	return &AgentGroupsRepository{
 		BaseRepository{db: db},
 	}

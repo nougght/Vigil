@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/nougght/monitoring-system/backend/pkg/storage"
 	agent_model "github.com/nougght/monitoring-system/backend/services/core/internal/model/agent"
 )
 
@@ -13,7 +14,7 @@ type SpecsRepository struct {
 	BaseRepository
 }
 
-func NewSpecsRepository(db DB) *SpecsRepository {
+func NewSpecsRepository(db storage.DB) *SpecsRepository {
 	return &SpecsRepository{
 		BaseRepository{db: db},
 	}

@@ -29,7 +29,7 @@ type RealtimeService struct {
 	hub        *ws.Hub
 	upgrader   *websocket.Upgrader
 	bus        *eventbus.EventBus
-	handlers   map[string]event.EventHandler
+	handlers   map[string]eventbus.EventHandler
 }
 
 func NewRealtimeService(cfg *config.Config,
@@ -49,7 +49,7 @@ func NewRealtimeService(cfg *config.Config,
 		bus: bus,
 	}
 	s.hub = ws.NewHub(s.HandleSubscription, s.HandleUnsubscription)
-	s.handlers = map[string]event.EventHandler{
+	s.handlers = map[string]eventbus.EventHandler{
 		event.AgentMetricsEventName:  s.metricsSeriesEventHandler,
 		event.AgentActivityEventName: s.activityEventHandler,
 	}
@@ -113,7 +113,7 @@ func (s *RealtimeService) HandleSubscription(subject string) {
 	}
 }
 
-func (s *RealtimeService) activityEventHandler(ctx context.Context, e event.Event) {
+func (s *RealtimeService) activityEventHandler(ctx context.Context, e eventbus.Event) {
 	activityEvent, ok := e.(*event.AgentActivityEvent)
 	if !ok {
 		log.Printf("failed to convert event: %s", e)
@@ -137,7 +137,7 @@ func (s *RealtimeService) activityEventHandler(ctx context.Context, e event.Even
 		Payload: jsonMsg,
 	})
 }
-func (s *RealtimeService) metricsSeriesEventHandler(ctx context.Context, e event.Event) {
+func (s *RealtimeService) metricsSeriesEventHandler(ctx context.Context, e eventbus.Event) {
 	metricsEvent, ok := e.(*event.AgentMetricsEvent)
 	if !ok {
 		log.Printf("failed to convert event: %s", e)

@@ -18,7 +18,8 @@ type GRPCConfig struct {
 type Config struct {
 	Postgres *storage.PostgresConfig
 	HTTP     *HTTPConfig
-	GRPC     *GRPCConfig
+	//GRPC     *GRPCConfig
+	NatsURL string
 }
 
 func MustLoadConfig(path string) *Config {
@@ -41,10 +42,13 @@ func MustLoadConfig(path string) *Config {
 		ServerPort: serverPort,
 	}
 
-	grpcPort := util.MustGetPortEnvVar("GRPC_SERVER_PORT")
-	cfg.GRPC = &GRPCConfig{
-		ServerPort: grpcPort,
-	}
+	//grpcPort := util.MustGetPortEnvVar("GRPC_SERVER_PORT")
+	//cfg.GRPC = &GRPCConfig{
+	//	ServerPort: grpcPort,
+	//}
+
+	natsURL := util.MustGetEnvVar("NATS_URL")
+	cfg.NatsURL = natsURL
 
 	return cfg
 }

@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/nougght/monitoring-system/backend/pkg/natsclient"
 	"github.com/nougght/monitoring-system/backend/pkg/storage"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -84,7 +85,12 @@ func New(ctx context.Context, cfg *config.Config) *App {
 		}
 	}
 
-	bus := eventbus.NewEventBus(cfg)
+	bus := eventbus.NewEventBus()
+	natsClient := natsclient.NewClient(cfg.NatsURL)
+	err = natsClient.Durable().InitStream()
+	if err != nil {
+		log.Panicf("failed to init stream: %s", err.Error())
+	}
 	services := service.New(service.ServicesOptions{
 		Config:       cfg,
 		Repositories: repository.New(db),
@@ -94,7 +100,8 @@ func New(ctx context.Context, cfg *config.Config) *App {
 			Key:    intKey,
 			RootCA: rootCA,
 		},
-		Bus: bus,
+		Bus:        bus,
+		NatsClient: natsClient,
 	})
 
 	err = services.Metrics().SyncMetricKinds(ctx)

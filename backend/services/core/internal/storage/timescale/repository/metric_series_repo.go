@@ -10,7 +10,8 @@ import (
 	"slices"
 
 	"github.com/google/uuid"
-	"github.com/nougght/monitoring-system/backend/services/core/internal/model"
+	"github.com/jackc/pgx/v5"
+	"github.com/nougght/monitoring-system/backend/pkg/storage"
 	metrics_model "github.com/nougght/monitoring-system/backend/services/core/internal/model/metrics"
 )
 
@@ -18,7 +19,7 @@ type SeriesRepository struct {
 	BaseRepository
 }
 
-func NewSeriesRepository(db DB) *SeriesRepository {
+func NewSeriesRepository(db storage.DB) *SeriesRepository {
 	return &SeriesRepository{
 		BaseRepository{db: db},
 	}
@@ -52,7 +53,7 @@ func (r *SeriesRepository) BatchCreateOrLoadSeries(ctx context.Context, seriesLi
 	}()
 
 	res := tx.SendBatch(ctx, batch)
-	ctx = context.WithValue(ctx, model.ContextKeyTx, tx)
+	ctx = context.WithValue(ctx, storage.ContextKeyTx, tx)
 
 	missingKeysWithIndexes := make(map[metrics_model.MetricSeriesKey]int, 0)
 	for i := range seriesList {

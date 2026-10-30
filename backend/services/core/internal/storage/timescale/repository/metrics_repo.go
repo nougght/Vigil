@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/nougght/monitoring-system/backend/pkg/storage"
 	metrics_model "github.com/nougght/monitoring-system/backend/services/core/internal/model/metrics"
 	metrickinds "github.com/nougght/monitoring-system/pkg/metric_kinds"
 )
@@ -41,7 +43,7 @@ type MetricsRepository struct {
 	BaseRepository
 }
 
-func NewMetricsRepository(db DB) *MetricsRepository {
+func NewMetricsRepository(db storage.DB) *MetricsRepository {
 	return &MetricsRepository{
 		BaseRepository{db: db},
 	}

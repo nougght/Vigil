@@ -4,7 +4,7 @@ import (
 	"context"
 	"embed"
 
-	"backend/pkg/storage"
+	"github.com/nougght/monitoring-system/backend/pkg/storage"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
