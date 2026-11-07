@@ -2,7 +2,7 @@
 
 version: '3'
 
-dotenv: ['.env.local', '.env']
+dotenv: [ '.env.local', '.env' ]
 
 includes:
   web:
@@ -71,9 +71,14 @@ tasks:
       - docker compose -f ./deploy/docker-compose.yaml -p monitoring-system --build monitoring-backend
 
   server-up:
-    desc: build and start server container
+    desc: build and start server containers
     cmds:
       - docker compose --env-file ./deploy/.env -f ./deploy/docker-compose.yaml -p monitoring-system up -d  --build
+
+  server-dbg:
+    desc: build and start server containers in debug mode
+    cmds:
+      - docker compose --env-file ./deploy/.env -f ./deploy/docker-compose.yaml -f ./deploy/docker-compose.debug.yaml -p monitoring-system up -d  --build
 
   server-down:
     desc: stop and remove server containers
@@ -156,6 +161,6 @@ tasks:
 
   gen-proto:
     cmds:
-      - cd api/proto && protoc -I . --go_out=../../gen/proto --go_opt=paths=source_relative 
-        --go-grpc_out=../../gen/proto --go-grpc_opt=paths=source_relative 
+      - cd api/proto && protoc -I . --go_out=../../gen/proto --go_opt=paths=source_relative
+        --go-grpc_out=../../gen/proto --go-grpc_opt=paths=source_relative
         agent/v1/agent_service.proto enrollment/v1/enrollment_service.proto messages/messages.proto

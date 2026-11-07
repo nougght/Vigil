@@ -16,25 +16,27 @@ services:
       # repo root so /pkg is available for the go.mod replace
       context: ..
       dockerfile: backend/services/core/docker/core.Dockerfile
+      target: run
+
     image: monitoring-core
     networks:
-          default:
-          proxy:
+      default:
+      proxy:
 
     ports:
       - "8091:8091"
       - "8092:8092"
-      - "8093:8093" 
-      
+      - "8093:8093"
+
     env_file:
       - ../backend/services/core/.env
-      
+
     environment:
       POSTGRES_HOST: "timescale"
       POSTGRES_PORT: "5432"
       NATS_URL: "nats:4222"
       CA_PATH: ${CONTAINER_CA_PATH}
-      INT_CA_PATH:  ${CONTAINER_INT_CA_PATH}
+      INT_CA_PATH: ${CONTAINER_INT_CA_PATH}
       INT_KEY_PATH: ${CONTAINER_INT_KEY_PATH}
 
     depends_on:
@@ -48,6 +50,8 @@ services:
       # repo root so /pkg is available for the go.mod replace
       context: ..
       dockerfile: backend/services/alerts/docker/alerts.Dockerfile
+      target: run
+
     image: monitoring-alerts
     networks:
       default:
@@ -73,13 +77,15 @@ services:
       - "8222:8222"
     volumes:
       - nats_data:/data
-    command: ["-js", "-sd", "/data"] # -js for JetStream, -sd for data path
+
+    # -js for JetStream, -sd for data path, -m for http monitor on 8222
+    command: [ "-js", "-sd", "/data", "-m", "8222" ]
     restart: unless-stopped
 
 volumes:
   db-data:
   nats_data:
-  
+
 networks:
   proxy:
     external: true

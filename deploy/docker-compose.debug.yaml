@@ -1,0 +1,12 @@
+# overrides base docker compose with debug options
+services:
+  monitoring-core:
+    build:
+      target: run-debug
+    ports:
+      - "40011:40011"
+  monitoring-alerts:
+    build:
+      target: run-debug
+    ports:
+      - "40012:40012"

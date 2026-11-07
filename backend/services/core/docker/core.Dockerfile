@@ -1,4 +1,4 @@
-FROM golang:1.26-alpine AS build
+FROM golang:1.26-alpine AS init
 
 WORKDIR /build
 
@@ -17,11 +17,21 @@ COPY backend/pkg ./backend/pkg
 COPY backend/services/core ./backend/services/core
 
 WORKDIR /build/backend
-RUN go build -o /build/monit-core ./services/core/cmd/main.go
+
+# delve for debug mode
+FROM golang:1.26-alpine AS dlv
+RUN CGO_ENABLED=0 go install github.com/go-delve/delve/cmd/dlv@v1.27.0
+
+FROM init AS build
+RUN CGO_ENABLED=0 go build -o /build/monit-core ./services/core/cmd/main.go
+
+FROM init AS build-debug
+RUN CGO_ENABLED=0 go build -gcflags="all=-N -l" -o /build/monit-core ./services/core/cmd/main.go
+
 
 
 # light weight image for running
-FROM alpine
+FROM alpine AS run
 WORKDIR /app/core
 
 COPY --from=build /build/monit-core .
@@ -29,3 +39,14 @@ COPY backend/services/core/config.yaml .
 COPY bin/agent.exe /app/bin/agent.exe
 COPY backend/services/core/creds/root-ca.crt /app/server/creds/root-ca.crt
 ENTRYPOINT ["./monit-core"]
+
+
+FROM alpine AS run-debug
+WORKDIR /app/core
+
+COPY --from=build-debug /build/monit-core .
+COPY --from=dlv /go/bin/dlv .
+COPY backend/services/core/config.yaml .
+COPY bin/agent.exe /app/bin/agent.exe
+COPY backend/services/core/creds/root-ca.crt /app/server/creds/root-ca.crt
+ENTRYPOINT ["./dlv", "exec", "./monit-core", "--headless", "--listen=:40011", "--api-version=2", "--accept-multiclient", "--continue"]
