@@ -16,7 +16,7 @@ tasks:
     desc: lint go files in agent, server, shared
     cmds:
       - task: lint-agent
-      - task: lint-server
+      - task: lint-backend
       - task: lint-pkg
 
   lint-agent:
@@ -68,7 +68,7 @@ tasks:
   server-build:
     desc: build server docker image
     cmds:
-      - docker compose -f ./deploy/docker-compose.yaml -p monitoring-system --build monitoring-backend
+      - docker compose --env-file ./deploy/.env -f ./deploy/docker-compose.yaml -p monitoring-system build
 
   server-up:
     desc: build and start server containers

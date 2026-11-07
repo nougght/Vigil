@@ -30,8 +30,7 @@ jobs:
 
       - name: Copy env template
         run: |
-          cd server
-          cp .env.example .env
+          cp deploy/.env.example deploy/.env
 
       - name: Run Linters
         run: |
@@ -43,17 +42,46 @@ jobs:
 
       - name: Copy env template
         run: |
-          cd server
-          cp .env.example .env
+          cp deploy/.env.example deploy/.env
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.26'
+          go-version: '1.27.3'
 
       - name: Run Tests
         run: |
           go test -v -cover ./agent/...
-          go test -v -cover ./server/...
+          go test -v -cover ./backend/...
           go test -v -cover ./pkg/...
 
+  build-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.27.3'
+
+      - name: Install Task
+        uses: go-task/setup-task@v2
+      
+      - name: build agent
+        run: |
+          task build-agent
+
+      - name: upload agent windows
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-windows
+          path: bin/agent.exe
+          if-no-files-found: error
+
+      - name: upload agent linux
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-linux
+          path: bin/agent
+          if-no-files-found: error
